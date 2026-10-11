@@ -1,0 +1,77 @@
+{
+  "report_id": "sample-report-baseline",
+  "generated_at": "2026-10-11T12:00:00.000000+00:00",
+  "mode": "local",
+  "fork_block": null,
+  "summary": {
+    "total": 8,
+    "succeeded": 4,
+    "failed": 4
+  },
+  "results": [
+    {
+      "module": "reentrancy",
+      "variant": "vulnerable",
+      "status": "SUCCEEDED",
+      "profit_eth": 10.0,
+      "note": "drained vault via reentrant withdraw",
+      "duration_s": 0.85
+    },
+    {
+      "module": "reentrancy",
+      "variant": "protected",
+      "status": "FAILED",
+      "profit_eth": 0.0,
+      "note": "reentrancy blocked: Initial withdraw failed",
+      "duration_s": 0.82
+    },
+    {
+      "module": "oracle",
+      "variant": "vulnerable",
+      "status": "SUCCEEDED",
+      "profit_eth": 75.0,
+      "note": "borrowed uncollateralized funds via spot price pump",
+      "duration_s": 0.95
+    },
+    {
+      "module": "oracle",
+      "variant": "protected",
+      "status": "FAILED",
+      "profit_eth": 0.0,
+      "note": "oracle manipulation blocked by TWAP deviation guard",
+      "duration_s": 0.91
+    },
+    {
+      "module": "flash_loan",
+      "variant": "vulnerable",
+      "status": "SUCCEEDED",
+      "profit_eth": 50.0,
+      "note": "drained lending pool via flash loan AMM pump and repaid lender",
+      "duration_s": 1.15
+    },
+    {
+      "module": "flash_loan",
+      "variant": "protected",
+      "status": "FAILED",
+      "profit_eth": 0.0,
+      "note": "flash loan exploit aborted: lending oracle rejected skewed price",
+      "duration_s": 1.10
+    },
+    {
+      "module": "governance",
+      "variant": "vulnerable",
+      "status": "SUCCEEDED",
+      "profit_eth": 10.0,
+      "note": "hijacked vote with flash-loaned balance and drained treasury",
+      "duration_s": 0.78
+    },
+    {
+      "module": "governance",
+      "variant": "protected",
+      "status": "FAILED",
+      "profit_eth": 0.0,
+      "note": "vote rejected: zero voting power at historical snapshot",
+      "duration_s": 0.76
+    }
+  ]
+}

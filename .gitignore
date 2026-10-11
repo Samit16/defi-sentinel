@@ -1,8 +1,13 @@
-# DeFiSentinel
-venv/
+# DeFiSentinel .gitignore
+.env
 out/
 cache/
-.env
+lib/
+venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# Reports: ignore dynamically generated reports except .gitkeep and sample_report.json
+reports/*.json
+!reports/sample_report.json
