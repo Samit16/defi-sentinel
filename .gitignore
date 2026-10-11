@@ -1,0 +1,8 @@
+# DeFiSentinel
+venv/
+out/
+cache/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
