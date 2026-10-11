@@ -5,7 +5,7 @@ Serves static UI assets and provides REST endpoints for listing and viewing repo
 
 import json
 from pathlib import Path
-from flask import Flask, jsonify, render_template, abort
+from flask import Flask, jsonify, render_template, abort, request
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REPORTS_DIR = PROJECT_ROOT / "reports"
@@ -16,6 +16,22 @@ app = Flask(
     template_folder=str(Path(__file__).resolve().parent / "templates"),
     static_folder=str(Path(__file__).resolve().parent / "static"),
 )
+
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    """Returns JSON (instead of Flask's default HTML page) for 404s on API routes."""
+    if request.path.startswith("/api/"):
+        return jsonify({"error": getattr(e, "description", "Not found")}), 404
+    return e
+
+
+@app.errorhandler(500)
+def handle_server_error(e):
+    """Returns JSON (instead of Flask's default HTML page) for 500s on API routes."""
+    if request.path.startswith("/api/"):
+        return jsonify({"error": getattr(e, "description", "Internal server error")}), 500
+    return e
 
 
 def get_available_reports():
@@ -66,6 +82,16 @@ def get_available_reports():
 def index():
     """Renders the single-page dashboard."""
     return render_template("index.html")
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """Lightweight liveness check for the dashboard API (useful for the demo script and deployment)."""
+    return jsonify({
+        "status": "ok",
+        "reports_dir_exists": REPORTS_DIR.exists(),
+        "report_count": len(get_available_reports()),
+    })
 
 
 @app.route("/api/reports", methods=["GET"])
