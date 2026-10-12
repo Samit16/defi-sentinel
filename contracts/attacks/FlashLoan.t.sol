@@ -89,6 +89,17 @@ contract FlashLoanAttacker is IFlashBorrower {
         return CALLBACK_SUCCESS;
     }
 }
+contract NonRepayingBorrower is IFlashBorrower {
+    function onFlashLoan(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes32) {
+        return keccak256("ERC3156FlashBorrower.onFlashLoan");
+    }
+}
 
 /// @title Flash Loan Attack Simulation
 /// @notice Simulates an uncollateralized flash loan used to manipulate AMM spot prices and drain lending.
@@ -114,9 +125,76 @@ contract FlashLoanTest is SentinelBase {
         amm.addLiquidity(100 ether, 100 ether);
         vm.stopPrank();
 
+        // Establish the initial TWAP after a full observation window.
+        vm.warp(block.timestamp + 30 minutes);
+        amm.updateTWAP();
+
         // Honest LP funds FlashLender with 1000 BOR
         borrowToken.mint(address(flashLender), 1000 ether);
     }
+
+    function test_flashLoanRejectsMissingRepayment() public {
+        NonRepayingBorrower borrower = new NonRepayingBorrower();
+
+        uint256 lenderBalanceBefore = borrowToken.balanceOf(address(flashLender));
+
+        vm.expectRevert("FlashLender: flash loan not repaid with fee");
+
+        flashLender.flashLoan(
+            borrower,
+            address(borrowToken),
+            100 ether,
+            ""
+        );
+
+        assertEq(
+            borrowToken.balanceOf(address(flashLender)),
+            lenderBalanceBefore,
+            "Failed flash loan must restore lender balance"
+        );
+    }
+
+    function test_protectedFlashLoanPreservesLendingLiquidity() public {
+    LendingProtected lending = new LendingProtected(
+        address(collateralToken),
+        address(borrowToken),
+        address(amm)
+    );
+
+    borrowToken.mint(honestUser, 250 ether);
+
+    vm.startPrank(honestUser);
+    borrowToken.approve(address(lending), 250 ether);
+    lending.supplyBorrowLiquidity(250 ether);
+    vm.stopPrank();
+
+    uint256 poolBefore = borrowToken.balanceOf(address(lending));
+    uint256 lenderBefore = borrowToken.balanceOf(address(flashLender));
+
+    vm.startPrank(attacker);
+    FlashLoanAttacker attackContract = new FlashLoanAttacker(
+        address(collateralToken),
+        address(borrowToken),
+        address(amm),
+        address(flashLender)
+    );
+
+    vm.expectRevert();
+    attackContract.executeAttack(address(lending), 500 ether);
+    vm.stopPrank();
+
+    assertEq(
+        borrowToken.balanceOf(address(lending)),
+        poolBefore,
+        "Protected lending liquidity must remain unchanged"
+    );
+
+    assertEq(
+        borrowToken.balanceOf(address(flashLender)),
+        lenderBefore,
+        "Failed flash loan must restore lender balance"
+    );
+}
 
     function test_flash_loan() public {
         string memory variant = getVariant();

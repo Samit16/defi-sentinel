@@ -53,17 +53,29 @@ contract MockGovToken is MockERC20 {
         return ckpts[low].votes;
     }
 
-    function _writeCheckpoint(address account, uint256 newBalance) internal {
-        Checkpoint[] storage ckpts = _checkpoints[account];
-        uint32 currentBlock = uint32(block.number);
+function _writeCheckpoint(address account, uint256 newBalance) internal {
+    require(block.number <= type(uint32).max, "MockGovToken: block overflow");
+    require(newBalance <= type(uint224).max, "MockGovToken: votes overflow");
 
-        if (ckpts.length > 0 && ckpts[ckpts.length - 1].fromBlock == currentBlock) {
-            ckpts[ckpts.length - 1].votes = uint224(newBalance);
-        } else {
-            ckpts.push(Checkpoint({fromBlock: currentBlock, votes: uint224(newBalance)}));
-        }
-        emit DelegateVotesChanged(account, balanceOf[account], newBalance);
+    Checkpoint[] storage ckpts = _checkpoints[account];
+    uint32 currentBlock = uint32(block.number);
+
+    if (
+        ckpts.length > 0 &&
+        ckpts[ckpts.length - 1].fromBlock == currentBlock
+    ) {
+        ckpts[ckpts.length - 1].votes = uint224(newBalance);
+    } else {
+        ckpts.push(
+            Checkpoint({
+                fromBlock: currentBlock,
+                votes: uint224(newBalance)
+            })
+        );
     }
+
+    emit DelegateVotesChanged(account, balanceOf[account], newBalance);
+}
 
     function mint(address to, uint256 amount) external override {
         totalSupply += amount;

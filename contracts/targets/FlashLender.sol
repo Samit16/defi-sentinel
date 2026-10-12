@@ -25,29 +25,43 @@ contract FlashLender {
 
     /// @notice Issues a flash loan to the receiver
     function flashLoan(
-        IFlashBorrower receiver,
-        address token,
-        uint256 amount,
-        bytes calldata data
-    ) external returns (bool) {
-        MockERC20 tokenContract = MockERC20(token);
-        uint256 balanceBefore = tokenContract.balanceOf(address(this));
-        require(balanceBefore >= amount, "FlashLender: not enough liquidity");
+    IFlashBorrower receiver,
+    address token,
+    uint256 amount,
+    bytes calldata data
+) external returns (bool) {
+    require(address(receiver) != address(0), "FlashLender: invalid receiver");
+    require(token != address(0), "FlashLender: invalid token");
+    require(amount > 0, "FlashLender: zero amount");
 
-        uint256 fee = (amount * FEE_BPS) / 10000;
-
-        // Transfer funds to receiver
-        tokenContract.transfer(address(receiver), amount);
-
-        // Execute receiver callback
-        bytes32 callbackResult = receiver.onFlashLoan(msg.sender, token, amount, fee, data);
-        require(callbackResult == CALLBACK_SUCCESS, "FlashLender: invalid callback return");
-
-        // Verify repayment plus fee
-        uint256 balanceAfter = tokenContract.balanceOf(address(this));
-        require(balanceAfter >= balanceBefore + fee, "FlashLender: flash loan not repaid with fee");
-
-        emit FlashLoan(address(receiver), token, amount, fee);
-        return true;
-    }
+    MockERC20 tokenContract = MockERC20(token);
+    uint256 balanceBefore = tokenContract.balanceOf(address(this));
+    require(
+        balanceBefore >= amount,
+        "FlashLender: not enough liquidity"
+    );
+    uint256 fee = (amount * FEE_BPS) / 10000;
+    require(
+        tokenContract.transfer(address(receiver), amount),
+        "FlashLender: transfer failed"
+    );
+    bytes32 callbackResult = receiver.onFlashLoan(
+        msg.sender,
+        token,
+        amount,
+        fee,
+        data
+    );
+    require(
+        callbackResult == CALLBACK_SUCCESS,
+        "FlashLender: invalid callback return"
+    );
+    uint256 balanceAfter = tokenContract.balanceOf(address(this));
+    require(
+        balanceAfter >= balanceBefore + fee,
+        "FlashLender: flash loan not repaid with fee"
+    );
+    emit FlashLoan(address(receiver), token, amount, fee);
+    return true;
+}
 }
