@@ -37,6 +37,14 @@ contract GovernanceProtected {
 
     /// @notice Creates a proposal locking the snapshot block to the previous block
     function propose(address recipient, uint256 amount) external returns (uint256) {
+
+        // Ensure the proposer has sufficient voting power at the snapshot block
+        uint256 proposalThreshold = 1_000 ether;
+        uint256 proposerVotes = govToken.getPastVotes(msg.sender, block.number - 1);
+    require(
+    proposerVotes >= proposalThreshold,
+    "Proposer below proposal threshold"
+);
         require(recipient != address(0), "Invalid recipient");
         require(amount <= address(this).balance, "Amount exceeds treasury");
         require(block.number > 0, "Genesis block not allowed");
@@ -62,6 +70,8 @@ contract GovernanceProtected {
         Proposal storage proposal = proposals[proposalId];
         require(!proposal.executed, "Proposal already executed");
         require(!hasVoted[proposalId][msg.sender], "Already voted");
+        require(block.number >= proposal.startBlock, "Voting has not started");
+        require(block.number <= proposal.endBlock, "Voting period ended");
 
         // Protected: Query voting power at the proposal's snapshot block
         uint256 votes = govToken.getPastVotes(msg.sender, proposal.snapshotBlock);

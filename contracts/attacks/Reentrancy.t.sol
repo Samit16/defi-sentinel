@@ -95,4 +95,62 @@ contract ReentrancyTest is SentinelBase {
 
         emitSentinelResult("reentrancy", variant, attackSucceeded, netProfit, note);
     }
+
+    function test_protectedVaultPreservesHonestUserFunds() public {
+        VaultProtected vault = new VaultProtected();
+
+        vm.deal(honestUser, 10 ether);
+
+        vm.prank(honestUser);
+        vault.deposit{value: 10 ether}();
+
+        uint256 honestBalanceBefore = vault.balances(honestUser);
+        uint256 vaultBalanceBefore = address(vault).balance;
+
+        vm.deal(attacker, 1 ether);
+
+        vm.startPrank(attacker);
+        ReentrancyAttacker attackContract =
+            new ReentrancyAttacker(address(vault));
+
+        vm.expectRevert("Initial withdraw failed");
+        attackContract.attack{value: 1 ether}();
+        vm.stopPrank();
+
+        assertEq(
+            vault.balances(honestUser),
+            honestBalanceBefore,
+            "Honest user's recorded balance must remain unchanged"
+        );
+
+        assertEq(
+            address(vault).balance,
+            vaultBalanceBefore,
+            "Vault ETH balance must remain unchanged"
+        );
+    }
+
+    function test_vulnerableVaultDemonstratesDrain() public {
+        VaultVulnerable vault = new VaultVulnerable();
+
+        vm.deal(honestUser, 10 ether);
+
+        vm.prank(honestUser);
+        vault.deposit{value: 10 ether}();
+
+        vm.deal(attacker, 1 ether);
+
+        vm.startPrank(attacker);
+        ReentrancyAttacker attackContract =
+            new ReentrancyAttacker(address(vault));
+
+        attackContract.attack{value: 1 ether}();
+        vm.stopPrank();
+
+        assertEq(
+            address(vault).balance,
+            0,
+            "Vulnerable vault should be drained in this simulation"
+        );
+    }
 }

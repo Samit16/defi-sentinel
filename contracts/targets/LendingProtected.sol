@@ -31,44 +31,66 @@ contract LendingProtected {
 
     /// @notice Supplies borrowToken liquidity to the lending pool
     function supplyBorrowLiquidity(uint256 amount) external {
-        borrowToken.transferFrom(msg.sender, address(this), amount);
-        emit LiquiditySupplied(msg.sender, amount);
-    }
+    require(amount > 0, "Invalid liquidity amount");
+    require(
+        borrowToken.transferFrom(msg.sender, address(this), amount),
+        "Borrow token transfer failed"
+    );
+    emit LiquiditySupplied(msg.sender, amount);
+}
 
     /// @notice Deposits collateral token
     function depositCollateral(uint256 amount) external {
-        require(amount > 0, "Invalid collateral amount");
-        collateralToken.transferFrom(msg.sender, address(this), amount);
-        collateralDeposited[msg.sender] += amount;
-        emit CollateralDeposited(msg.sender, amount);
-    }
+    require(amount > 0, "Invalid collateral amount");
+    require(
+        collateralToken.transferFrom(msg.sender, address(this), amount),
+        "Collateral transfer failed"
+    );
+    collateralDeposited[msg.sender] += amount;
+    emit CollateralDeposited(msg.sender, amount);
+}
 
-    /// @notice Safely calculates collateral valuation with TWAP and deviation check
+    /// @notice Validates the spot price against the last completed TWAP.
     function getSafePrice() public view returns (uint256) {
         uint256 spotPrice = amm.getSpotPrice();
         uint256 twapPrice = amm.getTWAP();
+        require(twapPrice > 0, "Invalid TWAP price");
+        uint256 diff = spotPrice > twapPrice
+            ? spotPrice - twapPrice
+            : twapPrice - spotPrice;
 
-        uint256 diff = spotPrice > twapPrice ? spotPrice - twapPrice : twapPrice - spotPrice;
-        require((diff * 100) / twapPrice <= MAX_DEVIATION_PCT, "Price deviation exceeds threshold: oracle manipulated");
-
+        require(
+            (diff * 100) <= twapPrice * MAX_DEVIATION_PCT,
+            "Price deviation exceeds threshold: oracle manipulated"
+        );
         return twapPrice;
     }
 
     /// @notice Borrows borrowToken against deposited collateral using validated price
     function borrow(uint256 amount) external {
-        require(amount > 0, "Invalid borrow amount");
-        require(borrowToken.balanceOf(address(this)) >= amount, "Insufficient pool liquidity");
+    require(amount > 0, "Invalid borrow amount");
+    require(
+        borrowToken.balanceOf(address(this)) >= amount,
+        "Insufficient pool liquidity"
+    );
 
-        // Protected: Uses safe price with deviation bounds
-        uint256 safePrice = getSafePrice();
-        uint256 collateralValue = (collateralDeposited[msg.sender] * safePrice) / 1e18;
-        uint256 maxBorrow = (collateralValue * LTV) / 100;
+    uint256 safePrice = getSafePrice();
+    uint256 collateralValue =
+        (collateralDeposited[msg.sender] * safePrice) / 1e18;
+    uint256 maxBorrow = (collateralValue * LTV) / 100;
 
-        require(borrowedAmount[msg.sender] + amount <= maxBorrow, "Borrow exceeds collateral limit");
+    require(
+        borrowedAmount[msg.sender] + amount <= maxBorrow,
+        "Borrow exceeds collateral limit"
+    );
 
-        borrowedAmount[msg.sender] += amount;
-        borrowToken.transfer(msg.sender, amount);
+    borrowedAmount[msg.sender] += amount;
 
-        emit Borrowed(msg.sender, amount);
-    }
+    require(
+        borrowToken.transfer(msg.sender, amount),
+        "Borrow token transfer failed"
+    );
+
+    emit Borrowed(msg.sender, amount);
+}
 }

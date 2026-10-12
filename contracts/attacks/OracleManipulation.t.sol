@@ -62,6 +62,53 @@ contract OracleManipulationTest is SentinelBase {
     MockERC20 public borrowToken;
     SimpleAMM public amm;
 
+
+    function test_protectedOracleRejectsDeviationAboveThreshold() public {
+        LendingProtected lending = new LendingProtected(
+            address(collateralToken),
+            address(borrowToken),
+            address(amm)
+        );
+
+        // A 6% spot-price increase must exceed the 5% threshold.
+        collateralToken.mint(attacker, 100 ether);
+
+        vm.startPrank(attacker);
+        collateralToken.approve(address(amm), 100 ether);
+        amm.swap(address(collateralToken), 6 ether);
+        vm.stopPrank();
+
+        vm.expectRevert(
+            "Price deviation exceeds threshold: oracle manipulated"
+        );
+        lending.getSafePrice();
+    }
+
+    function test_twapRejectsStaleObservation() public {
+        vm.warp(block.timestamp + 2 hours + 1 seconds);
+
+        vm.expectRevert("TWAP observation stale");
+        amm.getTWAP();
+    }
+
+
+    function test_twapRejectsShortObservationWindow() public {
+        vm.expectRevert("TWAP window too short");
+        amm.updateTWAP();
+    }
+    function test_twapRemainsStableDuringSameBlockManipulation() public {
+        uint256 priceBefore = amm.getSpotPrice();
+
+        borrowToken.mint(attacker, 200 ether);
+
+        vm.startPrank(attacker);
+        borrowToken.approve(address(amm), 200 ether);
+        amm.swap(address(borrowToken), 200 ether);
+        vm.stopPrank();
+        assertTrue(amm.getSpotPrice() != priceBefore);
+        assertEq(amm.getTWAP(), priceBefore);
+    }
+
     function setUp() public {
         collateralToken = new MockERC20("Collateral Token", "COL", 18);
         borrowToken = new MockERC20("Borrow Token", "BOR", 18);
@@ -78,7 +125,50 @@ contract OracleManipulationTest is SentinelBase {
         borrowToken.approve(address(amm), 100 ether);
         amm.addLiquidity(100 ether, 100 ether);
         vm.stopPrank();
+
+        // Establish the initial TWAP after a full observation window.
+        vm.warp(block.timestamp + 30 minutes);
+        amm.updateTWAP();
     }
+    
+    function test_protectedOraclePreservesLendingLiquidity() public {
+
+    LendingProtected lending = new LendingProtected(
+        address(collateralToken),
+        address(borrowToken),
+        address(amm)
+    );
+
+    borrowToken.mint(honestUser, 100 ether);
+
+    vm.startPrank(honestUser);
+    borrowToken.approve(address(lending), 100 ether);
+    lending.supplyBorrowLiquidity(100 ether);
+    vm.stopPrank();
+
+    uint256 poolBefore = borrowToken.balanceOf(address(lending));
+
+    borrowToken.mint(attacker, 300 ether);
+
+    vm.startPrank(attacker);
+    OracleAttacker attackContract = new OracleAttacker(
+        address(collateralToken),
+        address(borrowToken),
+        address(amm)
+    );
+    borrowToken.transfer(address(attackContract), 300 ether);
+
+    vm.expectRevert();
+    attackContract.attack(address(lending));
+    vm.stopPrank();
+
+    assertEq(
+        borrowToken.balanceOf(address(lending)),
+        poolBefore,
+        "Protected lending liquidity must remain unchanged"
+    );
+}
+
 
     function test_oracle_manipulation() public {
         string memory variant = getVariant();

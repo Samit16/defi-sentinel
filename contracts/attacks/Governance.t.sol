@@ -99,6 +99,186 @@ contract GovernanceTest is SentinelBase {
         vm.roll(100);
     }
 
+
+function test_flashLoanTokensDoNotCreateHistoricalVotes() public {
+    uint256 snapshotBlock = block.number;
+
+    vm.roll(block.number + 1);
+    govToken.mint(address(flashLender), 120_000 ether);
+
+    assertEq(
+        govToken.getPastVotes(attacker, snapshotBlock),
+        0,
+        "Flash-loaned tokens must not create historical votes"
+    );
+}
+
+function test_sameBlockCheckpointUsesLatestBalance() public {
+    vm.roll(block.number + 1);
+
+    govToken.mint(attacker, 100 ether);
+    govToken.mint(attacker, 50 ether);
+
+    assertEq(govToken.numCheckpoints(attacker), 1);
+
+    vm.roll(block.number + 1);
+
+    assertEq(
+        govToken.getPastVotes(attacker, block.number - 1),
+        150 ether,
+        "Same-block mints must update the existing checkpoint"
+    );
+}
+
+function test_futureBlockHistoricalVotesAreRejected() public {
+    vm.expectRevert("MockGovToken: block not yet mined");
+    govToken.getPastVotes(attacker, block.number);
+}
+
+
+function test_proposerBelowThresholdIsRejected() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    // Attacker has no historical voting power.
+    vm.roll(block.number + 1);
+
+    vm.prank(attacker);
+    vm.expectRevert("Proposer below proposal threshold");
+    gov.propose(address(attacker), 1 ether);
+}
+
+function test_votingBeforeStartBlockIsRejected() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(address(attacker), 1 ether);
+
+    vm.prank(honestUser);
+    vm.expectRevert("Voting has not started");
+    gov.castVote(proposalId);
+}
+
+function test_votingAfterEndBlockIsRejected() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(address(attacker), 1 ether);
+
+    vm.roll(block.number + 6);
+
+    vm.prank(honestUser);
+    vm.expectRevert("Voting period ended");
+    gov.castVote(proposalId);
+}
+
+function test_proposalCannotExecuteWithoutQuorum() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(address(attacker), 1 ether);
+
+    // Advance beyond the voting period without casting votes.
+    vm.roll(block.number + 7);
+
+    vm.expectRevert("Quorum not met");
+    gov.execute(proposalId);
+
+    assertEq(
+        address(gov).balance,
+        10 ether,
+        "Treasury must remain unchanged without quorum"
+    );
+}
+
+function test_proposalCannotExecuteBeforeVotingEnds() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(attacker, 1 ether);
+
+    vm.expectRevert("Voting period still active");
+    gov.execute(proposalId);
+
+    assertEq(
+        address(gov).balance,
+        10 ether,
+        "Treasury must remain unchanged before voting ends"
+    );
+}
+
+
+function test_proposalCannotExecuteTwice() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    // Create historical voting power.
+    vm.roll(block.number + 1);
+    govToken.mint(honestUser, 100_000 ether);
+    vm.roll(block.number + 1);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(attacker, 1 ether);
+
+    // Advance to the voting period, not past its end.
+    vm.roll(block.number + 1);
+
+    vm.prank(honestUser);
+    gov.castVote(proposalId);
+
+    // Finish the voting period.
+    vm.roll(block.number + 6);
+
+    gov.execute(proposalId);
+
+    uint256 treasuryAfterExecution = address(gov).balance;
+
+    vm.expectRevert("Already executed");
+    gov.execute(proposalId);
+
+    assertEq(
+        address(gov).balance,
+        treasuryAfterExecution,
+        "Second execution must not transfer treasury funds"
+    );
+}
+
+
+    function test_protectedGovernanceRejectsFlashLoanVotingPower() public {
+        GovernanceProtected gov = new GovernanceProtected(address(govToken));
+        vm.deal(address(gov), 10 ether);
+
+        GovernanceAttacker attackContract = new GovernanceAttacker(
+            address(govToken),
+            address(flashLender),
+            payable(attacker)
+        );
+
+        // Fund the attacker's fee reserve.
+        govToken.mint(address(attackContract), 500 ether);
+
+        uint256 treasuryBefore = address(gov).balance;
+
+        vm.expectRevert();
+        attackContract.executeAttack(address(gov), 120_000 ether);
+
+        assertEq(
+            address(gov).balance,
+            treasuryBefore,
+            "Failed governance attack must preserve treasury"
+        );
+    }
+
     function test_governance() public {
         string memory variant = getVariant();
         bool isProtected = keccak256(bytes(variant)) == keccak256(bytes("protected"));
