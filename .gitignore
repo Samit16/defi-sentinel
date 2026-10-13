@@ -1,13 +1,20 @@
 # DeFiSentinel .gitignore
 .env
-out/
 cache/
-lib/
 venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 
+# Foundry / Solidity libraries and build output at project root
+/lib/
+/out/
+
 # Reports: ignore dynamically generated reports except .gitkeep and sample_report.json
 reports/*.json
 !reports/sample_report.json
+
+# Next.js Frontend
+dashboard-next/node_modules/
+dashboard-next/.next/
+dashboard-next/out/
