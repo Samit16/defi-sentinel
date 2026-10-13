@@ -7,6 +7,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const reportSelect = document.getElementById('reportSelect');
   const refreshBtn = document.getElementById('refreshBtn');
   const sampleNotice = document.getElementById('sampleNotice');
+  const loadStatus = document.getElementById('loadStatus');
+  let reportRequestId = 0;
+
+  function setStatus(message) {
+    if (loadStatus) loadStatus.textContent = message;
+  }
+
+  function formatNumber(value, decimals = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(decimals) : '—';
+  }
+
+  function formatMetric(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? String(number) : '—';
+  }
+
+  function clearReportView(message) {
+    reportIdDisplay.textContent = 'Report: --';
+    reportTimeDisplay.textContent = 'Generated: --';
+    modeBadge.textContent = 'NO DATA';
+    forkBlockBadge.classList.add('hidden');
+    sampleNotice.classList.add('hidden');
+    kpiTotal.textContent = '—';
+    kpiSucceeded.textContent = '—';
+    kpiFailed.textContent = '—';
+    kpiDuration.textContent = '—';
+    matrixTableBody.replaceChildren();
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 4;
+    cell.className = 'text-center py-4 text-muted';
+    cell.textContent = message;
+    row.appendChild(cell);
+    matrixTableBody.appendChild(row);
+  }
 
   const reportIdDisplay = document.getElementById('reportIdDisplay');
   const reportTimeDisplay = document.getElementById('reportTimeDisplay');
@@ -44,14 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   async function fetchReportsList() {
+    const previousSelection = reportSelect.value;
+    setStatus('Loading report history…');
     try {
       const res = await fetch('/api/reports');
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const reports = await res.json();
 
       reportSelect.innerHTML = '';
-      if (!reports || reports.length === 0) {
+      if (!Array.isArray(reports) || reports.length === 0) {
         reportSelect.innerHTML = '<option value="">No reports found</option>';
+        clearReportView('No simulation reports are available yet. Run the simulation engine, then refresh.');
+        setStatus('No reports available.');
         return;
       }
 
@@ -61,28 +101,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const tag = r.is_sample ? ' [Sample Data]' : '';
         const timeStr = r.generated_at ? new Date(r.generated_at).toLocaleString() : r.id;
         opt.textContent = `${r.id} (${timeStr})${tag}`;
-        if (idx === 0) opt.selected = true;
+        if (r.id === previousSelection || (!previousSelection && idx === 0)) opt.selected = true;
         reportSelect.appendChild(opt);
       });
 
-      // Load first report
-      if (reports.length > 0) {
-        await loadReport(reports[0].id);
-      }
+      // Preserve the selected report on refresh when it still exists.
+      const selectedReport = reports.find((report) => report.id === reportSelect.value) || reports[0];
+      reportSelect.value = selectedReport.id;
+      await loadReport(selectedReport.id);
     } catch (err) {
       console.error('Failed fetching reports list:', err);
-      reportSelect.innerHTML = '<option value="">Error loading reports</option>';
+      setStatus('Could not load report history. Check the connection and retry.');
+      if (!reportSelect.options.length) {
+        reportSelect.innerHTML = '<option value="">Error loading reports</option>';
+      }
     }
   }
 
   async function loadReport(reportId) {
+    const requestId = ++reportRequestId;
+    setStatus(`Loading report ${reportId}…`);
     try {
       const res = await fetch(`/api/reports/${encodeURIComponent(reportId)}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
+      if (requestId !== reportRequestId) return;
       renderReport(data);
+      setStatus(`Loaded report ${data.report_id || reportId}.`);
     } catch (err) {
+      if (requestId !== reportRequestId) return;
       console.error(`Failed loading report ${reportId}:`, err);
+      clearReportView(`Could not load report “${reportId}”. Refresh the report list or try another report.`);
+      setStatus(`Failed to load report ${reportId}.`);
     }
   }
 
@@ -112,14 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // KPIs
     const summary = data.summary || {};
-    kpiTotal.textContent = summary.total !== undefined ? summary.total : (data.results ? data.results.length : 0);
-    kpiSucceeded.textContent = summary.succeeded !== undefined ? summary.succeeded : 0;
-    kpiFailed.textContent = summary.failed !== undefined ? summary.failed : 0;
+    kpiTotal.textContent = formatMetric(summary.total !== undefined ? summary.total : (Array.isArray(data.results) ? data.results.length : 0));
+    kpiSucceeded.textContent = formatMetric(summary.succeeded !== undefined ? summary.succeeded : 0);
+    kpiFailed.textContent = formatMetric(summary.failed !== undefined ? summary.failed : 0);
 
     let totalDuration = 0;
-    if (data.results) {
-      data.results.forEach(r => {
-        totalDuration += parseFloat(r.duration_s || 0);
+    if (Array.isArray(data.results)) {
+      data.results.forEach((r) => {
+        const duration = Number(r.duration_s || 0);
+        if (Number.isFinite(duration) && duration >= 0) totalDuration += duration;
       });
     }
     kpiDuration.textContent = `${totalDuration.toFixed(2)}s`;
@@ -164,12 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isSucceeded = vuln.status === 'SUCCEEDED';
         const badgeClass = isSucceeded ? 'status-succeeded' : 'status-failed';
         const badgeLabel = isSucceeded ? '⚠️ VULNERABLE' : '🛡️ BLOCKED';
-        const profitClass = vuln.profit_eth > 0 ? 'profit-loot' : 'profit-zero';
+        const profitClass = Number(vuln.profit_eth) > 0 ? 'profit-loot' : 'profit-zero';
 
         vulnCell = `
           <td>
             <div class="status-badge ${badgeClass}">${badgeLabel}</div>
-            <div class="profit-text ${profitClass}">+${vuln.profit_eth.toFixed(4)} ETH profit</div>
+            <div class="profit-text ${profitClass}">+${formatNumber(vuln.profit_eth, 4)} ETH profit</div>
             <p class="note-text">${escapeHtml(vuln.note || '')}</p>
           </td>
         `;
@@ -183,12 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isBlocked = prot.status === 'FAILED';
         const badgeClass = isBlocked ? 'status-failed' : 'status-succeeded';
         const badgeLabel = isBlocked ? '🛡️ PROTECTED' : '⚠️ BREACHED';
-        const profitClass = prot.profit_eth > 0 ? 'profit-loot' : 'profit-zero';
+        const profitClass = Number(prot.profit_eth) > 0 ? 'profit-loot' : 'profit-zero';
 
         protCell = `
           <td>
             <div class="status-badge ${badgeClass}">${badgeLabel}</div>
-            <div class="profit-text ${profitClass}">+${prot.profit_eth.toFixed(4)} ETH profit</div>
+            <div class="profit-text ${profitClass}">+${formatNumber(prot.profit_eth, 4)} ETH profit</div>
             <p class="note-text">${escapeHtml(prot.note || '')}</p>
           </td>
         `;
@@ -208,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="verdict-box">
                 <span class="verdict-tag verdict-verified">DEFENSE VERIFIED</span>
                 <p class="verdict-summary">
-                  <strong>VULNERABLE:</strong> attacker gained ${vuln.profit_eth.toFixed(2)} ETH<br>
+                  <strong>VULNERABLE:</strong> attacker gained ${formatNumber(vuln.profit_eth, 2)} ETH<br>
                   <strong>PROTECTED:</strong> attack blocked
                 </p>
               </div>
@@ -219,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td>
               <div class="verdict-box">
                 <span class="verdict-tag" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">INCONCLUSIVE</span>
-                <p class="verdict-summary">Vuln: ${vuln.status} / Prot: ${prot.status}</p>
+                <p class="verdict-summary">Vuln: ${escapeHtml(String(vuln.status || 'UNKNOWN'))} / Prot: ${escapeHtml(String(prot.status || 'UNKNOWN'))}</p>
               </div>
             </td>
           `;
