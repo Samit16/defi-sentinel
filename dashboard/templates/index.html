@@ -28,11 +28,12 @@
             <option value="" disabled selected>Loading reports...</option>
           </select>
         </div>
-        <button id="refreshBtn" class="btn btn-secondary" title="Refresh Reports">
+        <button id="refreshBtn" class="btn btn-secondary" type="button" title="Refresh reports" aria-label="Refresh reports">
           <span class="refresh-icon">↻</span> Refresh
         </button>
       </div>
     </header>
+    <p id="loadStatus" class="load-status" role="status" aria-live="polite">Loading report history…</p>
 
     <!-- Main Content Area -->
     <main class="content">
@@ -73,7 +74,7 @@
       </section>
 
       <!-- Summary KPI Cards -->
-      <section class="kpi-grid">
+      <section class="kpi-grid" aria-label="Selected report summary">
         <div class="kpi-card">
           <div class="kpi-icon blue">⚡</div>
           <div class="kpi-body">
@@ -117,7 +118,7 @@
           </div>
         </div>
 
-        <div class="table-wrapper">
+        <div class="table-wrapper" role="region" aria-label="Attack class security matrix" tabindex="0">
           <table class="sentinel-table">
             <thead>
               <tr>
