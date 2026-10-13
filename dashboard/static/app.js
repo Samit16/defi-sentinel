@@ -139,7 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderReport(data) {
     // Header information
     reportIdDisplay.textContent = `Report: ${data.report_id || 'Unknown'}`;
-    const dateFormatted = data.generated_at ? new Date(data.generated_at).toUTCString() : '--';
+    const parsedDate = data.generated_at ? new Date(data.generated_at) : null;
+    const dateFormatted = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.toUTCString() : '--';
     reportTimeDisplay.textContent = `Generated: ${dateFormatted}`;
 
     // Sample notice
@@ -221,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             <div class="status-badge ${badgeClass}">${badgeLabel}</div>
             <div class="profit-text ${profitClass}">+${formatNumber(vuln.profit_eth, 4)} ETH profit</div>
-            <p class="note-text">${escapeHtml(vuln.note || '')}</p>
+            <p class="note-text">${escapeHtml(String(vuln.note || ''))}</p>
           </td>
         `;
       } else {
@@ -240,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             <div class="status-badge ${badgeClass}">${badgeLabel}</div>
             <div class="profit-text ${profitClass}">+${formatNumber(prot.profit_eth, 4)} ETH profit</div>
-            <p class="note-text">${escapeHtml(prot.note || '')}</p>
+            <p class="note-text">${escapeHtml(String(prot.note || ''))}</p>
           </td>
         `;
       } else {
@@ -284,7 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function escapeHtml(str) {
+  function escapeHtml(value) {
+    const str = String(value);
     return str
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
