@@ -550,3 +550,166 @@ select:hover, select:focus {
 /* Helpers */
 .text-center { text-align: center; }
 .py-4 { padding-top: 32px; padding-bottom: 32px; }
+
+
+/* Refinement: keyboard access, responsive controls, and status feedback */
+:where(button, select, a, [tabindex="0"]):focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.load-status {
+  min-height: 1.25rem;
+  margin: -10px 4px 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.load-status:empty {
+  display: none;
+}
+
+.note-text,
+.verdict-summary,
+.module-tag,
+.meta-val {
+  overflow-wrap: anywhere;
+}
+
+.table-wrapper:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    padding: 16px 18px 40px;
+  }
+
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .nav-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .selector-group {
+    flex: 1 1 260px;
+    min-width: 0;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .selector-group select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .meta-strip {
+    justify-content: flex-start;
+  }
+
+  .meta-item {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .table-container {
+    padding: 16px;
+  }
+
+  .sentinel-table {
+    min-width: 860px;
+  }
+}
+
+@media (max-width: 560px) {
+  .layout {
+    padding: 12px 12px 28px;
+  }
+
+  .navbar {
+    padding: 14px;
+  }
+
+  .brand {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .brand-subtitle {
+    max-width: 28ch;
+  }
+
+  .nav-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .nav-controls .btn {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+  }
+
+  .overview-bar {
+    padding: 14px;
+  }
+
+  .info-title,
+  .info-timestamp {
+    display: block;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .mode-badges {
+    flex-wrap: wrap;
+  }
+
+  .pipeline-card {
+    padding: 16px;
+  }
+
+  .pipeline-steps {
+    align-items: stretch;
+  }
+
+  .p-step {
+    flex: 1 1 125px;
+  }
+
+  .p-arrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
