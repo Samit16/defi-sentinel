@@ -29,8 +29,9 @@ contract GovernanceProtected {
     event ProposalExecuted(uint256 indexed proposalId, address recipient, uint256 amount);
 
     constructor(address _govToken) payable {
-        govToken = MockGovToken(_govToken);
-    }
+    require(_govToken != address(0), "Invalid governance token");
+    govToken = MockGovToken(_govToken);
+}
 
     /// @notice Allows funding the DAO treasury
     receive() external payable {}

@@ -84,6 +84,33 @@ contract OracleManipulationTest is SentinelBase {
         lending.getSafePrice();
     }
 
+    function test_twapRejectsManipulatedPriceUpdate() public {
+    // The initial TWAP established in setUp() is approximately 1:1.
+    uint256 originalTwap = amm.getTWAP();
+
+    collateralToken.mint(attacker, 100 ether);
+
+    vm.startPrank(attacker);
+    collateralToken.approve(address(amm), 100 ether);
+    amm.swap(address(collateralToken), 6 ether);
+    vm.stopPrank();
+
+    // Sustain the manipulated spot price beyond the TWAP window.
+    vm.warp(block.timestamp + 30 minutes + 1 seconds);
+
+    vm.expectRevert(
+        "TWAP update exceeds deviation threshold"
+    );
+    amm.updateTWAP();
+
+    // The failed transaction must preserve the previous observation.
+    assertEq(
+        amm.getTWAP(),
+        originalTwap,
+        "TWAP must remain unchanged after rejected update"
+    );
+}
+
     function test_twapRejectsStaleObservation() public {
         vm.warp(block.timestamp + 2 hours + 1 seconds);
 
@@ -93,9 +120,26 @@ contract OracleManipulationTest is SentinelBase {
 
 
     function test_twapRejectsShortObservationWindow() public {
-        vm.expectRevert("TWAP window too short");
-        amm.updateTWAP();
-    }
+    uint256 originalTwap = amm.getTWAP();
+    uint256 originalTimestamp = amm.twapTimestampLast();
+
+    vm.warp(block.timestamp + 29 minutes);
+
+    vm.expectRevert("TWAP window too short");
+    amm.updateTWAP();
+
+    assertEq(
+        amm.getTWAP(),
+        originalTwap,
+        "Rejected update must preserve the accepted TWAP"
+    );
+
+    assertEq(
+        amm.twapTimestampLast(),
+        originalTimestamp,
+        "Rejected update must preserve the observation timestamp"
+    );
+}
     function test_twapRemainsStableDuringSameBlockManipulation() public {
         uint256 priceBefore = amm.getSpotPrice();
 
@@ -190,7 +234,6 @@ contract OracleManipulationTest is SentinelBase {
             );
             lendingPool = address(vulnLending);
         }
-
         // Honest LPs supply 100 BOR liquidity to Lending Pool
         borrowToken.mint(honestUser, 100 ether);
         vm.startPrank(honestUser);
@@ -237,5 +280,13 @@ contract OracleManipulationTest is SentinelBase {
         }
 
         emitSentinelResult("oracle", variant, attackSucceeded, netProfit, note);
+
+        if (isProtected) {
+            assertFalse(attackSucceeded, "Protected oracle must block manipulation");
+            assertEq(netProfit, 0, "Protected oracle must yield zero profit");
+        } else {
+            assertTrue(attackSucceeded, "Vulnerable oracle must demonstrate exploit");
+            assertGt(netProfit, 0, "Exploit must generate profit");
+        }
     }
 }

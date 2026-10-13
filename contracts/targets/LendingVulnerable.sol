@@ -22,11 +22,26 @@ contract LendingVulnerable {
     event Borrowed(address indexed user, uint256 amount);
     event LiquiditySupplied(address indexed supplier, uint256 amount);
 
-    constructor(address _collateralToken, address _borrowToken, address _amm) {
-        collateralToken = MockERC20(_collateralToken);
-        borrowToken = MockERC20(_borrowToken);
-        amm = SimpleAMM(_amm);
-    }
+    constructor(
+    address _collateralToken,
+    address _borrowToken,
+    address _amm
+) {
+    require(
+        _collateralToken != address(0) &&
+        _borrowToken != address(0) &&
+        _amm != address(0),
+        "Invalid dependency address"
+    );
+    require(
+        _collateralToken != _borrowToken,
+        "Tokens must differ"
+    );
+
+    collateralToken = MockERC20(_collateralToken);
+    borrowToken = MockERC20(_borrowToken);
+    amm = SimpleAMM(_amm);
+}
 
     /// @notice Supplies borrowToken liquidity to the lending pool
     function supplyBorrowLiquidity(uint256 amount) external {

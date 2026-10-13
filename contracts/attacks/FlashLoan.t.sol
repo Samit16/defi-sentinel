@@ -9,6 +9,19 @@ import "../targets/LendingVulnerable.sol";
 import "../targets/LendingProtected.sol";
 
 /// @notice Exploit contract combining uncollateralized flash loan, AMM manipulation, and lending borrow
+
+contract InvalidCallbackBorrower is IFlashBorrower {
+    function onFlashLoan(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes32) {
+        return bytes32(0);
+    }
+}
+
 contract FlashLoanAttacker is IFlashBorrower {
     bytes32 public constant CALLBACK_SUCCESS = keccak256("ERC3156FlashBorrower.onFlashLoan");
 
@@ -132,6 +145,89 @@ contract FlashLoanTest is SentinelBase {
         // Honest LP funds FlashLender with 1000 BOR
         borrowToken.mint(address(flashLender), 1000 ether);
     }
+
+
+    function test_flashLoanRejectsZeroAmount() public {
+    NonRepayingBorrower borrower = new NonRepayingBorrower();
+
+    vm.expectRevert(
+        bytes("FlashLender: zero amount")
+    );
+
+    flashLender.flashLoan(
+        borrower,
+        address(borrowToken),
+        0,
+        ""
+    );
+}
+
+function test_flashLoanRejectsInsufficientLiquidity() public {
+    MockERC20 emptyToken = new MockERC20("Empty Token", "EMPTY", 18);
+    NonRepayingBorrower borrower = new NonRepayingBorrower();
+
+    vm.expectRevert("FlashLender: not enough liquidity");
+
+    flashLender.flashLoan(
+        borrower,
+        address(emptyToken),
+        1 ether,
+        ""
+    );
+}
+
+function test_flashLoanRejectsInvalidCallback() public {
+    InvalidCallbackBorrower borrower = new InvalidCallbackBorrower();
+
+    uint256 lenderBalanceBefore =
+        borrowToken.balanceOf(address(flashLender));
+
+    vm.expectRevert("FlashLender: invalid callback return");
+
+    flashLender.flashLoan(
+        borrower,
+        address(borrowToken),
+        100 ether,
+        ""
+    );
+
+    assertEq(
+        borrowToken.balanceOf(address(flashLender)),
+        lenderBalanceBefore,
+        "Invalid callback must not move lender funds permanently"
+    );
+}
+
+    function test_flashLoanCollectsCorrectFee() public {
+    uint256 loanAmount = 100 ether;
+    uint256 lenderBalanceBefore = borrowToken.balanceOf(address(flashLender));
+
+    // 0.09% fee on 100 tokens.
+    uint256 expectedFee = (loanAmount * flashLender.FEE_BPS()) / 10_000;
+
+    // This borrower cannot repay, so use a dedicated borrower
+    // that returns the principal plus fee in its callback.
+    FeeRepayingBorrower repayer = new FeeRepayingBorrower(
+        address(borrowToken),
+        address(flashLender)
+    );
+
+    borrowToken.mint(address(repayer), expectedFee);
+
+    bool success = flashLender.flashLoan(
+        repayer,
+        address(borrowToken),
+        loanAmount,
+        ""
+    );
+
+    assertTrue(success, "Flash loan should succeed");
+    assertEq(
+        borrowToken.balanceOf(address(flashLender)),
+        lenderBalanceBefore + expectedFee,
+        "Lender must receive principal plus exact fee"
+    );
+}
 
     function test_flashLoanRejectsMissingRepayment() public {
         NonRepayingBorrower borrower = new NonRepayingBorrower();
@@ -264,5 +360,37 @@ contract FlashLoanTest is SentinelBase {
         }
 
         emitSentinelResult("flash_loan", variant, attackSucceeded, netProfit, note);
+
+        if (isProtected) {
+    assertFalse(attackSucceeded, "Protected lending must block the attack");
+    assertEq(netProfit, 0, "Protected lending must yield zero profit");
+} else {
+    assertTrue(attackSucceeded, "Vulnerable lending must demonstrate exploit");
+    assertGt(netProfit, 0, "Exploit must generate profit");
+}
+    }
+}
+
+contract FeeRepayingBorrower is IFlashBorrower {
+    MockERC20 public immutable token;
+    FlashLender public immutable lender;
+
+    constructor(address token_, address lender_) {
+        token = MockERC20(token_);
+        lender = FlashLender(lender_);
+    }
+
+    function onFlashLoan(
+        address,
+        address,
+        uint256 amount,
+        uint256 fee,
+        bytes calldata
+    ) external override returns (bytes32) {
+        require(msg.sender == address(lender), "Unauthorized lender");
+
+        token.transfer(address(lender), amount + fee);
+
+        return keccak256("ERC3156FlashBorrower.onFlashLoan");
     }
 }
