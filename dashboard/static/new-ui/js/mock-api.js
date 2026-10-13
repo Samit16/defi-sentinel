@@ -31,20 +31,29 @@ export const FINDINGS = {
   }
 };
 
+
 const report = (report_id, generated_at, target, results) => ({
   report_id,
   generated_at,
   mode: "local",
   target,
   is_real: false,
+  simulation_type: "demo",
   summary: {
     total: results.length,
-    succeeded: results.filter(x => x.status === "SUCCEEDED").length,
-    failed: results.filter(x => x.status === "FAILED").length,
-    not_applicable: results.filter(x => x.status === "NOT APPLICABLE").length
+    succeeded: results.filter(
+      (x) => x.status === "SUCCEEDED"
+    ).length,
+    failed: results.filter(
+      (x) => x.status === "FAILED"
+    ).length,
+    not_applicable: results.filter(
+      (x) => x.status === "NOT APPLICABLE"
+    ).length,
   },
-  results
+  results,
 });
+
 
 export const SAMPLE_REPORTS = [
   report("DS-7A31", "2026-10-12T16:44:00.000Z", "YieldVault.sol", [

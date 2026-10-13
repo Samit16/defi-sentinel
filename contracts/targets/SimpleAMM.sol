@@ -13,6 +13,7 @@ contract SimpleAMM {
 
     uint256 public reserve0;
     uint256 public reserve1;
+    uint256 public constant MAX_TWAP_UPDATE_DEVIATION_PCT = 5;
 
     uint256 public price0CumulativeLast;
     uint256 public twapPrice;
@@ -87,23 +88,42 @@ contract SimpleAMM {
     /// @notice Updates TWAP only after the minimum observation window.
     /// @dev Price accumulation uses the reserves that existed during each elapsed interval.
     function updateTWAP() external {
-        _accumulatePrice();
+    _accumulatePrice();
 
-        require(twapTimestampLast > 0, "TWAP not initialized");
-        uint256 elapsed = block.timestamp - twapTimestampLast;
-        require(elapsed >= MIN_TWAP_WINDOW, "TWAP window too short");
+    require(twapTimestampLast > 0, "TWAP not initialized");
 
-        uint256 cumulativeDelta = price0CumulativeLast - twapCumulativeLast;
-        uint256 newTwapPrice = cumulativeDelta / elapsed;
+    uint256 elapsed = block.timestamp - twapTimestampLast;
+    require(elapsed >= MIN_TWAP_WINDOW, "TWAP window too short");
 
-        require(newTwapPrice > 0, "Invalid TWAP price");
+    // Reject updates when the current spot price deviates
+    // excessively from the previously accepted TWAP.
+    if (twapPrice > 0) {
+        uint256 spotPrice = getSpotPrice();
 
-        twapPrice = newTwapPrice;
-        twapCumulativeLast = price0CumulativeLast;
-        twapTimestampLast = block.timestamp;
+        uint256 diff = spotPrice > twapPrice
+            ? spotPrice - twapPrice
+            : twapPrice - spotPrice;
 
-        emit TwapUpdated(newTwapPrice, block.timestamp);
+        require(
+            diff * 100 <=
+                twapPrice * MAX_TWAP_UPDATE_DEVIATION_PCT,
+            "TWAP update exceeds deviation threshold"
+        );
     }
+
+    uint256 cumulativeDelta =
+        price0CumulativeLast - twapCumulativeLast;
+
+    uint256 newTwapPrice = cumulativeDelta / elapsed;
+
+    require(newTwapPrice > 0, "Invalid TWAP price");
+
+    twapPrice = newTwapPrice;
+    twapCumulativeLast = price0CumulativeLast;
+    twapTimestampLast = block.timestamp;
+
+    emit TwapUpdated(newTwapPrice, block.timestamp);
+}
 
     function swap(address tokenIn, uint256 amountIn) external returns (uint256 amountOut) {
         require(tokenIn == address(token0) || tokenIn == address(token1), "Invalid token");

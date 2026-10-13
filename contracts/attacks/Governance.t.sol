@@ -99,6 +99,40 @@ contract GovernanceTest is SentinelBase {
         vm.roll(100);
     }
 
+    function test_tokensAcquiredAfterProposalCannotVote() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(attacker, 1 ether);
+
+    // Acquire tokens after the proposal snapshot was taken.
+    vm.roll(block.number + 1);
+    govToken.mint(attacker, 10_000 ether);
+
+    vm.expectRevert("No snapshot voting weight from past block");
+    vm.prank(attacker);
+    gov.castVote(proposalId);
+}
+
+function test_voterCannotVoteTwice() public {
+    GovernanceProtected gov =
+        new GovernanceProtected(address(govToken));
+    vm.deal(address(gov), 10 ether);
+
+    vm.prank(honestUser);
+    uint256 proposalId = gov.propose(attacker, 1 ether);
+
+    vm.roll(block.number + 1);
+
+    vm.prank(honestUser);
+    gov.castVote(proposalId);
+
+    vm.expectRevert("Already voted");
+    vm.prank(honestUser);
+    gov.castVote(proposalId);
+}
 
 function test_flashLoanTokensDoNotCreateHistoricalVotes() public {
     uint256 snapshotBlock = block.number;
@@ -333,5 +367,13 @@ function test_proposalCannotExecuteTwice() public {
         }
 
         emitSentinelResult("governance", variant, attackSucceeded, netProfit, note);
+
+        if (isProtected) {
+    assertFalse(attackSucceeded, "Protected governance must block takeover");
+    assertEq(netProfit, 0, "Protected governance must yield zero profit");
+} else {
+    assertTrue(attackSucceeded, "Vulnerable governance must demonstrate exploit");
+    assertGt(netProfit, 0, "Exploit must generate profit");
+}
     }
 }
