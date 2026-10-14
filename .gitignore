@@ -18,3 +18,4 @@ reports/*.json
 dashboard-next/node_modules/
 dashboard-next/.next/
 dashboard-next/out/
+dashboard-next/screenshots-parity/
