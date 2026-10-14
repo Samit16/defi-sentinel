@@ -4,8 +4,19 @@ Serves static UI assets and provides REST endpoints for listing and viewing repo
 """
 
 import json
+import sys
 from pathlib import Path
-from flask import Flask, jsonify, render_template, abort, request
+
+# Allow `python dashboard/serve.py` (script mode) to import the sibling `orchestrator` package.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from flask import Flask, jsonify, render_template, abort, request  # noqa: E402
+
+from orchestrator import config as engine_config  # noqa: E402
+from orchestrator.engine import forge_available  # noqa: E402
+from orchestrator.scan_manager import ScanBusyError, manager as scan_manager  # noqa: E402
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REPORTS_DIR = PROJECT_ROOT / "reports"
@@ -91,7 +102,78 @@ def health():
         "status": "ok",
         "reports_dir_exists": REPORTS_DIR.exists(),
         "report_count": len(get_available_reports()),
+        "engine_available": forge_available(),
+        "fork_configured": bool(engine_config.RPC_URL),
     })
+
+
+@app.route("/api/scans", methods=["POST"])
+def create_scan():
+    """Starts a real Foundry simulation in the background.
+
+    Body (all optional): {"modules": ["reentrancy", ...] | "all",
+                          "variant": "both" | "vulnerable" | "protected",
+                          "mode": "local" | "fork"}
+    The RPC URL and fork block are never taken from the request; fork mode uses
+    the server-side .env configuration only.
+    """
+    if not forge_available():
+        return jsonify({"error": "Foundry ('forge') is not installed on the server"}), 503
+
+    # Require a JSON content type: a cross-site "simple" POST (text/plain form) must not start a scan.
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json"}), 415
+
+    body = request.get_json(silent=True) or {}
+    if not isinstance(body, dict):
+        return jsonify({"error": "Request body must be a JSON object"}), 400
+
+    modules = body.get("modules", "all")
+    if modules == "all":
+        modules = None
+    elif not isinstance(modules, list) or not all(isinstance(m, str) for m in modules):
+        return jsonify({"error": "'modules' must be 'all' or a list of module ids"}), 400
+
+    variant = body.get("variant", "both")
+    if variant == "both":
+        variants = None
+    elif variant in ("vulnerable", "protected"):
+        variants = [variant]
+    else:
+        return jsonify({"error": "'variant' must be both, vulnerable or protected"}), 400
+
+    mode = body.get("mode", "local")
+    try:
+        scan_id = scan_manager.start(
+            modules=modules,
+            variants=variants,
+            mode=mode,
+            rpc_url=engine_config.RPC_URL if mode == "fork" else "",
+            fork_block=engine_config.FORK_BLOCK if mode == "fork" else "",
+        )
+    except ScanBusyError as e:
+        return jsonify({"error": str(e)}), 409
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+    return jsonify({"id": scan_id, "status": "queued"}), 202
+
+
+@app.route("/api/scans/<scan_id>", methods=["GET"])
+def get_scan(scan_id):
+    """Returns live progress for a scan started via POST /api/scans."""
+    snap = scan_manager.snapshot(scan_id)
+    if snap is None:
+        abort(404, description=f"Scan '{scan_id}' not found")
+    return jsonify(snap)
+
+
+@app.route("/api/scans/<scan_id>/cancel", methods=["POST"])
+def cancel_scan(scan_id):
+    """Requests cancellation; the scan stops before its next forge run."""
+    if not scan_manager.cancel(scan_id):
+        abort(404, description=f"Scan '{scan_id}' not found")
+    return jsonify({"id": scan_id, "cancel_requested": True}), 202
 
 
 @app.route("/api/reports", methods=["GET"])

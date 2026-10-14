@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build contracts
+        run: forge build
+
+      - name: Python tests (includes real Foundry integration tests)
+        run: python -m pytest -q
+
+      - name: Full simulation (expects 4 exploited + 4 blocked)
+        run: python -m orchestrator.run --modules all --variant both

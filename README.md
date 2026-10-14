@@ -49,7 +49,7 @@ Block 6: Web Dashboard (Flask REST API + Vanilla JS/CSS Visualization)
 
 - **Execution Engine:** Foundry compiles and runs real EVM bytecode.
 - **Orchestration Layer:** Python launches tests via subprocess, parses standard output logs, and writes reports.
-- **Reporting & UI:** The Flask dashboard reads historical JSON reports without invoking the compiler or EVM directly.
+- **Reporting & UI:** The Flask dashboard reads historical JSON reports. It starts new simulations only through the orchestrator (`/api/scans`), never by calling the compiler or EVM itself.
 
 Detailed architecture specifications and flow diagrams are documented in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -100,13 +100,18 @@ DeFiSentinel/
 │   ├── runner.py                 # Subprocess execution of forge tests with timeouts
 │   ├── parser.py                 # Strict regex log extraction and wei→ETH conversion
 │   ├── report_writer.py          # JSON report generation adhering to frozen schema
+│   ├── engine.py                 # Shared "run one module/variant" logic + forge build step
+│   ├── scan_manager.py           # Background scan jobs with live progress (used by the web API)
+│   ├── custom_run.py             # CLI for running your own .t.sol attack harness
 │   └── run.py                    # CLI command entrypoint
-├── dashboard/                    # Block 6: Single-page web dashboard
-│   ├── serve.py                  # Flask server (routes: /, /api/reports, /api/reports/<id>)
-│   ├── templates/index.html      # Responsive HTML5 single-page application
-│   └── static/
-│       ├── style.css             # Glassmorphism dark mode UI styling
-│       └── app.js                # Report fetcher and security matrix renderer
+├── dashboard/                    # Block 6: Web dashboard
+│   ├── serve.py                  # Flask server (reports API + scan API, see section 7)
+│   ├── templates/index.html      # App shell
+│   └── static/new-ui/            # Single-page UI (hash-routed ES modules, Three.js background)
+│       ├── js/app.js             # Router, state, upload/configure/run/report flow
+│       ├── js/views.js           # Screen templates
+│       ├── js/real-api.js        # Client for /api/health, /api/scans and /api/reports
+│       └── js/mock-api.js        # Demo-data fallback when Foundry is not installed
 ├── reports/                      # Output directory for persisted simulation reports
 │   ├── .gitkeep
 │   └── sample_report.json        # Fallback dataset for cold-start demo mode
@@ -115,7 +120,12 @@ DeFiSentinel/
 │   └── RESULT_FORMAT.md          # Frozen JSON schema & SENTINEL_RESULT format
 └── tests/
     ├── conftest.py               # Test harness configuration
-    └── test_parser.py            # Pytest test suite for output parsing & math validation
+    ├── test_parser.py            # Output parsing & wei→ETH math
+    ├── test_report_writer.py     # Report schema and persistence
+    ├── test_api.py               # Reports REST API
+    ├── test_scans.py             # Scan manager + /api/scans (Foundry faked)
+    ├── test_custom_run.py        # Custom harness CLI validation
+    └── test_engine_integration.py# Real Foundry run (auto-skipped if forge is missing)
 ```
 
 ---
@@ -138,6 +148,11 @@ venv\Scripts\activate
 To install or verify Python dependencies:
 ```bash
 pip install -r requirements.txt
+```
+
+Fetch the Foundry standard library (it is a git submodule and is not in a plain zip download):
+```bash
+git submodule update --init --recursive   # or: forge install foundry-rs/forge-std
 ```
 
 Compile contracts and run unit tests:
@@ -179,18 +194,30 @@ python -m orchestrator.run --modules reentrancy --variant vulnerable
 
 ## 7. Launching the Web Dashboard
 
-Start the Flask visualization server:
+Start the Flask server (Foundry must be on `PATH` for live runs):
 ```bash
 python dashboard/serve.py
 ```
 Open your browser to: **[http://localhost:5000](http://localhost:5000)**
 
-### Dashboard Features
-- **Summary Cards:** Total simulations, confirmed vulnerabilities (rose), and attacks blocked (emerald).
-- **Security Matrix Table:** Side-by-side comparison for each module showing exploit profit in ETH and explanatory notes.
-- **Plain-Language Verdict:** Explicit security summary per module (e.g., `VULNERABLE: attacker gained 10.0 ETH` vs `PROTECTED: attack blocked`).
-- **Report History Selector:** Dropdown menu allowing instant switching between historical simulation runs.
-- **Graceful Fallback:** Automatically switches to `sample_report.json` with a prominent warning badge if no dynamic reports exist.
+### Flow
+1. **Upload** a `.sol` file (or paste source), 2. **Configure** protocol roles, 3. **Run**, 4. **Report**, plus a **History** view.
+- When Foundry is available, **Run** launches the real engine: live per-module progress, then a head-to-head report (vulnerable vs protected) with observed profit in ETH. The top strip reads `LIVE ENGINE`.
+- If Foundry is not installed, the UI falls back to clearly labelled **demo data** (`DEMO DATA / NOT A REAL SCAN`).
+- **Important:** the live engine currently attacks DeFiSentinel's *built-in reference contracts*. Uploaded source is collected for the workflow but is **not yet analysed or executed**; the report says so explicitly.
+- **History** lists real reports from `reports/` (and demo reports stored in the browser).
+
+### REST API
+| Method & path | Purpose |
+|---|---|
+| `GET /api/health` | Liveness, `engine_available` (Foundry found), `fork_configured` |
+| `GET /api/reports` | List persisted reports (falls back to `sample_report.json` if none) |
+| `GET /api/reports/<id>` | One report by id, filename, or `latest` |
+| `POST /api/scans` | Start a scan. JSON body (all optional): `{"modules": "all" \| ["reentrancy", ...], "variant": "both" \| "vulnerable" \| "protected", "mode": "local" \| "fork"}`. Returns `202 {"id": ...}`; `409` if a scan is already running; `503` if Foundry is missing |
+| `GET /api/scans/<id>` | Live status: `status` (`queued/building/running/done/error/cancelled`), per-module rows, `overall` %, `report_id` when done |
+| `POST /api/scans/<id>/cancel` | Stop before the next forge run (no report is written) |
+
+Only one scan runs at a time (Foundry shares its build cache). The RPC URL and fork block are read from the server's `.env` only, never from the request. The server binds to `127.0.0.1` and has no authentication; do not expose it publicly.
 
 ---
 
@@ -218,9 +245,8 @@ For presentations, evaluations, and viva demonstrations:
    ```
 4. **Demonstrate Web Interface:**
    - Navigate to `http://localhost:5000`.
-   - Point out the institutional header (Ramdeobaba University, Dept. of AI & Cyber Security, Guide: Dr. Poonam Agarkar).
-   - Review the 8-run KPI cards and the head-to-head security matrix table.
-   - Select past runs from the Report Run dropdown to show historical persistence.
+   - Walk Upload → Configure → Run, and show the live progress and the 8 real results in the report.
+   - Open the History tab to show persisted runs.
 
 ---
 
@@ -242,7 +268,7 @@ DeFiSentinel runs completely offline by default using `MODE=local`. If you wish 
    ```bash
    python -m orchestrator.run --mode fork
    ```
-   *When active, the dashboard will display the Network Fork badge and the specific forked block number.*
+   *Fork mode is also available from the dashboard API (`"mode": "fork"`) when `RPC_URL` is set in `.env`.*
 
 ---
 
@@ -250,7 +276,8 @@ DeFiSentinel runs completely offline by default using `MODE=local`. If you wish 
 
 - **Toy Implementations:** The smart contracts are purpose-built educational targets designed to isolate specific attack mechanisms without production dependencies (e.g. full Uniswap v3 math or multi-token liquidity router logic).
 - **Single-Transaction Flash Loans:** Flash loan exploits operate atomically within a single block; multi-block MEV sandwiching and cross-chain bridge relay exploits are outside current scope.
-- **Future Enhancements:** Extending the module registry to cover read-only reentrancy (Curve/Lido style) and precision loss bugs (ERC4626 inflation attacks).
+- **Uploaded Contracts Are Not Scanned Yet:** the dashboard's upload/configure steps do not yet generate harnesses for arbitrary user contracts; the engine runs the built-in reference targets. Custom harnesses can be run from the CLI (`python -m orchestrator.custom_run`).
+- **Future Enhancements:** Scanning uploaded contracts via role-mapped adapter harnesses; Extending the module registry to cover read-only reentrancy (Curve/Lido style) and precision loss bugs (ERC4626 inflation attacks).
 
 ---
 

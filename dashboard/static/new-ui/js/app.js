@@ -1,14 +1,28 @@
 import { uploadView, configureView, runningView, reportView, historyView, rolesForProtocol } from "./views.js";
 import { runFakeScan, saveReport, getReportById } from "./mock-api.js";
+import { runRealScan, checkEngineAvailable } from "./real-api.js";
 import { initGlass, setGlassScreen } from "./glass.js";
 
 const root = document.querySelector("#app");
 const state = {
   fileName: "", source: "", uploadValid: false, protocol: "", roleMap: {},
   constructorArgs: "", holds: { ETH: true, TOKEN: false }, report: null,
-  runRows: null, overallProgress: 0, controller: null, runPromise: null
+  runRows: null, overallProgress: 0, controller: null, runPromise: null,
+  engineAvailable: false
 };
 window.appState = state;
+
+const STRIP_DEMO = "PROTOTYPE: NOTHING IS COMPILED OR ATTACKED. ALL RESULTS ARE SAMPLE DATA.";
+const STRIP_LIVE = "LIVE ENGINE: FOUNDRY RUNS REAL EVM ATTACKS ON DEFISENTINEL'S BUILT-IN REFERENCE CONTRACTS. UPLOADED SOURCE IS NOT ANALYSED YET.";
+function applyEngineStatus(ok) {
+  state.engineAvailable = ok;
+  const strip = document.querySelector(".prototype-strip .strip-message");
+  if (strip) strip.textContent = ok ? STRIP_LIVE : STRIP_DEMO;
+  const end = document.querySelector(".prototype-strip .strip-end");
+  if (end) end.innerHTML = ok ? "LIVE ENGINE <span aria-hidden=\"true\">·</span> LOCAL EVM" : "LOCAL MODE <span aria-hidden=\"true\">·</span> NO RPC";
+  if (routeName() === "configure" || routeName() === "running") render();
+}
+const engineReady = checkEngineAvailable().then(applyEngineStatus);
 const ROUTES = ["upload","configure","running","report"];
 let toastTimer;
 
@@ -108,12 +122,19 @@ function startSimulation() {
   if(state.runPromise)return;
   const controller=new AbortController();state.controller=controller;
   state.runRows=null;state.overallProgress=0;
-  state.runPromise=runFakeScan({target:state.fileName||"PastedContract.sol",protocol:state.protocol,onUpdate:updateRunUI,signal:controller.signal})
-    .then(report=>{state.report=report;saveReport(report);state.runRows=null;state.overallProgress=0;state.runPromise=null;state.controller=null;if(routeName()==="running")location.hash="/report";})
-    .catch(error=>{state.runPromise=null;state.controller=null;state.runRows=null;state.overallProgress=0;if(error.name==="AbortError"){state.report=null;if(routeName()==="running")location.hash="/configure";}else{console.error(error);showToast("The local simulation could not finish.");}});
+  const finish=()=>{state.runPromise=null;state.controller=null;state.runRows=null;state.overallProgress=0;};
+  state.runPromise=engineReady.then(()=>{
+    const live=state.engineAvailable;
+    const run=live
+      ? runRealScan({onUpdate:updateRunUI,signal:controller.signal})
+      : runFakeScan({target:state.fileName||"PastedContract.sol",protocol:state.protocol,onUpdate:updateRunUI,signal:controller.signal});
+    return run.then(report=>({report,live}));
+  })
+    .then(({report,live})=>{if(!live)saveReport(report);state.report=report;finish();if(routeName()==="running")location.hash="/report";})
+    .catch(error=>{finish();if(error.name==="AbortError"){state.report=null;if(routeName()==="running")location.hash="/configure";}else{console.error(error);showToast(state.engineAvailable?`Engine error: ${String(error.message||error).slice(0,160)}`:"The local simulation could not finish.");if(routeName()==="running")location.hash="/configure";}});
 }
 function bindRunning() {
-  document.querySelector("#cancelRun")?.addEventListener("click",()=>{state.controller?.abort();state.controller=null;showToast("Simulation cancelled. No chain or contract was touched.");});
+  document.querySelector("#cancelRun")?.addEventListener("click",()=>{state.controller?.abort();state.controller=null;showToast(state.engineAvailable?"Simulation cancelled. No report was written.":"Simulation cancelled. No chain or contract was touched.");});
   if(!state.runPromise)startSimulation();
 }
 function bindReport() {

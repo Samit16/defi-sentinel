@@ -71,7 +71,7 @@ flowchart TD
 | **Block 3** | Attack Harnesses | Attack simulation suites inheriting `SentinelBase.t.sol`. Executes atomic multi-step exploits, wraps them in `try/catch` to isolate reverts, and logs verdicts. | Foundry Forge Tests (`.t.sol`) |
 | **Block 4** | Orchestrator | Spawns subprocesses running `forge test`, enforces timeouts, and parses stdout text with strict regular expressions. | Python 3, `subprocess`, `re` |
 | **Block 5** | Report Storage | Persists execution metrics into immutable, timestamped JSON reports adhering to a frozen schema. | Python, JSON filesystem |
-| **Block 6** | Dashboard | Reads JSON reports from disk and renders a security comparison matrix with red/green badges and plain-language verdicts. Never invokes Foundry directly. | Flask, HTML5, Vanilla CSS/JS |
+| **Block 6** | Dashboard | Reads JSON reports from disk and renders a vulnerable-vs-protected comparison with plain-language verdicts. Starts new runs only via the orchestrator's scan manager (`POST /api/scans`), never by invoking Foundry itself. | Flask, HTML5, Vanilla CSS/JS |
 
 ---
 
@@ -96,3 +96,16 @@ flowchart TD
 5. **Parsing**: `parser.py` captures stdout, matches the strict regex, and converts `profit_wei` to `profit_eth` (`wei / 1e18`).
 6. **Persistence**: `report_writer.py` aggregates all module results into `reports/<timestamp>.json`.
 7. **Visualization**: Flask reads the report on request (`/api/reports/<id>`) and the web client displays the security verdict.
+
+---
+
+## 4. Dashboard-Initiated Scans
+
+The web UI can also trigger a run:
+
+1. `POST /api/scans` validates the request and asks `orchestrator.scan_manager` to start a background job (one at a time; `409` if busy).
+2. The job runs `forge build` once, then each module/variant through `orchestrator.engine.run_single` (the same code path as the CLI).
+3. `GET /api/scans/<id>` returns live per-module progress; the UI polls it.
+4. On success the job writes a normal report via `report_writer`, and the UI loads it from `/api/reports/<report_id>`. Cancelled or failed scans write no report.
+
+RPC URL and fork block come only from the server `.env`, never from the request.

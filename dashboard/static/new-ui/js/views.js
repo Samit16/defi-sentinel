@@ -15,8 +15,8 @@ export function uploadView(state) {
   const code = state.source || "";
   const bytes = new TextEncoder().encode(code).length;
   const lines = code ? code.split("\n").slice(0, 7).map((line, i) => `${String(i+1).padStart(2,"0")}  ${line}`).join("\n") : "";
-  return <section class="screen" aria-labelledby="screen-title">
-    {header("01","UPLOAD SOURCE","SOLIDITY FILE / MAX 100 KB")}
+  return `<section class="screen" aria-labelledby="screen-title">
+    ${header("01","UPLOAD SOURCE","SOLIDITY FILE / MAX 100 KB")}
     <div class="upload-layout">
       <div class="upload-copy">
         <div class="eyebrow">PRE-LAUNCH SECURITY SIMULATION</div>
@@ -27,7 +27,7 @@ export function uploadView(state) {
       <form class="upload-card bracket-panel" id="uploadForm" novalidate>
         <div class="section-rule">SOURCE CONTRACT <span class="muted">.SOL ONLY</span></div>
         <label class="dropzone" id="dropzone" for="fileInput">
-          {iconUpload}
+          ${iconUpload}
           <strong>Drop one Solidity file here</strong>
           <small>or choose a file · max 100 KB</small>
           <input class="visually-hidden" type="file" id="fileInput" accept=".sol,text/plain" aria-label="Choose one Solidity file" />
@@ -35,19 +35,19 @@ export function uploadView(state) {
         <div class="upload-divider">OR PASTE SOURCE</div>
         <div class="field">
           <label class="field-label" for="sourceName">FILE NAME</label>
-          <input class="text-input" id="sourceName" name="sourceName" value={esc(name || "PastedContract.sol")} maxlength="120" spellcheck="false" aria-describedby="uploadErrors" />
+          <input class="text-input" id="sourceName" name="sourceName" value="${esc(name || "PastedContract.sol")}" maxlength="120" spellcheck="false" aria-describedby="uploadErrors" />
         </div>
         <div class="field" style="margin-top:11px">
           <label class="field-label" for="sourceCode">SOLIDITY SOURCE</label>
-          <textarea class="text-area paste-code" id="sourceCode" name="sourceCode" placeholder="// Paste contract source here" spellcheck="false" aria-describedby="uploadErrors">{esc(code)}</textarea>
+          <textarea class="text-area paste-code" id="sourceCode" name="sourceCode" placeholder="// Paste contract source here" spellcheck="false" aria-describedby="uploadErrors">${esc(code)}</textarea>
         </div>
-        <div class="file-meta"><span id="fileMetaName"><strong>{esc(name || "No source selected")}</strong></span><span id="fileMetaSize">{bytes ? `${bytes.toLocaleString()} B` : "0 B"}</span></div>
-        <pre id="codePreview" className={`code-preview${code ? " is-visible" : ""}`} aria-label="Monospace Solidity preview">{esc(lines || "Preview appears when source is entered.")}</pre>
+        <div class="file-meta"><span id="fileMetaName"><strong>${esc(name || "No source selected")}</strong></span><span id="fileMetaSize">${bytes ? `${bytes.toLocaleString()} B` : "0 B"}</span></div>
+        <pre id="codePreview" class="${`code-preview${code ? " is-visible" : ""}`}" aria-label="Monospace Solidity preview">${esc(lines || "Preview appears when source is entered.")}</pre>
         <ul id="uploadErrors" class="error-list" role="alert" aria-live="assertive"></ul>
-        <div class="upload-actions"><span class="hint">.SOL <span aria-hidden="true">/</span> NON-EMPTY <span aria-hidden="true">/</span> &lt;100 KB</span><button class="button" id="continueUpload" type="submit" disabled={!state.uploadValid}>CONTINUE <span class="button-arrow" aria-hidden="true">→</span></button></div>
+        <div class="upload-actions"><span class="hint">.SOL <span aria-hidden="true">/</span> NON-EMPTY <span aria-hidden="true">/</span> &lt;100 KB</span><button class="button" id="continueUpload" type="submit" ${(!state.uploadValid) ? "disabled" : ""}>CONTINUE <span class="button-arrow" aria-hidden="true">→</span></button></div>
       </form>
     </div>
-  </section>;
+  </section>`;
 }
 
 const PROTOCOLS = [
@@ -64,40 +64,40 @@ export function configureView(state) {
   const roles = rolesForProtocol(protocol);
   const mappings = roles.map(role => `<label class="mapping-row"><span class="mapping-label">${esc(role)}</span><select class="select-input role-select" data-role="${esc(role)}" aria-label="Map function for ${esc(role)}" ${!protocol || !funcs.length ? "disabled" : ""}><option value="">${funcs.length ? "Select function" : "No functions detected"}</option>${funcs.map(fn=>`<option value="${esc(fn)}" ${state.roleMap?.[role]===fn?"selected":""}>${esc(fn)}()</option>`).join("")}</select></label>`).join("");
   const missing = !protocol ? ["protocol type"] : roles.filter(role => !state.roleMap?.[role]).map(role => `${role} function`);
-  return <section class="screen" aria-labelledby="screen-title">
-    {header("02","CONFIGURE ROLES","FUNCTIONS PARSED LOCALLY")}
+  return `<section class="screen" aria-labelledby="screen-title">
+    ${header("02","CONFIGURE ROLES","FUNCTIONS PARSED LOCALLY")}
     <div class="configure-layout">
       <div>
         <h1 id="screen-title" class="display display-small" style="margin-bottom:24px">Map contract roles.</h1>
         <div class="section-rule">01 <span>PROTOCOL TYPE</span></div>
-        <div class="protocol-grid" role="group" aria-label="Choose protocol type">{PROTOCOLS.map(([id,desc])=>`<button class="protocol-option" type="button" data-protocol="${id}" aria-pressed="${protocol===id}"><span class="protocol-name">${id}</span><span class="protocol-description">${desc}</span></button>`).join("")}</div>
+        <div class="protocol-grid" role="group" aria-label="Choose protocol type">${PROTOCOLS.map(([id,desc])=>`<button class="protocol-option" type="button" data-protocol="${id}" aria-pressed="${protocol===id}"><span class="protocol-name">${id}</span><span class="protocol-description">${desc}</span></button>`).join("")}</div>
         <div class="section-rule">02 <span>FUNCTION ROLE MAPPING</span></div>
         <p class="micro" style="margin:8px 0 0">SELECT THE FUNCTION THAT PLAYS EACH STANDARD ROLE.</p>
-        <div class="mapping-list">{roles.length ? mappings : <p class="micro">Choose a protocol type to load its expected roles.</p>}</div>
-        {protocol && !funcs.length ? <div class="notice" role="status"><span class="notice-mark">!</span><span>No function declarations were found. Add Solidity source with <code>function name(...)</code> declarations, then return to this step.</span></div> : null}
+        <div class="mapping-list">${roles.length ? mappings : `<p class="micro">Choose a protocol type to load its expected roles.</p>`}</div>
+        ${protocol && !funcs.length ? `<div class="notice" role="status"><span class="notice-mark">!</span><span>No function declarations were found. Add Solidity source with <code>function name(...)</code> declarations, then return to this step.</span></div>` : ""}
       </div>
       <aside class="configure-side bracket-panel">
         <div class="section-rule">03 <span>DEPLOYMENT CONTEXT</span></div>
         <div class="field"><label class="field-label" for="constructorArgs">CONSTRUCTOR ARGUMENTS <span class="muted">/ OPTIONAL</span></label><textarea class="text-area" id="constructorArgs" placeholder="e.g. _asset = 0x…" spellcheck="false">${esc(state.constructorArgs || "")}</textarea></div>
         <div class="toggle-row"><span class="field-label">CONTRACT HOLDS</span><div class="toggle-control"><button type="button" class="toggle-button" data-holds="ETH" aria-pressed="${state.holds?.ETH !== false}">ETH</button><button type="button" class="toggle-button" data-holds="TOKEN" aria-pressed="${state.holds?.TOKEN === true}">TOKEN</button></div></div>
         <div class="notice"><span class="notice-mark">i</span><span>Role names are selected by you. The parser only reads function names; it does not verify behavior.</span></div>
-        <div class="validation-message" id="configureMessage" role="status">${missing.length ? `<span class="missing">RUN DISABLED</span> <span aria-hidden="true">/</span> MAP ${missing.map(esc).join(", ")}.` : "ALL REQUIRED ROLES MAPPED. READY FOR SAMPLE RUN."}</div>
-        <button class="button" id="runSimulation" type="button" disabled={missing.length > 0}>RUN SIMULATION <span class="button-arrow" aria-hidden="true">→</span></button>
+        <div class="validation-message" id="configureMessage" role="status">${missing.length ? `<span class="missing">RUN DISABLED</span> <span aria-hidden="true">/</span> MAP ${missing.map(esc).join(", ")}.` : (state.engineAvailable ? "ALL REQUIRED ROLES MAPPED. READY TO RUN THE LIVE ENGINE." : "ALL REQUIRED ROLES MAPPED. READY FOR SAMPLE RUN.")}</div>
+        <button class="button" id="runSimulation" type="button" ${(missing.length > 0) ? "disabled" : ""}>RUN SIMULATION <span class="button-arrow" aria-hidden="true">→</span></button>
       </aside>
     </div>
-  </section>;
+  </section>`;
 }
 
 export function runningView(state) {
   const rows = state.runRows || ["Reentrancy","Oracle Manipulation","Flash Loan","Governance Takeover"].map(module=>({module,state:"QUEUED",progress:0,elapsed_s:0}));
   const list = rows.map((row,i)=>`<div class="attack-row" data-attack="${i}" data-state="${row.state.toLowerCase()}"><div><span class="attack-index">MODULE / 0${i+1}</span><div class="attack-name">${esc(row.module)}</div></div><div class="attack-status"><span class="status-dot" aria-hidden="true"></span><span class="state-label">${esc(row.state)}</span></div><div class="progress-track" role="progressbar" aria-label="${esc(row.module)} progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(row.progress)}"><div class="progress-bar" style="width:${Math.round(row.progress)}%"></div></div><div class="elapsed">${Number(row.elapsed_s||0).toFixed(1)} S</div></div>`).join("");
   const pct = Math.round(state.overallProgress || 0);
-  return <section class="screen" aria-labelledby="screen-title">
-    ${header("03","SIMULATION RUN","LOCAL MOCK ENGINE")}
-    <div class="running-head"><div><div class="eyebrow micro tracked">SAFE COPY <span aria-hidden="true">/</span> NO CHAIN CONNECTION</div><h1 id="screen-title" class="display display-small">Four attack paths.</h1></div><div class="run-summary"><span id="overallProgress">${pct}</span>% COMPLETE<br /><span id="overallElapsed">0.0</span> S ELAPSED</div></div>
+  return `<section class="screen" aria-labelledby="screen-title">
+    ${header("03","SIMULATION RUN",state.engineAvailable?"LIVE FOUNDRY ENGINE":"LOCAL MOCK ENGINE")}
+    <div class="running-head"><div><div class="eyebrow micro tracked">${state.engineAvailable?"IN-MEMORY EVM":"SAFE COPY"} <span aria-hidden="true">/</span> NO CHAIN CONNECTION</div><h1 id="screen-title" class="display display-small">Four attack paths.</h1></div><div class="run-summary"><span id="overallProgress">${pct}</span>% COMPLETE<br /><span id="overallElapsed">0.0</span> S ELAPSED</div></div>
     <div class="attack-list" id="attackList">${list}</div>
-    <div class="run-footer"><span class="run-footnote">DEMO DATA <span aria-hidden="true">/</span> THIS TIMELINE IS SIMULATED. NO CONTRACT BYTECODE IS RUN.</span><button class="button button-danger" id="cancelRun" type="button">CANCEL <span aria-hidden="true">×</span></button></div>
-  </section>;
+    <div class="run-footer"><span class="run-footnote">${state.engineAvailable?`REAL RESULTS <span aria-hidden="true">/</span> FORGE EXECUTES EVM BYTECODE FOR EACH MODULE ON THE BUILT-IN TARGETS.`:`DEMO DATA <span aria-hidden="true">/</span> THIS TIMELINE IS SIMULATED. NO CONTRACT BYTECODE IS RUN.`}</span><button class="button button-danger" id="cancelRun" type="button">CANCEL <span aria-hidden="true">×</span></button></div>
+  </section>`;
 }
 
 const statusClass = status => status === "SUCCEEDED" ? "is-succeeded" : status === "FAILED" ? "is-failed" : "is-na";
@@ -110,14 +110,14 @@ function chartSvg(summary) {
 
 export function reportView(report) {
   if (!report) {
-    return <section class="screen">
+    return `<section class="screen">
       ${header("04", "REPORT", "NO REPORT SELECTED")}
       <div class="empty-state">
         <strong>NO REPORT SELECTED</strong>
         Run a local simulation or open a history row.
       </div>
       <a class="button" href="#/upload">START A CHECK →</a>
-    </section>;
+    </section>`;
   }
 
   const results = Array.isArray(report.results) ? report.results : [];
@@ -177,12 +177,12 @@ export function reportView(report) {
   }
 
   const tagHtml = isReal
-    ? <span class="demo-tag demo-tag--real">
+    ? `<span class="demo-tag demo-tag--real">
          ENGINE REPORT <span aria-hidden="true">/</span> SIMULATION RESULTS
-       </span>
-    : <span class="demo-tag">
+       </span>`
+    : `<span class="demo-tag">
          DEMO DATA <span aria-hidden="true">/</span> NOT A REAL SCAN
-       </span>;
+       </span>`;
 
   const resultCards = results.map((result, index) => {
     const finding = FINDINGS[result.module];
@@ -191,7 +191,7 @@ export function reportView(report) {
       String(result.variant || "").toLowerCase() !== "protected";
 
     const findingHtml = exploited && finding
-      ? <div class="finding-grid">
+      ? `<div class="finding-grid">
            <section class="finding-panel">
              <h4>POTENTIAL WEAKNESS</h4>
              <p>${esc(finding.lacking)}</p>
@@ -200,18 +200,18 @@ export function reportView(report) {
              <h4>SUGGESTED MITIGATION</h4>
              <p>${esc(finding.fix)}</p>
            </section>
-         </div>
+         </div>`
       : "";
 
     const variant = result.variant
-      ?  <span class="muted">/ ${esc(result.variant)}</span>
+      ?  `<span class="muted">/ ${esc(result.variant)}</span>`
       : "";
 
-    return <article class="result-card">
+    return `<article class="result-card">
       <div class="result-card-head">
         <div>
           <span class="attack-index">RESULT / ${String(index + 1).padStart(2, "0")}</span>
-          <div class="result-name">${esc(result.module)}${variant}</div>
+          <div class="result-name">${esc(result.module)} ${variant}</div>
           <div class="result-note">${esc(result.note)}</div>
         </div>
         <span class="result-status ${statusClass(result.status)}">
@@ -224,10 +224,10 @@ export function reportView(report) {
         <span class="muted">/ ${Number(result.duration_s || 0).toFixed(1)} S</span>
       </div>
       ${findingHtml}
-    </article>;
+    </article>`;
   }).join("");
 
-  return <section class="screen" aria-labelledby="screen-title">
+  return `<section class="screen" aria-labelledby="screen-title">
     ${header(
       "04",
       "SIMULATION REPORT",
@@ -245,6 +245,7 @@ export function reportView(report) {
         </p>
       </div>
     </div>
+    ${isReal ? `<div class="notice" role="note"><span class="notice-mark">i</span><span>These attacks ran on DeFiSentinel's built-in reference contracts (a vulnerable and a protected version of each protocol). Your uploaded source was not analysed or executed.</span></div>` : ""}
     <div class="result-list">${resultCards}</div>
     <div class="notice" role="note">
       <span class="notice-mark">i</span>
@@ -258,7 +259,7 @@ export function reportView(report) {
       <button class="button" id="copyReport" type="button">COPY REPORT JSON</button>
       <button class="button" id="runAgain" type="button">RUN AGAIN</button>
     </div>
-  </section>;
+  </section>`;
 }
 
 export async function historyView() {

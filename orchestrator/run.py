@@ -16,8 +16,7 @@ from orchestrator.config import (
     RPC_URL as CONFIG_RPC_URL,
     FORK_BLOCK as CONFIG_FORK_BLOCK,
 )
-from orchestrator.runner import run_forge_test
-from orchestrator.parser import parse_forge_output
+from orchestrator.engine import run_single
 from orchestrator.report_writer import write_report
 
 
@@ -104,18 +103,17 @@ def main() -> int:
 
     results = []
     for module in modules:
-        test_path = MODULE_REGISTRY[module]
         for variant in variants:
             print(f"\n[*] Executing {module} [{variant}] ...")
             try:
-                output, duration_s = run_forge_test(
-                    test_path=test_path,
-                    variant=variant,
+                result = run_single(
+                    module,
+                    variant,
                     mode=args.mode,
                     rpc_url=args.rpc_url,
                     fork_block=args.fork_block,
                 )
-                result = parse_forge_output(output, duration_s=duration_s)
+                duration_s = result["duration_s"]
                 results.append(result)
 
                 status_tag = f"[{result['status']}]"
