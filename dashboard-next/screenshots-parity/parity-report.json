@@ -1,0 +1,102 @@
+[
+  {
+    "viewport": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "upload",
+    "diffPixels": 0,
+    "totalPixels": 1296000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "configure",
+    "diffPixels": 0,
+    "totalPixels": 1296000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "running",
+    "diffPixels": 135,
+    "totalPixels": 1296000,
+    "diffPercent": 0.010416666666666668,
+    "passed": true
+  },
+  {
+    "viewport": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "report",
+    "diffPixels": 0,
+    "totalPixels": 1296000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "desktop",
+    "width": 1440,
+    "height": 900,
+    "route": "history",
+    "diffPixels": 2895,
+    "totalPixels": 1296000,
+    "diffPercent": 0.22337962962962962,
+    "passed": false
+  },
+  {
+    "viewport": "mobile",
+    "width": 360,
+    "height": 800,
+    "route": "upload",
+    "diffPixels": 0,
+    "totalPixels": 288000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "mobile",
+    "width": 360,
+    "height": 800,
+    "route": "configure",
+    "diffPixels": 0,
+    "totalPixels": 288000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "mobile",
+    "width": 360,
+    "height": 800,
+    "route": "running",
+    "diffPixels": 181,
+    "totalPixels": 288000,
+    "diffPercent": 0.06284722222222222,
+    "passed": true
+  },
+  {
+    "viewport": "mobile",
+    "width": 360,
+    "height": 800,
+    "route": "report",
+    "diffPixels": 0,
+    "totalPixels": 288000,
+    "diffPercent": 0,
+    "passed": true
+  },
+  {
+    "viewport": "mobile",
+    "width": 360,
+    "height": 800,
+    "route": "history",
+    "diffPixels": 4994,
+    "totalPixels": 288000,
+    "diffPercent": 1.7340277777777777,
+    "passed": false
+  }
+]

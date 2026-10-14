@@ -152,4 +152,4 @@ def test_get_report_marks_sample_report(client):
 
 def test_index_page_loads(client):
     resp = client.get("/")
-    assert resp.status_code == 200
+    assert resp.status_code in (200, 302)

@@ -101,12 +101,12 @@ DeFiSentinel/
 │   ├── parser.py                 # Strict regex log extraction and wei→ETH conversion
 │   ├── report_writer.py          # JSON report generation adhering to frozen schema
 │   └── run.py                    # CLI command entrypoint
-├── dashboard/                    # Block 6: Single-page web dashboard
-│   ├── serve.py                  # Flask server (routes: /, /api/reports, /api/reports/<id>)
-│   ├── templates/index.html      # Responsive HTML5 single-page application
-│   └── static/
-│       ├── style.css             # Glassmorphism dark mode UI styling
-│       └── app.js                # Report fetcher and security matrix renderer
+├── dashboard-next/               # Block 6: Next.js canonical frontend (React, Three.js)
+│   ├── src/app/                  # App router pages, layouts, and global styles
+│   ├── src/components/           # Reusable UI, 3D canvases, and simulation screens
+│   └── src/lib/                  # API client and report data adapters
+├── dashboard/                    # Backend API service & launcher
+│   └── serve.py                  # Orchestrated launcher: Next.js (port 3000) + Flask API (port 5000)
 ├── reports/                      # Output directory for persisted simulation reports
 │   ├── .gitkeep
 │   └── sample_report.json        # Fallback dataset for cold-start demo mode
@@ -179,17 +179,18 @@ python -m orchestrator.run --modules reentrancy --variant vulnerable
 
 ## 7. Launching the Web Dashboard
 
-Start the Flask visualization server:
+Start the integrated dashboard launcher:
 ```bash
 python dashboard/serve.py
 ```
-Open your browser to: **[http://localhost:5000](http://localhost:5000)**
+This automatically initializes the Next.js development server on port 3000 and starts the Flask API backend on port 5000. It opens your browser to: **[http://localhost:3000](http://localhost:3000)** (Flask's root at `http://localhost:5000` automatically redirects here).
 
 ### Dashboard Features
+- **Modern Next.js Frontend:** Interactive 3D glassmorphism canvas, pixel field background, and modular viewports.
 - **Summary Cards:** Total simulations, confirmed vulnerabilities (rose), and attacks blocked (emerald).
 - **Security Matrix Table:** Side-by-side comparison for each module showing exploit profit in ETH and explanatory notes.
 - **Plain-Language Verdict:** Explicit security summary per module (e.g., `VULNERABLE: attacker gained 10.0 ETH` vs `PROTECTED: attack blocked`).
-- **Report History Selector:** Dropdown menu allowing instant switching between historical simulation runs.
+- **Report History & Configuration:** View historical simulation runs and configure simulation runs interactively.
 - **Graceful Fallback:** Automatically switches to `sample_report.json` with a prominent warning badge if no dynamic reports exist.
 
 ---
