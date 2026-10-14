@@ -54,7 +54,6 @@ contract ReentrancyTest is SentinelBase {
             VaultVulnerable vulnVault = new VaultVulnerable();
             vaultAddress = address(vulnVault);
         }
-
         // Fund vault with 10 ETH from honest users
         vm.deal(honestUser, 10 ether);
         vm.prank(honestUser);
@@ -91,6 +90,14 @@ contract ReentrancyTest is SentinelBase {
         uint256 netProfit = 0;
         if (attacker.balance > attackerBalBefore) {
             netProfit = attacker.balance - attackerBalBefore;
+        }
+
+        if (isProtected) {
+            assertFalse(attackSucceeded, "Protected vault must block reentrancy");
+            assertEq(netProfit, 0, "Protected vault must yield zero profit");
+        } else {
+            assertTrue(attackSucceeded, "Vulnerable vault must demonstrate exploit");
+            assertGt(netProfit, 0, "Exploit must generate profit");
         }
 
         emitSentinelResult("reentrancy", variant, attackSucceeded, netProfit, note);
