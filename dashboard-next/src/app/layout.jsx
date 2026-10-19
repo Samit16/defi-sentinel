@@ -1,9 +1,9 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "DeFiSentinel — Local Security Simulation",
+  title: "DeFi Sentinel — Smart Contract Security Analysis",
   description:
-    "A local DeFi security simulation prototype. Demo data only; no contract is compiled or attacked.",
+    "Find vulnerabilities before attackers do. Analyze Solidity contracts with safe, controlled attack simulations from DeFi Sentinel.",
   icons: {
     icon:
       "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2308080A'/%3E%3Cpath d='M13 13h17a19 19 0 1 1 0 38H13z' fill='none' stroke='%238B5CF6' stroke-width='3'/%3E%3C/svg%3E",
