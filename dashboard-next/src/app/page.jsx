@@ -11,6 +11,7 @@ import ConfigureScreen from "../components/ConfigureScreen";
 import RunningScreen from "../components/RunningScreen";
 import ReportScreen from "../components/ReportScreen";
 import HistoryScreen from "../components/HistoryScreen";
+import LandingPage from "../components/LandingPage";
 
 const PixelFieldCanvas = dynamic(() => import("../components/PixelFieldCanvas"), {
   ssr: false,
@@ -20,15 +21,15 @@ const GlassCanvas = dynamic(() => import("../components/GlassCanvas"), {
 });
 
 function getRouteFromHash() {
-  if (typeof window === "undefined") return "upload";
+  if (typeof window === "undefined") return "landing";
   const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
   return ["upload", "configure", "running", "report", "history"].includes(raw)
     ? raw
-    : "upload";
+    : "landing";
 }
 
 export default function Page() {
-  const [activeRoute, setActiveRoute] = useState("upload");
+  const [activeRoute, setActiveRoute] = useState("landing");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [toast, setToast] = useState({ message: "", visible: false });
   const toastTimerRef = useRef(null);
@@ -62,11 +63,7 @@ export default function Page() {
 
   useEffect(() => {
     const initialRoute = getRouteFromHash();
-    if (!window.location.hash) {
-      window.location.hash = "/upload";
-    } else {
-      setActiveRoute(initialRoute);
-    }
+    setActiveRoute(initialRoute);
 
     const onHashChange = () => {
       const nextRoute = getRouteFromHash();
@@ -99,61 +96,55 @@ export default function Page() {
 
   return (
     <>
-      <PixelFieldCanvas />
-      <GlassCanvas activeRoute={activeRoute} state={state} />
-      <ViewportFrame />
-
-      <div className="app-shell">
-        <Topbar activeRoute={activeRoute} />
-        <PrototypeStrip />
-
-        <main
-          id="app"
-          tabIndex={-1}
-          aria-live="polite"
-          className={isTransitioning ? "is-transitioning" : ""}
-        >
-          {activeRoute === "upload" && (
+      {activeRoute === "landing" ? <LandingPage /> : <>
+        <PixelFieldCanvas />
+        <GlassCanvas activeRoute={activeRoute} state={state} />
+        <ViewportFrame />
+        <div className="app-shell">
+          <Topbar activeRoute={activeRoute} />
+          <PrototypeStrip />
+          <main id="app" tabIndex={-1} aria-live="polite" className={isTransitioning ? "is-transitioning" : ""}>
+            {activeRoute === "upload" && (
             <UploadScreen
               key="upload"
               state={state}
               setState={setState}
               showToast={showToast}
             />
-          )}
-          {activeRoute === "configure" && (
+            )}
+            {activeRoute === "configure" && (
             <ConfigureScreen
               key="configure"
               state={state}
               setState={setState}
             />
-          )}
-          {activeRoute === "running" && (
+            )}
+            {activeRoute === "running" && (
             <RunningScreen
               key="running"
               state={state}
               setState={setState}
               showToast={showToast}
             />
-          )}
-          {activeRoute === "report" && (
+            )}
+            {activeRoute === "report" && (
             <ReportScreen
               key="report"
               report={state.report}
               setState={setState}
               showToast={showToast}
             />
-          )}
-          {activeRoute === "history" && (
+            )}
+            {activeRoute === "history" && (
             <HistoryScreen
               key="history"
               setState={setState}
             />
-          )}
-        </main>
-
-        <Footer />
-      </div>
+            )}
+          </main>
+          <Footer />
+        </div>
+      </>}
 
       <div
         className={`toast ${toast.visible ? "is-visible" : ""}`}
