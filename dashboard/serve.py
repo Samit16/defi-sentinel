@@ -5,14 +5,22 @@ The frontend (dashboard-next) is a Next.js application served on port 3000.
 """
 
 import json
+import sys
 from pathlib import Path
 from flask import Flask, jsonify, redirect, abort, request
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Lets `python dashboard/serve.py` import the dashboard and orchestrator packages.
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from dashboard.scans import scans_bp  # noqa: E402
+
 REPORTS_DIR = PROJECT_ROOT / "reports"
 SAMPLE_REPORT_FILE = REPORTS_DIR / "sample_report.json"
 
 app = Flask(__name__)
+app.register_blueprint(scans_bp)
 
 
 @app.errorhandler(404)
