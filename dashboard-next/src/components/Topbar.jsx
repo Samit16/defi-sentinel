@@ -11,7 +11,7 @@ export default function Topbar({ activeRoute }) {
 
   return (
     <header className="topbar">
-      <a className="wordmark" href="#/upload" aria-label="DeFiSentinel home">
+      <a className="wordmark" href="#/" aria-label="DeFiSentinel home">
         <span className="wordmark-mark" aria-hidden="true">D<span>·</span>S</span>
         <span>DEFISENTINEL</span>
       </a>
