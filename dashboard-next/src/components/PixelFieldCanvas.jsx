@@ -7,7 +7,7 @@ const TUNING = Object.freeze({
   lightFieldScale: 2.05,
   domainWarpStrength: 1.35,
   lightCoverage: 0.72,
-  brightness: 0.45,
+  brightness: 0.2,
   highlightIntensity: 1.8,
   cyanBalance: 0.90,
   blueBalance: 0.70,
