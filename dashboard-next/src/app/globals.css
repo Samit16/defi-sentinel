@@ -36,7 +36,7 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .wordmark-mark span{color:var(--muted);margin:0 1px}
 .step-nav{display:flex;align-items:center;gap:clamp(8px,1.5vw,24px)}.step-nav a{display:flex;align-items:center;gap:7px;color:var(--muted);white-space:nowrap;transition:color .25s var(--ease)}.step-nav a span,.micro,.eyebrow,.step-label,.label,.history-link,.button,.pill,.protocol-name,.strip-index,.strip-end,.site-footer,.status,.step-stamp{font-family:var(--mono);font-size:10px;letter-spacing:.1em}.step-nav a b{font:400 9px var(--mono);letter-spacing:.1em}.step-nav a.active,.step-nav a.done{color:var(--text)}.step-nav a.active span{color:var(--text)}.step-rule{width:clamp(12px,2vw,35px);height:1px;background:var(--line-strong)}
 .history-link{justify-self:end;color:var(--muted);display:flex;align-items:center;gap:9px}.history-link:hover{color:var(--text)}.history-dot{width:5px;height:5px;border:1px solid currentColor;border-radius:50%}
-.prototype-strip{min-height:39px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;color:#A8A8B0;font:400 9px var(--mono);letter-spacing:.075em}.prototype-strip>span:nth-child(2){text-align:center}.strip-index,.strip-end{font-size:8px;color:var(--muted);white-space:nowrap}.strip-index span{color:var(--muted)}
+.prototype-strip{min-height:32px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#A8A8B0;font:400 10px var(--mono);letter-spacing:.04em;padding:0 var(--gutter)}
 #app{flex:1;min-height:calc(100vh - 160px);display:flex;flex-direction:column;justify-content:center;padding:clamp(34px,6vh,76px) 0;transition:opacity .3s var(--ease),transform .3s var(--ease)}#app.is-transitioning{opacity:0;transform:translateY(5px)}
 .screen{width:100%;max-width:1400px;margin:0 auto}
 
@@ -698,4 +698,42 @@ textarea:focus-visible {
     height: 18px;
     font-size: 8px;
   }
+}
+
+/* Lucide Icon & Animation Utilities */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.notice-mark {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.landing-brand-mark {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-row-arrow {
+  color: var(--muted);
+  transition: transform 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.history-table tr:hover .history-row-arrow {
+  color: var(--mint);
+  transform: translateX(3px);
 }

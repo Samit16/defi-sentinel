@@ -1,9 +1,12 @@
+import { Info } from "lucide-react";
+
 export default function PrototypeStrip() {
   return (
     <div className="prototype-strip" role="note">
-      <span className="strip-index">SYSTEM NOTE <span aria-hidden="true">/</span> 00</span>
-      <span>PROTOTYPE: NOTHING IS COMPILED OR ATTACKED. ALL RESULTS ARE SAMPLE DATA.</span>
-      <span className="strip-end">LOCAL MODE <span aria-hidden="true">·</span> NO RPC</span>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <Info size={13} strokeWidth={2} aria-hidden="true" style={{ color: "var(--muted)" }} />
+        Sample mode — results shown are simulated, not from a live scan.
+      </span>
     </div>
   );
 }

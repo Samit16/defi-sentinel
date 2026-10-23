@@ -1,77 +1,1786 @@
- .gitignore                                         |    12 [32m+[m[31m-[m
- README.md                                          |    19 [32m+[m[31m-[m
- dashboard-next/next.config.mjs                     |    12 [32m+[m
- dashboard-next/package-lock.json                   |   477 [32m+[m
- dashboard-next/package.json                        |    21 [32m+[m
- .../public}/fonts/IBMPlexMono-OFL.txt              |     0
- .../public}/fonts/IBMPlexMono-Regular.ttf          |   Bin
- .../public}/fonts/IBMPlexSans-OFL.txt              |     0
- .../public}/fonts/IBMPlexSans-Variable.ttf         |   Bin
- .../public}/fonts/Michroma-OFL.txt                 |     0
- .../public}/fonts/Michroma-Regular.ttf             |   Bin
- .../screenshots-parity/3d-upload-new.png           |   Bin [31m0[m -> [32m956530[m bytes
- .../screenshots-parity/3d-upload-old.png           |   Bin [31m0[m -> [32m960431[m bytes
- .../screenshots-parity/desktop-configure-diff.png  |   Bin [31m0[m -> [32m165324[m bytes
- .../screenshots-parity/desktop-configure-new.png   |   Bin [31m0[m -> [32m189941[m bytes
- .../screenshots-parity/desktop-configure-old.png   |   Bin [31m0[m -> [32m189932[m bytes
- .../screenshots-parity/desktop-history-diff.png    |   Bin [31m0[m -> [32m149484[m bytes
- .../screenshots-parity/desktop-history-new.png     |   Bin [31m0[m -> [32m165922[m bytes
- .../screenshots-parity/desktop-history-old.png     |   Bin [31m0[m -> [32m165895[m bytes
- .../screenshots-parity/desktop-report-diff.png     |   Bin [31m0[m -> [32m72927[m bytes
- .../screenshots-parity/desktop-report-new.png      |   Bin [31m0[m -> [32m57055[m bytes
- .../screenshots-parity/desktop-report-old.png      |   Bin [31m0[m -> [32m57054[m bytes
- .../screenshots-parity/desktop-running-diff.png    |   Bin [31m0[m -> [32m130617[m bytes
- .../screenshots-parity/desktop-running-new.png     |   Bin [31m0[m -> [32m131892[m bytes
- .../screenshots-parity/desktop-running-old.png     |   Bin [31m0[m -> [32m131830[m bytes
- .../screenshots-parity/desktop-upload-diff.png     |   Bin [31m0[m -> [32m182330[m bytes
- .../screenshots-parity/desktop-upload-new.png      |   Bin [31m0[m -> [32m200635[m bytes
- .../screenshots-parity/desktop-upload-old.png      |   Bin [31m0[m -> [32m200636[m bytes
- .../screenshots-parity/mobile-configure-diff.png   |   Bin [31m0[m -> [32m80289[m bytes
- .../screenshots-parity/mobile-configure-new.png    |   Bin [31m0[m -> [32m99496[m bytes
- .../screenshots-parity/mobile-configure-old.png    |   Bin [31m0[m -> [32m99497[m bytes
- .../screenshots-parity/mobile-history-diff.png     |   Bin [31m0[m -> [32m83348[m bytes
- .../screenshots-parity/mobile-history-new.png      |   Bin [31m0[m -> [32m108007[m bytes
- .../screenshots-parity/mobile-history-old.png      |   Bin [31m0[m -> [32m107964[m bytes
- .../screenshots-parity/mobile-report-diff.png      |   Bin [31m0[m -> [32m41670[m bytes
- .../screenshots-parity/mobile-report-new.png       |   Bin [31m0[m -> [32m40744[m bytes
- .../screenshots-parity/mobile-report-old.png       |   Bin [31m0[m -> [32m40747[m bytes
- .../screenshots-parity/mobile-running-diff.png     |   Bin [31m0[m -> [32m75689[m bytes
- .../screenshots-parity/mobile-running-new.png      |   Bin [31m0[m -> [32m87236[m bytes
- .../screenshots-parity/mobile-running-old.png      |   Bin [31m0[m -> [32m86671[m bytes
- .../screenshots-parity/mobile-upload-diff.png      |   Bin [31m0[m -> [32m90254[m bytes
- .../screenshots-parity/mobile-upload-new.png       |   Bin [31m0[m -> [32m108037[m bytes
- .../screenshots-parity/mobile-upload-old.png       |   Bin [31m0[m -> [32m108040[m bytes
- .../screenshots-parity/parity-report.json          |   102 [32m+[m
- dashboard-next/scripts/deploy.mjs                  |    31 [32m+[m
- dashboard-next/scripts/visual-parity.js            |   349 [32m+[m
- .../src/app/globals.css                            |     6 [32m+[m[31m-[m
- dashboard-next/src/app/layout.jsx                  |    25 [32m+[m
- dashboard-next/src/app/page.jsx                    |   166 [32m+[m
- dashboard-next/src/components/ConfigureScreen.jsx  |   202 [32m+[m
- dashboard-next/src/components/Footer.jsx           |     9 [32m+[m
- dashboard-next/src/components/GlassCanvas.jsx      |   419 [32m+[m
- dashboard-next/src/components/HistoryScreen.jsx    |   140 [32m+[m
- .../src/components/PixelFieldCanvas.jsx            |   226 [32m+[m[31m-[m
- dashboard-next/src/components/PrototypeStrip.jsx   |     9 [32m+[m
- dashboard-next/src/components/ReportScreen.jsx     |   262 [32m+[m
- dashboard-next/src/components/RunningScreen.jsx    |   166 [32m+[m
- dashboard-next/src/components/ScreenHeader.jsx     |    17 [32m+[m
- dashboard-next/src/components/Topbar.jsx           |    60 [32m+[m
- dashboard-next/src/components/UploadScreen.jsx     |   217 [32m+[m
- dashboard-next/src/components/ViewportFrame.jsx    |    10 [32m+[m
- .../js => dashboard-next/src/lib}/mock-api.js      |     2 [32m+[m
- .../js => dashboard-next/src/lib}/real-api.js      |     0
- dashboard/serve.py                                 |   138 [32m+[m[31m-[m
- dashboard/static/new-ui/ASSET-SOURCES.md           |     7 [31m-[m
- dashboard/static/new-ui/README.md                  |    59 [31m-[m
- dashboard/static/new-ui/index.html                 |    65 [31m-[m
- dashboard/static/new-ui/js/app.js                  |   137 [31m-[m
- dashboard/static/new-ui/js/glass.js                |   214 [31m-[m
- dashboard/static/new-ui/js/views.js                |   270 [31m-[m
- dashboard/static/new-ui/vendor/THREE-LICENSE.txt   |    21 [31m-[m
- .../new-ui/vendor/geometries/RoundedBoxGeometry.js |   216 [31m-[m
- dashboard/static/new-ui/vendor/three.core.js       | 58773 [31m-------------------[m
- dashboard/static/new-ui/vendor/three.module.js     | 18251 [31m------[m
- dashboard/templates/index.html                     |    65 [31m-[m
- tests/test_api.py                                  |     2 [32m+[m[31m-[m
- 76 files changed, 2961 insertions(+), 78216 deletions(-)
+
+                   SSUUMMMMAARRYY OOFF LLEESSSS CCOOMMMMAANNDDSS
+
+      Commands marked with * may be preceded by a number, _N.
+      Notes in parentheses indicate the behavior if _N is given.
+      A key preceded by a caret indicates the Ctrl key; thus ^K is ctrl-K.
+
+  h  H                 Display this help.
+  q  :q  Q  :Q  ZZ     Exit.
+ ---------------------------------------------------------------------------
+
+                           MMOOVVIINNGG
+
+  e  ^E  j  ^N  CR  *  Forward  one line   (or _N lines).
+  y  ^Y  k  ^K  ^P  *  Backward one line   (or _N lines).
+  ESC-j             *  Forward  one file line (or _N file lines).
+  ESC-k             *  Backward one file line (or _N file lines).
+  f  ^F  ^V  SPACE  *  Forward  one window (or _N lines).
+  b  ^B  ESC-v      *  Backward one window (or _N lines).
+  z                 *  Forward  one window (and set window to _N).
+  w                 *  Backward one window (and set window to _N).
+  ESC-SPACE         *  Forward  one window, but don't stop at end-of-file.
+  ESC-b             *  Backward one window, but don't stop at beginning-of-file.
+  d  ^D             *  Forward  one half-window (and set half-window to _N).
+  u  ^U             *  Backward one half-window (and set half-window to _N).
+  ESC-)  RightArrow *  Right one half screen width (or _N positions).
+  ESC-(  LeftArrow  *  Left  one half screen width (or _N positions).
+  ESC-}  ^RightArrow   Right to last column displayed.
+  ESC-{  ^LeftArrow    Left  to first column.
+  F                    Forward forever; like "tail -f".
+  ESC-F                Like F but stop when search pattern is found.
+  r  ^R  ^L            Repaint screen.
+  R                    Repaint screen, discarding buffered input.
+        ---------------------------------------------------
+        Default "window" is the screen height.
+        Default "half-window" is half of the screen height.
+ ---------------------------------------------------------------------------
+
+                          SSEEAARRCCHHIINNGG
+
+  /_p_a_t_t_e_r_n          *  Search forward for (_N-th) matching line.
+  ?_p_a_t_t_e_r_n          *  Search backward for (_N-th) matching line.
+  n                 *  Repeat previous search (for _N-th occurrence).
+  N                 *  Repeat previous search in reverse direction.
+  ESC-n             *  Repeat previous search, spanning files.
+  ESC-N             *  Repeat previous search, reverse dir. & spanning files.
+  ^O^N  ^On         *  Search forward for (_N-th) OSC8 hyperlink.
+  ^O^P  ^Op         *  Search backward for (_N-th) OSC8 hyperlink.
+  ^O^L  ^Ol            Jump to the currently selected OSC8 hyperlink.
+  ESC-u                Undo (toggle) search highlighting.
+  ESC-U                Clear search highlighting.
+  &_p_a_t_t_e_r_n          *  Display only matching lines.
+        ---------------------------------------------------
+		Search is case-sensitive unless changed with -i or -I.
+        A search pattern may begin with one or more of:
+        ^N or !  Search for NON-matching lines.
+        ^E or *  Search multiple files (pass thru END OF FILE).
+        ^F or @  Start search at FIRST file (for /) or last file (for ?).
+        ^K       Highlight matches, but don't move (KEEP position).
+        ^R       Don't use REGULAR EXPRESSIONS.
+        ^S _n     Search for match in _n-th parenthesized subpattern.
+        ^W       WRAP search if no match found.
+        ^L       Enter next character literally into pattern.
+ ---------------------------------------------------------------------------
+
+                           JJUUMMPPIINNGG
+
+  g  <  ESC-<       *  Go to first line in file (or line _N).
+  G  >  ESC->       *  Go to last line in file (or line _N).
+  p  %              *  Go to beginning of file (or _N percent into file).
+  t                 *  Go to the (_N-th) next tag.
+  T                 *  Go to the (_N-th) previous tag.
+  {  (  [           *  Find close bracket } ) ].
+  }  )  ]           *  Find open bracket { ( [.
+  ESC-^F _<_c_1_> _<_c_2_>  *  Find close bracket _<_c_2_>.
+  ESC-^B _<_c_1_> _<_c_2_>  *  Find open bracket _<_c_1_>.
+        ---------------------------------------------------
+        Each "find close bracket" command goes forward to the close bracket 
+          matching the (_N-th) open bracket in the top line.
+        Each "find open bracket" command goes backward to the open bracket 
+          matching the (_N-th) close bracket in the bottom line.
+
+  m_<_l_e_t_t_e_r_>            Mark the current top line with <letter>.
+  M_<_l_e_t_t_e_r_>            Mark the current bottom line with <letter>.
+  '_<_l_e_t_t_e_r_>            Go to a previously marked position.
+  ''                   Go to the previous position.
+  ^X^X                 Same as '.
+  ESC-m_<_l_e_t_t_e_r_>        Clear a mark.
+        ---------------------------------------------------
+        A mark is any upper-case or lower-case letter.
+        Certain marks are predefined:
+             ^  means  beginning of the file
+             $  means  end of the file
+ ---------------------------------------------------------------------------
+
+                        CCHHAANNGGIINNGG FFIILLEESS
+
+  :e [_f_i_l_e]            Examine a new file.
+  ^X^V                 Same as :e.
+  :n                *  Examine the (_N-th) next file from the command line.
+  :p                *  Examine the (_N-th) previous file from the command line.
+  :x                *  Examine the first (or _N-th) file from the command line.
+  ^O^O                 Open the currently selected OSC8 hyperlink.
+  :d                   Delete the current file from the command line list.
+  =  ^G  :f            Print current file name.
+ ---------------------------------------------------------------------------
+
+                    MMIISSCCEELLLLAANNEEOOUUSS CCOOMMMMAANNDDSS
+
+  -_<_f_l_a_g_>              Toggle a command line option [see OPTIONS below].
+  --_<_n_a_m_e_>             Toggle a command line option, by name.
+  __<_f_l_a_g_>              Display the setting of a command line option.
+  ___<_n_a_m_e_>             Display the setting of an option, by name.
+  +_c_m_d                 Execute the less cmd each time a new file is examined.
+
+  !_c_o_m_m_a_n_d             Execute the shell command with $SHELL.
+  #_c_o_m_m_a_n_d             Execute the shell command, expanded like a prompt.
+  |XX_c_o_m_m_a_n_d            Pipe file between current pos & mark XX to shell command.
+  s _f_i_l_e               Save input to a file.
+  v                    Edit the current file with $VISUAL or $EDITOR.
+  V                    Print version number of "less".
+ ---------------------------------------------------------------------------
+
+                           OOPPTTIIOONNSS
+
+        Most options may be changed either on the command line,
+        or from within less by using the - or -- command.
+        Options may be given in one of two forms: either a single
+        character preceded by a -, or a name preceded by --.
+
+  -?  ........  --help
+                  Display help (from command line).
+  -a  ........  --search-skip-screen
+                  Search skips current screen.
+  -A  ........  --SEARCH-SKIP-SCREEN
+                  Search starts just after target line.
+  -b [_N]  ....  --buffers=[_N]
+                  Number of buffers.
+  -B  ........  --auto-buffers
+                  Don't automatically allocate buffers for pipes.
+  -c  ........  --clear-screen
+                  Repaint by clearing rather than scrolling.
+  -d  ........  --dumb
+                  Dumb terminal.
+  -D xx_c_o_l_o_r  .  --color=xx_c_o_l_o_r
+                  Set screen colors.
+  -e  -E  ....  --quit-at-eof  --QUIT-AT-EOF
+                  Quit at end of file.
+  -f  ........  --force
+                  Force open non-regular files.
+  -F  ........  --quit-if-one-screen
+                  Quit if entire file fits on first screen.
+  -g  ........  --hilite-search
+                  Highlight only last match for searches.
+  -G  ........  --HILITE-SEARCH
+                  Don't highlight any matches for searches.
+  -h [_N]  ....  --max-back-scroll=[_N]
+                  Backward scroll limit.
+  -i  ........  --ignore-case
+                  Ignore case in searches that do not contain uppercase.
+  -I  ........  --IGNORE-CASE
+                  Ignore case in all searches.
+  -j [_N]  ....  --jump-target=[_N]
+                  Screen position of target lines.
+  -J  ........  --status-column
+                  Display a status column at left edge of screen.
+  -k _f_i_l_e  ...  --lesskey-file=_f_i_l_e
+                  Use a compiled lesskey file.
+  -K  ........  --quit-on-intr
+                  Exit less in response to ctrl-C.
+  -L  ........  --no-lessopen
+                  Ignore the LESSOPEN environment variable.
+  -m  -M  ....  --long-prompt  --LONG-PROMPT
+                  Set prompt style.
+  -n .........  --line-numbers
+                  Suppress line numbers in prompts and messages.
+  -N .........  --LINE-NUMBERS
+                  Display line number at start of each line.
+  -o [_f_i_l_e] ..  --log-file=[_f_i_l_e]
+                  Copy to log file (standard input only).
+  -O [_f_i_l_e] ..  --LOG-FILE=[_f_i_l_e]
+                  Copy to log file (unconditionally overwrite).
+  -p _p_a_t_t_e_r_n .  --pattern=[_p_a_t_t_e_r_n]
+                  Start at pattern (from command line).
+  -P [_p_r_o_m_p_t]   --prompt=[_p_r_o_m_p_t]
+                  Define new prompt.
+  -q  -Q  ....  --quiet  --QUIET  --silent --SILENT
+                  Quiet the terminal bell.
+  -r  -R  ....  --raw-control-chars  --RAW-CONTROL-CHARS
+                  Output "raw" control characters.
+  -s  ........  --squeeze-blank-lines
+                  Squeeze multiple blank lines.
+  -S  ........  --chop-long-lines
+                  Chop (truncate) long lines rather than wrapping.
+  -t _t_a_g  ....  --tag=[_t_a_g]
+                  Find a tag.
+  -T [_t_a_g_s_f_i_l_e] --tag-file=[_t_a_g_s_f_i_l_e]
+                  Use an alternate tags file.
+  -u  -U  ....  --underline-special  --UNDERLINE-SPECIAL
+                  Change handling of backspaces, tabs and carriage returns.
+  -V  ........  --version
+                  Display the version number of "less".
+  -w  ........  --hilite-unread
+                  Highlight first new line after forward-screen.
+  -W  ........  --HILITE-UNREAD
+                  Highlight first new line after any forward movement.
+  -x [_N[,...]]  --tabs=[_N[,...]]
+                  Set tab stops.
+  -X  ........  --no-init
+                  Don't use termcap init/deinit strings.
+  -y [_N]  ....  --max-forw-scroll=[_N]
+                  Forward scroll limit.
+  -z [_N]  ....  --window=[_N]
+                  Set size of window.
+  -" [_c[_c]]  .  --quotes=[_c[_c]]
+                  Set shell quote characters.
+  -~  ........  --tilde
+                  Don't display tildes after end of file.
+  -# [_N]  ....  --shift=[_N]
+                  Set horizontal scroll amount (0 = one half screen width).
+
+                --exit-follow-on-close
+                  Exit F command on a pipe when writer closes pipe.
+                --file-size
+                  Automatically determine the size of the input file.
+                --follow-name
+                  The F command changes files if the input file is renamed.
+                --form-feed
+                  Stop scrolling when a form feed character is reached.
+                --header=[_L[,_C[,_N]]]
+                  Use _L lines (starting at line _N) and _C columns as headers.
+                --incsearch
+                  Search file as each pattern character is typed in.
+                --intr=[_C]
+                  Use _C instead of ^X to interrupt a read.
+                --lesskey-context=_t_e_x_t
+                  Use lesskey source file contents.
+                --lesskey-src=_f_i_l_e
+                  Use a lesskey source file.
+                --line-num-width=[_N]
+                  Set the width of the -N line number field to _N characters.
+                --match-shift=[_N]
+                  Show at least _N characters to the left of a search match.
+                --modelines=[_N]
+                  Read _N lines from the input file and look for vim modelines.
+                --mouse
+                  Enable mouse input.
+                --no-edit-warn
+                  Don't warn when using v command on a file opened via LESSOPEN.
+                --no-keypad
+                  Don't send termcap keypad init/deinit strings.
+                --no-histdups
+                  Remove duplicates from command history.
+                --no-number-headers
+                  Don't give line numbers to header lines.
+                --no-paste
+                  Ignore pasted input.
+                --no-search-header-lines
+                  Searches do not include header lines.
+                --no-search-header-columns
+                  Searches do not include header columns.
+                --no-search-headers
+                  Searches do not include header lines or columns.
+                --no-vbell
+                  Disable the terminal's visual bell.
+                --redraw-on-quit
+                  Redraw final screen when quitting.
+                --rscroll=[_C]
+                  Set the character used to mark truncated lines.
+                --save-marks
+                  Retain marks across invocations of less.
+                --search-options=[EFKNRW-]
+                  Set default options for every search.
+                --show-preproc-errors
+                  Display a message if preprocessor exits with an error status.
+                --proc-backspace
+                  Process backspaces for bold/underline.
+                --PROC-BACKSPACE
+                  Treat backspaces as control characters.
+                --proc-return
+                  Delete carriage returns before newline.
+                --PROC-RETURN
+                  Treat carriage returns as control characters.
+                --proc-tab
+                  Expand tabs to spaces.
+                --PROC-TAB
+                  Treat tabs as control characters.
+                --status-col-width=[_N]
+                  Set the width of the -J status column to _N characters.
+                --status-line
+                  Highlight or color the entire line containing a mark.
+                --use-backslash
+                  Subsequent options use backslash as escape char.
+                --use-color
+                  Enables colored text.
+                --wheel-lines=[_N]
+                  Each click of the mouse wheel moves _N lines.
+                --wordwrap
+                  Wrap lines at spaces.
+
+
+ ---------------------------------------------------------------------------
+
+                          LLIINNEE EEDDIITTIINNGG
+
+        These keys can be used to edit text being entered 
+        on the "command line" at the bottom of the screen.
+
+ RightArrow ..................... ESC-l ... Move cursor right one character.
+ LeftArrow ...................... ESC-h ... Move cursor left one character.
+ ctrl-RightArrow  ESC-RightArrow  ESC-w ... Move cursor right one word.
+ ctrl-LeftArrow   ESC-LeftArrow   ESC-b ... Move cursor left one word.
+ HOME ........................... ESC-0 ... Move cursor to start of line.
+ END ............................ ESC-$ ... Move cursor to end of line.
+ BACKSPACE ................................ Delete char to left of cursor.
+ DELETE ......................... ESC-x ... Delete char under cursor.
+ ctrl-BACKSPACE   ESC-BACKSPACE ........... Delete word to left of cursor.
+ ctrl-DELETE .... ESC-DELETE .... ESC-X ... Delete word under cursor.
+ ctrl-U ......... ESC (MS-DOS only) ....... Delete entire line.
+ UpArrow ........................ ESC-k ... Retrieve previous command line.
+ DownArrow ...................... ESC-j ... Retrieve next command line.
+ TAB ...................................... Complete filename & cycle.
+ SHIFT-TAB ...................... ESC-TAB   Complete filename & reverse cycle.
+ ctrl-L ................................... Complete filename, list all.
+[1mdiff --git a/dashboard-next/src/app/globals.css b/dashboard-next/src/app/globals.css[m
+[1mindex 69a3332..96ebc9d 100644[m
+[1m--- a/dashboard-next/src/app/globals.css[m
+[1m+++ b/dashboard-next/src/app/globals.css[m
+[36m@@ -499,3 +499,203 @@[m [mbutton {[m
+     0 0 16px rgba(77, 240, 168, 0.08),[m
+     0 8px 20px rgba(46, 204, 140, 0.1);[m
+ }[m
+[32m+[m
+[32m+[m[32m/* ==========================================================================[m
+[32m+[m[32m   UNIFIED WORKFLOW & ACCESSIBILITY ENHANCEMENTS[m
+[32m+[m[32m   ========================================================================== */[m
+[32m+[m
+[32m+[m[32m/* Topbar Workflow Progress Indicators */[m
+[32m+[m[32m.step-item-wrap {[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: clamp(8px, 1.2vw, 18px);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link {[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  text-decoration: none;[m
+[32m+[m[32m  padding: 6px 10px;[m
+[32m+[m[32m  border-radius: 4px;[m
+[32m+[m[32m  border: 1px solid transparent;[m
+[32m+[m[32m  transition: all 0.2s var(--ease);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link:hover {[m
+[32m+[m[32m  color: var(--text);[m
+[32m+[m[32m  border-color: rgba(255, 255, 255, 0.1);[m
+[32m+[m[32m  background: rgba(255, 255, 255, 0.03);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-badge {[m
+[32m+[m[32m  display: inline-grid;[m
+[32m+[m[32m  place-items: center;[m
+[32m+[m[32m  width: 20px;[m
+[32m+[m[32m  height: 20px;[m
+[32m+[m[32m  border-radius: 50%;[m
+[32m+[m[32m  border: 1px solid var(--line-strong);[m
+[32m+[m[32m  font: 400 9px var(--mono);[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m  background: rgba(15, 15, 18, 0.8);[m
+[32m+[m[32m  transition: all 0.2s var(--ease);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link.active .step-badge {[m
+[32m+[m[32m  color: var(--bg);[m
+[32m+[m[32m  background: var(--mint);[m
+[32m+[m[32m  border-color: var(--mint);[m
+[32m+[m[32m  box-shadow: 0 0 10px rgba(77, 240, 168, 0.45);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link.done .step-badge {[m
+[32m+[m[32m  color: var(--mint);[m
+[32m+[m[32m  border-color: rgba(77, 240, 168, 0.6);[m
+[32m+[m[32m  background: rgba(77, 240, 168, 0.12);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-label-group {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  line-height: 1.15;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-label-group b {[m
+[32m+[m[32m  font: 500 10px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.1em;[m
+[32m+[m[32m  color: inherit;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-state-tag {[m
+[32m+[m[32m  font: 400 8px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.06em;[m
+[32m+[m[32m  color: var(--muted);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link.active .step-state-tag {[m
+[32m+[m[32m  color: var(--mint);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-link.done .step-state-tag {[m
+[32m+[m[32m  color: #79a896;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.step-rule.is-done {[m
+[32m+[m[32m  background: rgba(77, 240, 168, 0.45);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Sample Contract Quick-Load Button */[m
+[32m+[m[32m.sample-load-btn {[m
+[32m+[m[32m  background: transparent;[m
+[32m+[m[32m  border: 1px solid rgba(77, 240, 168, 0.3);[m
+[32m+[m[32m  color: var(--mint);[m
+[32m+[m[32m  font: 400 9px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.06em;[m
+[32m+[m[32m  padding: 3px 8px;[m
+[32m+[m[32m  border-radius: 3px;[m
+[32m+[m[32m  cursor: pointer;[m
+[32m+[m[32m  transition: all 0.2s var(--ease);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.sample-load-btn:hover {[m
+[32m+[m[32m  background: rgba(77, 240, 168, 0.12);[m
+[32m+[m[32m  border-color: var(--mint);[m
+[32m+[m[32m  color: #fff;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.sample-load-btn:focus-visible {[m
+[32m+[m[32m  outline: 2px solid var(--mint);[m
+[32m+[m[32m  outline-offset: 2px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Role Mapping Badges */[m
+[32m+[m[32m.role-badge {[m
+[32m+[m[32m  font: 500 8px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.08em;[m
+[32m+[m[32m  padding: 2px 6px;[m
+[32m+[m[32m  border-radius: 3px;[m
+[32m+[m[32m  border: 1px solid transparent;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.role-badge.is-mapped {[m
+[32m+[m[32m  color: var(--mint);[m
+[32m+[m[32m  background: rgba(77, 240, 168, 0.1);[m
+[32m+[m[32m  border-color: rgba(77, 240, 168, 0.25);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.role-badge.is-unmapped {[m
+[32m+[m[32m  color: var(--coral);[m
+[32m+[m[32m  background: rgba(255, 92, 108, 0.08);[m
+[32m+[m[32m  border-color: rgba(255, 92, 108, 0.25);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.pill-badge {[m
+[32m+[m[32m  font: 500 8px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.1em;[m
+[32m+[m[32m  padding: 2px 6px;[m
+[32m+[m[32m  background: rgba(77, 240, 168, 0.1);[m
+[32m+[m[32m  border: 1px solid rgba(77, 240, 168, 0.3);[m
+[32m+[m[32m  border-radius: 2px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Report Severity Indicators */[m
+[32m+[m[32m.severity-pill {[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  font: 600 8px var(--mono);[m
+[32m+[m[32m  letter-spacing: 0.12em;[m
+[32m+[m[32m  padding: 2px 6px;[m
+[32m+[m[32m  border-radius: 2px;[m
+[32m+[m[32m  border: 1px solid currentColor;[m
+[32m+[m[32m  background: rgba(0, 0, 0, 0.3);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.result-card.is-exploited {[m
+[32m+[m[32m  border-color: rgba(255, 92, 108, 0.35);[m
+[32m+[m[32m  box-shadow: 0 0 20px rgba(255, 92, 108, 0.08);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Disabled Reason Callouts */[m
+[32m+[m[32m.disabled-reason {[m
+[32m+[m[32m  color: #e59966;[m
+[32m+[m[32m  display: inline-flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 4px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Accessible focus states for all interactive elements */[m
+[32m+[m[32ma:focus-visible,[m
+[32m+[m[32mbutton:focus-visible,[m
+[32m+[m[32minput:focus-visible,[m
+[32m+[m[32mselect:focus-visible,[m
+[32m+[m[32mtextarea:focus-visible {[m
+[32m+[m[32m  outline: 2px solid var(--mint) !important;[m
+[32m+[m[32m  outline-offset: 3px !important;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* High contrast inputs */[m
+[32m+[m[32m.text-input:focus,[m
+[32m+[m[32m.select-input:focus,[m
+[32m+[m[32m.text-area:focus {[m
+[32m+[m[32m  border-color: var(--mint) !important;[m
+[32m+[m[32m  box-shadow: 0 0 0 1px var(--mint), 0 0 12px rgba(77, 240, 168, 0.18) !important;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Mobile responsive adjustments */[m
+[32m+[m[32m@media (max-width: 768px) {[m
+[32m+[m[32m  .step-item-wrap {[m
+[32m+[m[32m    gap: 4px;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  .step-state-tag {[m
+[32m+[m[32m    display: none;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  .step-link {[m
+[32m+[m[32m    padding: 4px 6px;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  .step-badge {[m
+[32m+[m[32m    width: 18px;[m
+[32m+[m[32m    height: 18px;[m
+[32m+[m[32m    font-size: 8px;[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+[1mdiff --git a/dashboard-next/src/app/page.jsx b/dashboard-next/src/app/page.jsx[m
+[1mindex bef4d79..931f7e5 100644[m
+[1m--- a/dashboard-next/src/app/page.jsx[m
+[1m+++ b/dashboard-next/src/app/page.jsx[m
+[36m@@ -19,6 +19,10 @@[m [mconst PixelFieldCanvas = dynamic(() => import("../components/PixelFieldCanvas"),[m
+   ssr: false,[m
+ });[m
+ [m
+[32m+[m[32mconst GlassCanvas = dynamic(() => import("../components/GlassCanvas"), {[m
+[32m+[m[32m  ssr: false,[m
+[32m+[m[32m});[m
+[32m+[m
+ function getRouteFromHash() {[m
+   if (typeof window === "undefined") return "landing";[m
+   const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];[m
+[36m@@ -128,6 +132,7 @@[m [mexport default function Page() {[m
+       ) : ([m
+         <>[m
+           <PixelFieldCanvas />[m
+[32m+[m[32m          <GlassCanvas activeRoute={activeRoute} state={state} />[m
+           <ViewportFrame />[m
+           <div className="app-shell" ref={appShellRef}>[m
+             <Topbar activeRoute={activeRoute} />[m
+[1mdiff --git a/dashboard-next/src/components/ConfigureScreen.jsx b/dashboard-next/src/components/ConfigureScreen.jsx[m
+[1mindex 49a3d67..ac30d01 100644[m
+[1m--- a/dashboard-next/src/components/ConfigureScreen.jsx[m
+[1m+++ b/dashboard-next/src/components/ConfigureScreen.jsx[m
+[36m@@ -149,10 +149,15 @@[m [mexport default function ConfigureScreen({ state, setState }) {[m
+       <ScreenHeader num="02" label="CONFIGURE ROLES" right="FUNCTIONS PARSED LOCALLY" />[m
+       <div className="configure-layout">[m
+         <div>[m
+[31m-          <h1 id="screen-title" className="display display-small" style={{ marginBottom: 24 }}>[m
+[32m+[m[32m          <div className="eyebrow">STAGE 02 / ATTACK SURFACE DEFINITION</div>[m
+[32m+[m[32m          <h1 id="screen-title" className="display display-small" style={{ marginBottom: 12 }}>[m
+             Map contract roles.[m
+           </h1>[m
+[31m-          <div className="section-rule">01 <span>PROTOCOL TYPE</span></div>[m
+[32m+[m[32m          <p className="lede" style={{ marginBottom: 26, fontSize: "15px" }}>[m
+[32m+[m[32m            Select your protocol archetype and link each entry point to standard DeFi roles so the simulation engine can test realistic attack sequences.[m
+[32m+[m[32m          </p>[m
+[32m+[m
+[32m+[m[32m          <div className="section-rule">STEP 01 <span>SELECT PROTOCOL ARCHETYPE</span></div>[m
+           <div className="protocol-grid" role="group" aria-label="Choose protocol type">[m
+             {PROTOCOLS.map(([id, desc]) => ([m
+               <button[m
+[36m@@ -163,52 +168,80 @@[m [mexport default function ConfigureScreen({ state, setState }) {[m
+                 aria-pressed={protocol === id}[m
+                 onClick={() => handleSelectProtocol(id)}[m
+               >[m
+[31m-                <span className="protocol-name">{id}</span>[m
+[32m+[m[32m                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>[m
+[32m+[m[32m                  <span className="protocol-name">{id}</span>[m
+[32m+[m[32m                  {protocol === id && <span className="pill-badge" style={{ color: "var(--mint)" }}>SELECTED</span>}[m
+[32m+[m[32m                </div>[m
+                 <span className="protocol-description">{desc}</span>[m
+               </button>[m
+             ))}[m
+           </div>[m
+[31m-          <div className="section-rule">02 <span>FUNCTION ROLE MAPPING</span></div>[m
+[31m-          <p className="micro" style={{ margin: "8px 0 0" }}>[m
+[31m-            SELECT THE FUNCTION THAT PLAYS EACH STANDARD ROLE.[m
+[31m-          </p>[m
+[32m+[m
+[32m+[m[32m          <div className="section-rule" style={{ marginTop: 28 }}>[m
+[32m+[m[32m            STEP 02 <span>FUNCTION ROLE MAPPING</span>[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0 14px" }}>[m
+[32m+[m[32m            <p className="micro" style={{ margin: 0 }}>[m
+[32m+[m[32m              ASSIGN DETECTED SOLIDITY FUNCTIONS TO ATTACK ROLES ({funcs.length} DETECTED)[m
+[32m+[m[32m            </p>[m
+[32m+[m[32m            {funcs.length > 0 && protocol && ([m
+[32m+[m[32m              <span className="auto-mapped-hint" style={{ fontSize: "11px", color: "var(--mint)" }}>[m
+[32m+[m[32m                ✓ Smart auto-mapped[m
+[32m+[m[32m              </span>[m
+[32m+[m[32m            )}[m
+[32m+[m[32m          </div>[m
+[32m+[m
+           <div className="mapping-list">[m
+             {roles.length ? ([m
+[31m-              roles.map(role => ([m
+[31m-                <label key={role} className="mapping-row">[m
+[31m-                  <span className="mapping-label">{role}</span>[m
+[31m-                  <select[m
+[31m-                    className="select-input role-select"[m
+[31m-                    data-role={role}[m
+[31m-                    aria-label={`Map function for ${role}`}[m
+[31m-                    disabled={!protocol || !funcs.length}[m
+[31m-                    value={state.roleMap?.[role] || ""}[m
+[31m-                    onChange={(e) => handleRoleSelect(role, e.target.value)}[m
+[31m-                  >[m
+[31m-                    <option value="">{funcs.length ? "Select function" : "No functions detected"}</option>[m
+[31m-                    {funcs.map(fn => ([m
+[31m-                      <option key={fn} value={fn}>[m
+[31m-                        {fn}()[m
+[31m-                      </option>[m
+[31m-                    ))}[m
+[31m-                  </select>[m
+[31m-                </label>[m
+[31m-              ))[m
+[32m+[m[32m              roles.map(role => {[m
+[32m+[m[32m                const isMapped = Boolean(state.roleMap?.[role]);[m
+[32m+[m[32m                return ([m
+[32m+[m[32m                  <div key={role} className="mapping-row bracket-panel" style={{ padding: "14px 16px" }}>[m
+[32m+[m[32m                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>[m
+[32m+[m[32m                      <span className="mapping-label">[m
+[32m+[m[32m                        {role} <span style={{ color: "var(--mint)" }}>*</span>[m
+[32m+[m[32m                      </span>[m
+[32m+[m[32m                      <span className={`role-badge ${isMapped ? "is-mapped" : "is-unmapped"}`}>[m
+[32m+[m[32m                        {isMapped ? "✓ MAPPED" : "REQUIRED"}[m
+[32m+[m[32m                      </span>[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                    <select[m
+[32m+[m[32m                      className="select-input role-select"[m
+[32m+[m[32m                      data-role={role}[m
+[32m+[m[32m                      aria-label={`Map function for ${role}`}[m
+[32m+[m[32m                      disabled={!protocol || !funcs.length}[m
+[32m+[m[32m                      value={state.roleMap?.[role] || ""}[m
+[32m+[m[32m                      onChange={(e) => handleRoleSelect(role, e.target.value)}[m
+[32m+[m[32m                    >[m
+[32m+[m[32m                      <option value="">{funcs.length ? "-- Choose function --" : "No functions detected"}</option>[m
+[32m+[m[32m                      {funcs.map(fn => ([m
+[32m+[m[32m                        <option key={fn} value={fn}>[m
+[32m+[m[32m                          {fn}()[m
+[32m+[m[32m                        </option>[m
+[32m+[m[32m                      ))}[m
+[32m+[m[32m                    </select>[m
+[32m+[m[32m                  </div>[m
+[32m+[m[32m                );[m
+[32m+[m[32m              })[m
+             ) : ([m
+[31m-              <p className="micro">Choose a protocol type to load its expected roles.</p>[m
+[32m+[m[32m              <div className="notice" style={{ gridColumn: "1 / -1" }}>[m
+[32m+[m[32m                <span className="notice-mark">→</span>[m
+[32m+[m[32m                <span>Select a protocol archetype above to load its required role mapping inputs.</span>[m
+[32m+[m[32m              </div>[m
+             )}[m
+           </div>[m
+           {protocol && !funcs.length ? ([m
+[31m-            <div className="notice" role="status">[m
+[32m+[m[32m            <div className="notice" role="status" style={{ marginTop: 14 }}>[m
+               <span className="notice-mark">!</span>[m
+               <span>[m
+[31m-                No function declarations were found in this source. Map manually or return to upload.[m
+[32m+[m[32m                No function declarations were auto-detected. Check contract syntax or return to Upload.[m
+               </span>[m
+             </div>[m
+           ) : null}[m
+         </div>[m
+[32m+[m
+         <aside className="configure-side bracket-panel">[m
+[31m-          <div className="section-rule">03 <span>DEPLOYMENT CONTEXT</span></div>[m
+[32m+[m[32m          <div className="section-rule">STEP 03 <span>DEPLOYMENT CONTEXT</span></div>[m
+           <div className="field">[m
+             <label className="field-label" htmlFor="constructorArgs">[m
+               CONSTRUCTOR ARGUMENTS <span className="muted">/ OPTIONAL</span>[m
+[36m@@ -216,14 +249,20 @@[m [mexport default function ConfigureScreen({ state, setState }) {[m
+             <textarea[m
+               className="text-area"[m
+               id="constructorArgs"[m
+[31m-              placeholder="e.g. _asset = 0x…"[m
+[32m+[m[32m              placeholder="e.g. 0x123..., 18, 1000000000000000000"[m
+               spellCheck={false}[m
+               value={state.constructorArgs || ""}[m
+               onChange={(e) => handleConstructorArgsChange(e.target.value)}[m
+             />[m
+[32m+[m[32m            <small className="field-hint" style={{ fontSize: "10px", color: "var(--muted)" }}>[m
+[32m+[m[32m              Comma-separated parameters for the contract constructor during deployment.[m
+[32m+[m[32m            </small>[m
+           </div>[m
+           <div className="toggle-row">[m
+[31m-            <span className="field-label">CONTRACT HOLDS</span>[m
+[32m+[m[32m            <div>[m
+[32m+[m[32m              <span className="field-label" style={{ display: "block" }}>TEST ASSETS HELD</span>[m
+[32m+[m[32m              <small style={{ fontSize: "10px", color: "var(--muted)" }}>Simulated treasury funds</small>[m
+[32m+[m[32m            </div>[m
+             <div className="toggle-control">[m
+               <button[m
+                 type="button"[m
+[36m@@ -241,23 +280,29 @@[m [mexport default function ConfigureScreen({ state, setState }) {[m
+                 aria-pressed={state.holds?.TOKEN === true}[m
+                 onClick={() => handleToggleHold("TOKEN")}[m
+               >[m
+[31m-                TOKEN[m
+[32m+[m[32m                ERC20 TOKEN[m
+               </button>[m
+             </div>[m
+           </div>[m
+           <div className="notice">[m
+             <span className="notice-mark">i</span>[m
+             <span>[m
+[31m-              Target: <strong>{state.fileName}</strong>. Foundry will deploy and simulate attacks on the local EVM.[m
+[32m+[m[32m              Target: <strong>{state.fileName}</strong>. An isolated local Foundry EVM instance will deploy and test 4 attack vectors.[m
+             </span>[m
+           </div>[m
+[32m+[m
+           <div className="validation-message" id="configureMessage" role="status">[m
+             {missing.length ? ([m
+[31m-              <>[m
+[31m-                <span className="missing">RUN DISABLED</span> <span aria-hidden="true">/</span> MAP {missing.join(", ")}.[m
+[31m-              </>[m
+[32m+[m[32m              <div className="missing-summary">[m
+[32m+[m[32m                <span className="missing">⚠ ACTION REQUIRED</span>[m
+[32m+[m[32m                <p style={{ margin: "4px 0 0", fontSize: "11px" }}>[m
+[32m+[m[32m                  Please assign: <strong>{missing.join(", ")}</strong> before starting execution.[m
+[32m+[m[32m                </p>[m
+[32m+[m[32m              </div>[m
+             ) : ([m
+[31m-              "ALL REQUIRED ROLES MAPPED. READY FOR FOUNDRY EXECUTION."[m
+[32m+[m[32m              <div className="ready-summary" style={{ color: "var(--mint)" }}>[m
+[32m+[m[32m                ✓ ALL ROLES CONFIGURED. Ready for local simulation.[m
+[32m+[m[32m              </div>[m
+             )}[m
+           </div>[m
+           <button[m
+[36m@@ -266,8 +311,9 @@[m [mexport default function ConfigureScreen({ state, setState }) {[m
+             type="button"[m
+             disabled={missing.length > 0}[m
+             onClick={handleRunSimulation}[m
+[32m+[m[32m            title={missing.length > 0 ? `Complete missing configuration: ${missing.join(", ")}` : "Start Foundry EVM attack simulations"}[m
+           >[m
+[31m-            RUN SIMULATION <span className="button-arrow" aria-hidden="true">→</span>[m
+[32m+[m[32m            START ATTACK SIMULATION <span className="button-arrow" aria-hidden="true">→</span>[m
+           </button>[m
+         </aside>[m
+       </div>[m
+[1mdiff --git a/dashboard-next/src/components/GlassCanvas.jsx b/dashboard-next/src/components/GlassCanvas.jsx[m
+[1mindex 1e5c1c5..e095d4f 100644[m
+[1m--- a/dashboard-next/src/components/GlassCanvas.jsx[m
+[1m+++ b/dashboard-next/src/components/GlassCanvas.jsx[m
+[36m@@ -41,30 +41,30 @@[m [mfunction makeEnvironment(rendererInstance) {[m
+ function physicalMaterial(env) {[m
+   const material = new THREE.MeshPhysicalMaterial({[m
+     color: 0xffffff,[m
+[31m-    metalness: 0.005,[m
+[31m-    roughness: 0.095,[m
+[31m-    transmission: 0.98,[m
+[31m-    thickness: 0.38,[m
+[31m-    ior: 1.43,[m
+[31m-    iridescence: 0.82,[m
+[31m-    iridescenceIOR: 1.3,[m
+[31m-    iridescenceThicknessRange: [180, 510],[m
+[31m-    clearcoat: 0.88,[m
+[31m-    clearcoatRoughness: 0.06,[m
+[32m+[m[32m    metalness: 0.02,[m
+[32m+[m[32m    roughness: 0.14,[m
+[32m+[m[32m    transmission: 0.96,[m
+[32m+[m[32m    thickness: 0.32,[m
+[32m+[m[32m    ior: 1.38,[m
+[32m+[m[32m    iridescence: 0.55,[m
+[32m+[m[32m    iridescenceIOR: 1.25,[m
+[32m+[m[32m    iridescenceThicknessRange: [140, 420],[m
+[32m+[m[32m    clearcoat: 0.72,[m
+[32m+[m[32m    clearcoatRoughness: 0.12,[m
+     envMap: env,[m
+[31m-    envMapIntensity: 1.5,[m
+[31m-    emissive: 0x010814,[m
+[31m-    emissiveIntensity: 0.05,[m
+[31m-    attenuationColor: new THREE.Color(0x3f60b1),[m
+[31m-    attenuationDistance: 4.5,[m
+[32m+[m[32m    envMapIntensity: 0.85,[m
+[32m+[m[32m    emissive: 0x021612,[m
+[32m+[m[32m    emissiveIntensity: 0.04,[m
+[32m+[m[32m    attenuationColor: new THREE.Color(0x277a66),[m
+[32m+[m[32m    attenuationDistance: 6.0,[m
+     transparent: true,[m
+[31m-    opacity: 1,[m
+[32m+[m[32m    opacity: 0.42,[m
+     depthWrite: false,[m
+     vertexColors: true,[m
+     side: THREE.DoubleSide,[m
+     flatShading: false[m
+   });[m
+[31m-  if ("dispersion" in material) material.dispersion = 0.07;[m
+[32m+[m[32m  if ("dispersion" in material) material.dispersion = 0.04;[m
+   material.onBeforeCompile = shader => {[m
+     shader.uniforms.uFilmTime = { value: 0 };[m
+     shader.vertexShader = shader.vertexShader[m
+[36m@@ -84,23 +84,21 @@[m [mfunction physicalMaterial(env) {[m
+       .replace([m
+         "#include <color_fragment>",[m
+         `#include <color_fragment>[m
+[31m-        float filmPhase=vCrystalPosition.x*2.2+vCrystalPosition.y*1.8-vCrystalPosition.z*1.4+sin(vCrystalPosition.z*2.4+vCrystalPosition.x*1.1+uFilmTime*1.15)*1.4+uFilmTime*1.2;[m
+[31m-        float violetBand = smoothstep(.68, .97, .5 + .5 * sin(filmPhase + 3.7));[m
+[31m-        float cyanBand=smoothstep(.58,.96,.5+.5*sin(filmPhase));[m
+[31m-        float roseBand=smoothstep(.65,.98,.5+.5*sin(filmPhase*.83+vCrystalPosition.y*1.3+sin(vCrystalPosition.x*2.1-uFilmTime*.9)*.7));[m
+[31m-        float goldBand=smoothstep(.7,.98,.5+.5*sin(filmPhase+2.25));[m
+[31m-        vec3 filmColor=vec3(.015,.035,.62);[m
+[31m-        filmColor=mix(filmColor,vec3(0.0,.88,1.0),cyanBand*.1);[m
+[31m-        filmColor=mix(filmColor,vec3(1.0,.045,.63),roseBand*.70);[m
+[31m-        filmColor=mix(filmColor,vec3(1.0,1.0,1.0),goldBand*.68);[m
+[31m-        filmColor = mix(filmColor, vec3(.55, .18, 1.0), violetBand * .55);[m
+[31m-        float filmSheen=max(cyanBand,max(roseBand,goldBand));[m
+[31m-        diffuseColor.rgb=mix(diffuseColor.rgb,filmColor,.38+.4*filmSheen);`[m
+[32m+[m[32m        float filmPhase=vCrystalPosition.x*1.9+vCrystalPosition.y*1.5-vCrystalPosition.z*1.2+sin(vCrystalPosition.z*2.0+vCrystalPosition.x*1.0+uFilmTime*0.9)*1.2+uFilmTime*0.9;[m
+[32m+[m[32m        float mintBand = smoothstep(.60, .96, .5 + .5 * sin(filmPhase));[m
+[32m+[m[32m        float cyanBand = smoothstep(.65, .98, .5 + .5 * sin(filmPhase + 2.1));[m
+[32m+[m[32m        float tealBand = smoothstep(.68, .98, .5 + .5 * sin(filmPhase * .8 + vCrystalPosition.y * 1.1));[m
+[32m+[m[32m        vec3 filmColor = vec3(0.02, 0.06, 0.08);[m
+[32m+[m[32m        filmColor = mix(filmColor, vec3(0.20, 0.85, 0.60), mintBand * 0.45);[m
+[32m+[m[32m        filmColor = mix(filmColor, vec3(0.12, 0.70, 0.85), cyanBand * 0.35);[m
+[32m+[m[32m        filmColor = mix(filmColor, vec3(0.08, 0.45, 0.55), tealBand * 0.30);[m
+[32m+[m[32m        float filmSheen = max(mintBand, max(cyanBand, tealBand));[m
+[32m+[m[32m        diffuseColor.rgb = mix(diffuseColor.rgb, filmColor, .25 + .3 * filmSheen);`[m
+       )[m
+       .replace([m
+         "#include <emissivemap_fragment>",[m
+         `#include <emissivemap_fragment>[m
+[31m-        totalEmissiveRadiance+=vec3(0.0,.22,.34)*cyanBand*.10+vec3(.25,.01,.12)*roseBand*.14+vec3(.24,.13,.01)*goldBand*.02;`[m
+[32m+[m[32m        totalEmissiveRadiance += vec3(0.04, 0.22, 0.16) * mintBand * 0.08 + vec3(0.02, 0.14, 0.20) * cyanBand * 0.06;`[m
+       );[m
+     material.userData.iridescenceShader = shader;[m
+   };[m
+[36m@@ -114,8 +112,8 @@[m [mfunction withIridescentFacets(geometry) {[m
+   for (let i = 0; i < position.count; i++) {[m
+     const nx = normal.getX(i), ny = normal.getY(i), nz = normal.getZ(i);[m
+     const shimmer = 0.5 + 0.5 * Math.sin(nx * 3.1 - ny * 2.2 + nz * 2.7);[m
+[31m-    const hue = 0.62 + 0.035 * Math.sin(nx * 2.1 - ny * 1.7 + nz * 2.5);[m
+[31m-    const color = new THREE.Color().setHSL(hue, 0.86, 0.26 + 0.11 * shimmer);[m
+[32m+[m[32m    const hue = 0.45 + 0.06 * Math.sin(nx * 2.1 - ny * 1.7 + nz * 2.5);[m
+[32m+[m[32m    const color = new THREE.Color().setHSL(hue, 0.55, 0.20 + 0.08 * shimmer);[m
+     color.toArray(colors, i * 3);[m
+   }[m
+   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));[m
+[36m@@ -167,15 +165,24 @@[m [mexport default function GlassCanvas({ activeRoute, state }) {[m
+ [m
+     function createGlassObject(route, env) {[m
+       const objectGroup = new THREE.Group();[m
+[31m-      const geometry = withIridescentFacets(new THREE.OctahedronGeometry(1.58, 0));[m
+[32m+[m[32m      // Reduced size from 1.58 to 1.15 so it does not obstruct forms[m
+[32m+[m[32m      const geometry = withIridescentFacets(new THREE.OctahedronGeometry(1.15, 0));[m
+       const heroObject = new THREE.Mesh(geometry, physicalMaterial(env));[m
+       objectGroup.add(heroObject);[m
+       const edge = new THREE.LineSegments([m
+         new THREE.EdgesGeometry(geometry, 26),[m
+[31m-        new THREE.LineBasicMaterial({ color: 0xb8eaff, transparent: true, opacity: 0.005 })[m
+[32m+[m[32m        new THREE.LineBasicMaterial({ color: 0x4df0a8, transparent: true, opacity: 0.04 })[m
+       );[m
+       objectGroup.add(edge);[m
+[31m-      objectGroup.userData = { route, homeX: 2.95, homeY: 0.06, homeZ: -0.35, spin: 0 };[m
+[32m+[m[32m      // Route-specific home positions: keep it well to the right edge and slightly higher[m
+[32m+[m[32m      const routePositions = {[m
+[32m+[m[32m        upload: { homeX: 3.5, homeY: -0.3, homeZ: -0.5 },[m
+[32m+[m[32m        configure: { homeX: 3.6, homeY: 0.6, homeZ: -0.6 },[m
+[32m+[m[32m        running: { homeX: 3.4, homeY: 0.2, homeZ: -0.5 },[m
+[32m+[m[32m        report: { homeX: 3.6, homeY: 0.7, homeZ: -0.6 },[m
+[32m+[m[32m      };[m
+[32m+[m[32m      const pos = routePositions[route] || { homeX: 3.5, homeY: 0.2, homeZ: -0.5 };[m
+[32m+[m[32m      objectGroup.userData = { route, ...pos, spin: 0 };[m
+       objectGroup.position.set(objectGroup.userData.homeX, objectGroup.userData.homeY, objectGroup.userData.homeZ);[m
+       objectGroup.rotation.set(0.17, -0.24, 0.05);[m
+       scene.add(objectGroup);[m
+[36m@@ -189,18 +196,24 @@[m [mexport default function GlassCanvas({ activeRoute, state }) {[m
+       renderer.setSize(width, height, false);[m
+       camera.aspect = width / height;[m
+       camera.updateProjectionMatrix();[m
+[31m-      const mobile = width < 700;[m
+[31m-      camera.position.z = mobile ? 10 : 8;[m
+[31m-      camera.fov = mobile ? 36 : 34;[m
+[32m+[m[32m      const mobile = width < 800;[m
+[32m+[m[32m      camera.position.z = mobile ? 11 : 8;[m
+[32m+[m[32m      camera.fov = mobile ? 38 : 34;[m
+       camera.updateProjectionMatrix();[m
+[31m-      for (const item of Object.values(objects)) {[m
+[31m-        item.userData.homeX = mobile ? 1.62 : 2.95;[m
+[32m+[m[32m      for (const [r, item] of Object.entries(objects)) {[m
+[32m+[m[32m        if (mobile) {[m
+[32m+[m[32m          item.userData.homeX = 2.4;[m
+[32m+[m[32m          item.userData.homeY = -1.8; // Move below content on mobile[m
+[32m+[m[32m          item.scale.setScalar(0.75);[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m          item.scale.setScalar(1.0);[m
+[32m+[m[32m        }[m
+       }[m
+     }[m
+ [m
+     function setObjectForRoute(route) {[m
+       const objectRoute =[m
+[31m-        route === "running" ? "running" : route === "report" || route === "history" ? "report" : "upload";[m
+[32m+[m[32m        route === "running" ? "running" : route === "report" || route === "history" ? "report" : route === "configure" ? "configure" : "upload";[m
+       Object.values(objects).forEach(item => (item.visible = item.userData.route === objectRoute));[m
+       const chosen = objects[objectRoute];[m
+       if (chosen) {[m
+[1mdiff --git a/dashboard-next/src/components/ReportScreen.jsx b/dashboard-next/src/components/ReportScreen.jsx[m
+[1mindex b6f2042..b9886eb 100644[m
+[1m--- a/dashboard-next/src/components/ReportScreen.jsx[m
+[1m+++ b/dashboard-next/src/components/ReportScreen.jsx[m
+[36m@@ -197,86 +197,128 @@[m [mexport default function ReportScreen({ report, setState, showToast }) {[m
+ [m
+       <div className="report-grid">[m
+         <div>[m
+[31m-          <div className="section-rule" style={{ marginBottom: 14 }}>[m
+[31m-            ATTACK RESULTS[m
+[32m+[m[32m          <div className="section-rule" style={{ marginBottom: 16 }}>[m
+[32m+[m[32m            ATTACK VECTOR FINDINGS &amp; REMEDIATION ({report.results?.length || 0} SIMULATED VECTORS)[m
+           </div>[m
+           <div className="result-list">[m
+             {(report.results || []).map((result, i) => {[m
+               const finding = FINDINGS[result.module];[m
+[31m-              const findings =[m
+[31m-                result.status === "SUCCEEDED" && finding ? ([m
+[31m-                  <div className="finding-grid">[m
+[31m-                    <section className="finding-panel">[m
+[31m-                      <h4>WHAT WAS LACKING</h4>[m
+[31m-                      <p>{finding.lacking}</p>[m
+[31m-                    </section>[m
+[31m-                    <section className="finding-panel">[m
+[31m-                      <h4>SUGGESTED FIX</h4>[m
+[31m-                      <p>{finding.fix}</p>[m
+[31m-                    </section>[m
+[31m-                  </div>[m
+[31m-                ) : null;[m
+[32m+[m[32m              const isExploited = result.status === "SUCCEEDED";[m
+[32m+[m[32m              const isBlocked = result.status === "FAILED";[m
+[32m+[m[32m              const severity = isExploited ? (result.module === "Reentrancy" ? "CRITICAL" : "HIGH") : isBlocked ? "LOW / MITIGATED" : "INFO";[m
+[32m+[m[32m              const severityColor = isExploited ? "var(--coral)" : isBlocked ? "var(--mint)" : "var(--na)";[m
+ [m
+               return ([m
+[31m-                <article key={i} className="result-card">[m
+[32m+[m[32m                <article key={i} className={`result-card bracket-panel ${isExploited ? "is-exploited" : ""}`} style={{ marginBottom: 14, padding: "18px 22px" }}>[m
+                   <div className="result-card-head">[m
+                     <div>[m
+[31m-                      <span className="attack-index">ATTACK / 0{i + 1}</span>[m
+[31m-                      <div className="result-name">{result.module}</div>[m
+[31m-                      <div className="result-note">{result.note}</div>[m
+[32m+[m[32m                      <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: 6 }}>[m
+[32m+[m[32m                        <span className="attack-index">ATTACK VECTOR / 0{i + 1}</span>[m
+[32m+[m[32m                        <span className="severity-pill" style={{ color: severityColor, borderColor: severityColor }}>[m
+[32m+[m[32m                          {severity}[m
+[32m+[m[32m                        </span>[m
+[32m+[m[32m                      </div>[m
+[32m+[m[32m                      <h3 className="result-name" style={{ margin: "2px 0 6px", fontSize: "17px" }}>{result.module}</h3>[m
+[32m+[m[32m                      <div className="result-note" style={{ fontSize: "13px", color: "var(--soft)", lineHeight: 1.5 }}>[m
+[32m+[m[32m                        <strong>Simulation Outcome:</strong> {result.note || (isExploited ? "Attack sequence successfully extracted contract funds." : "State invariant held. Attack transaction reverted.")}[m
+[32m+[m[32m                      </div>[m
+                     </div>[m
+                     <span className={`result-status ${statusClass(result.status)}`}>[m
+[31m-                      {result.status}[m
+[32m+[m[32m                      {isExploited ? "✕ EXPLOITED" : isBlocked ? "✓ BLOCKED" : "— N/A"}[m
+                     </span>[m
+                   </div>[m
+[31m-                  <div className="profit-line">[m
+[31m-                    ESTIMATED PROFIT <strong>{profit(result.profit_eth)}</strong>[m
+[31m-                    <span className="muted">[m
+[31m-                      {" "}[m
+[31m-                      <span aria-hidden="true">/</span>{" "}[m
+[31m-                      {Number(result.duration_s || 0).toFixed(1)} S[m
+[31m-                    </span>[m
+[32m+[m
+[32m+[m[32m                  <div className="result-evidence-bar" style={{ display: "flex", flexWrap: "wrap", gap: "18px", margin: "14px 0", padding: "10px 14px", background: "rgba(0,0,0,0.35)", border: "1px solid var(--line)" }}>[m
+[32m+[m[32m                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>[m
+[32m+[m[32m                      <span style={{ color: "var(--muted)" }}>EXTRACTED VALUE: </span>[m
+[32m+[m[32m                      <strong style={{ color: isExploited ? "var(--coral)" : "var(--text)" }}>{profit(result.profit_eth)}</strong>[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>[m
+[32m+[m[32m                      <span style={{ color: "var(--muted)" }}>EXECUTION DURATION: </span>[m
+[32m+[m[32m                      <span>{Number(result.duration_s || 0).toFixed(2)}s</span>[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>[m
+[32m+[m[32m                      <span style={{ color: "var(--muted)" }}>TEST ENVIRONMENT: </span>[m
+[32m+[m[32m                      <span>{isReal ? "Foundry EVM Local Fork" : "Sample Attack Harness"}</span>[m
+[32m+[m[32m                    </div>[m
+                   </div>[m
+[31m-                  {findings}[m
+[32m+[m
+[32m+[m[32m                  {isExploited && finding && ([m
+[32m+[m[32m                    <div className="finding-grid" style={{ marginTop: 14 }}>[m
+[32m+[m[32m                      <section className="finding-panel" style={{ borderLeft: "2px solid var(--coral)" }}>[m
+[32m+[m[32m                        <h4 style={{ color: "var(--coral)", display: "flex", alignItems: "center", gap: 6 }}>[m
+[32m+[m[32m                          <span>⚠</span> VULNERABILITY MECHANISM[m
+[32m+[m[32m                        </h4>[m
+[32m+[m[32m                        <p>{finding.lacking}</p>[m
+[32m+[m[32m                      </section>[m
+[32m+[m[32m                      <section className="finding-panel" style={{ borderLeft: "2px solid var(--mint)" }}>[m
+[32m+[m[32m                        <h4 style={{ color: "var(--mint)", display: "flex", alignItems: "center", gap: 6 }}>[m
+[32m+[m[32m                          <span>✓</span> ACTIONABLE REMEDIATION[m
+[32m+[m[32m                        </h4>[m
+[32m+[m[32m                        <p>{finding.fix}</p>[m
+[32m+[m[32m                      </section>[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                  )}[m
+[32m+[m
+[32m+[m[32m                  {isBlocked && ([m
+[32m+[m[32m                    <div className="mitigation-note" style={{ padding: "10px 14px", background: "rgba(77,240,168,0.05)", borderLeft: "2px solid var(--mint)", marginTop: 10, fontSize: "12px", color: "#B3C4BB" }}>[m
+[32m+[m[32m                      ✓ Contract properly enforces state guards and reverts this simulated exploitation sequence.[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                  )}[m
+                 </article>[m
+               );[m
+             })}[m
+           </div>[m
+         </div>[m
+[32m+[m
+         <aside>[m
+[31m-          <div className="chart-panel">[m
+[31m-            <h3>RESULT DISTRIBUTION</h3>[m
+[32m+[m[32m          <div className="chart-panel bracket-panel">[m
+[32m+[m[32m            <h3>SIMULATION DISTRIBUTION</h3>[m
+             <p className="chart-caption">[m
+[31m-              Four modules <span aria-hidden="true">/</span> {isReal ? "real engine" : "sample-data"} status count[m
+[32m+[m[32m              Four standardized vectors <span aria-hidden="true">/</span> {isReal ? "Verified Engine Run" : "Sample Reference Run"}[m
+             </p>[m
+             <ChartSvg summary={summary} />[m
+             <div className="chart-key">[m
+               <span>[m
+[31m-                <i className="key-swatch coral"></i>SUCCEEDED[m
+[32m+[m[32m                <i className="key-swatch coral"></i>SUCCEEDED ({summary.succeeded})[m
+               </span>[m
+               <span>[m
+[31m-                <i className="key-swatch mint"></i>BLOCKED[m
+[32m+[m[32m                <i className="key-swatch mint"></i>BLOCKED ({summary.failed})[m
+               </span>[m
+               <span>[m
+[31m-                <i className="key-swatch na"></i>NOT APPLICABLE[m
+[32m+[m[32m                <i className="key-swatch na"></i>NOT APPLICABLE ({summary.not_applicable || 0})[m
+               </span>[m
+             </div>[m
+           </div>[m
+[32m+[m
+[32m+[m[32m          <div className="trust-panel bracket-panel" style={{ marginTop: 16, padding: "16px 18px", fontSize: "12px", lineHeight: 1.55 }}>[m
+[32m+[m[32m            <div className="field-label" style={{ marginBottom: 6, color: "var(--mint)" }}>[m
+[32m+[m[32m              TRANSPARENCY &amp; LIMITATIONS[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m            <p style={{ margin: "0 0 8px", color: "var(--soft)" }}>[m
+[32m+[m[32m              {isReal ? ([m
+[32m+[m[32m                <>[m
+[32m+[m[32m                  Results represent atomic state changes executed by DeFi Sentinel test harnesses on a local Foundry EVM. Gas limits, private mempool transactions, and cross-contract multi-block conditions outside simulated parameters may differ on live public networks.[m
+[32m+[m[32m                </>[m
+[32m+[m[32m              ) : ([m
+[32m+[m[32m                <>[m
+[32m+[m[32m                  Simulated preview data. Pre-launch checks provide automated regression testing against common attack patterns and do not replace a full manual security audit by certified smart contract auditors.[m
+[32m+[m[32m                </>[m
+[32m+[m[32m              )}[m
+[32m+[m[32m            </p>[m
+[32m+[m[32m            <div style={{ fontSize: "10px", fontFamily: "var(--mono)", color: "var(--muted)" }}>[m
+[32m+[m[32m              ENGINE: FOUNDRY FORGE · EVM SHANGHAI COMPLIANT[m
+[32m+[m[32m            </div>[m
+[32m+[m[32m          </div>[m
+[32m+[m
+           <div className="report-actions">[m
+             <button className="button" id="runAgain" type="button" onClick={handleRunAgain}>[m
+[31m-              RUN AGAIN <span aria-hidden="true">↻</span>[m
+[32m+[m[32m              RUN NEW CHECK <span aria-hidden="true">↻</span>[m
+             </button>[m
+             <button className="button button-secondary" id="copyReport" type="button" onClick={handleCopyReport}>[m
+[31m-              COPY REPORT AS JSON[m
+[32m+[m[32m              EXPORT JSON REPORT[m
+             </button>[m
+           </div>[m
+[31m-          <p className="report-footnote">[m
+[31m-            {isReal ? ([m
+[31m-              <>REAL ENGINE RUN <span aria-hidden="true">/</span> LOCAL FORK TEST.</>[m
+[31m-            ) : ([m
+[31m-              <>PRE-LAUNCH CHECK <span aria-hidden="true">/</span> NOT A REPLACEMENT FOR A PROFESSIONAL AUDIT.</>[m
+[31m-            )}[m
+[31m-          </p>[m
+         </aside>[m
+       </div>[m
+     </section>[m
+[1mdiff --git a/dashboard-next/src/components/RunningScreen.jsx b/dashboard-next/src/components/RunningScreen.jsx[m
+[1mindex 3326064..24110c1 100644[m
+[1m--- a/dashboard-next/src/components/RunningScreen.jsx[m
+[1m+++ b/dashboard-next/src/components/RunningScreen.jsx[m
+[36m@@ -168,34 +168,39 @@[m [mexport default function RunningScreen({ state, setState, showToast }) {[m
+       <div className="running-head">[m
+         <div>[m
+           <div className="eyebrow micro tracked">[m
+[31m-            TARGET: {state.fileName} <span aria-hidden="true">/</span> LOCAL EVM[m
+[32m+[m[32m            STAGE 03 / SIMULATED ATTACK EXECUTION · TARGET: {state.fileName || "Contract.sol"}[m
+           </div>[m
+           <h1 id="screen-title" className="display display-small">[m
+[31m-            Four attack paths.[m
+[32m+[m[32m            Simulating attack paths.[m
+           </h1>[m
+[31m-          <p className="micro" style={{ marginTop: 8, color: "var(--color-primary-dim)" }}>[m
+[31m-            {stageMessage}[m
+[32m+[m[32m          <p className="micro" style={{ marginTop: 8, color: "var(--mint)", letterSpacing: "0.08em" }}>[m
+[32m+[m[32m            ● {stageMessage}[m
+           </p>[m
+         </div>[m
+         <div className="run-summary">[m
+[31m-          <span id="overallProgress">{pct}</span>% COMPLETE<br />[m
+[31m-          <span id="overallElapsed">{Number(overallElapsed).toFixed(1)}</span> S ELAPSED[m
+[32m+[m[32m          <div style={{ fontSize: "28px", fontFamily: "var(--display)", color: "var(--text)" }}>[m
+[32m+[m[32m            <span id="overallProgress">{pct}</span>%[m
+[32m+[m[32m          </div>[m
+[32m+[m[32m          <div style={{ color: "var(--muted)", letterSpacing: "0.08em" }}>[m
+[32m+[m[32m            <span id="overallElapsed">{Number(overallElapsed).toFixed(1)}</span>s ELAPSED[m
+[32m+[m[32m          </div>[m
+         </div>[m
+       </div>[m
+       <div className="attack-list" id="attackList">[m
+         {rows.map((row, i) => ([m
+           <div[m
+             key={i}[m
+[31m-            className="attack-row"[m
+[32m+[m[32m            className="attack-row bracket-panel"[m
+[32m+[m[32m            style={{ marginBottom: "10px", padding: "16px 20px" }}[m
+             data-attack={i}[m
+             data-state={row.state.toLowerCase()}[m
+           >[m
+             <div>[m
+[31m-              <span className="attack-index">MODULE / 0{i + 1}</span>[m
+[31m-              <div className="attack-name">{row.module}</div>[m
+[32m+[m[32m              <span className="attack-index">VECTOR / 0{i + 1}</span>[m
+[32m+[m[32m              <div className="attack-name" style={{ fontWeight: 500 }}>{row.module}</div>[m
+             </div>[m
+             <div className="attack-status">[m
+[31m-              <span className="status-dot" aria-hidden="true"></span>[m
+[32m+[m[32m              <span className={`status-dot ${row.state.toLowerCase()}`} aria-hidden="true"></span>[m
+               <span className="state-label">{row.state}</span>[m
+             </div>[m
+             <div[m
+[36m@@ -217,15 +222,16 @@[m [mexport default function RunningScreen({ state, setState, showToast }) {[m
+       </div>[m
+       <div className="run-footer">[m
+         <span className="run-footnote">[m
+[31m-          REAL SIMULATION <span aria-hidden="true">/</span> EXECUTING ON LOCAL FOUNDRY EVM WITH ZERO MOCKED VERDICTS.[m
+[32m+[m[32m          ISOLATED LOCAL ENVIRONMENT <span aria-hidden="true">/</span> EXECUTED VIA FOUNDRY FORGE TEST HARNESSES. NO EXTERNAL RPC USED.[m
+         </span>[m
+         <button[m
+           className="button button-danger"[m
+           id="cancelRun"[m
+           type="button"[m
+           onClick={handleCancel}[m
+[32m+[m[32m          title="Abort simulation and return to role configuration"[m
+         >[m
+[31m-          CANCEL <span aria-hidden="true">×</span>[m
+[32m+[m[32m          ABORT SIMULATION <span aria-hidden="true">×</span>[m
+         </button>[m
+       </div>[m
+     </section>[m
+[1mdiff --git a/dashboard-next/src/components/Topbar.jsx b/dashboard-next/src/components/Topbar.jsx[m
+[1mindex 2e9edc5..c1b3b2c 100644[m
+[1m--- a/dashboard-next/src/components/Topbar.jsx[m
+[1m+++ b/dashboard-next/src/components/Topbar.jsx[m
+[36m@@ -15,45 +15,43 @@[m [mexport default function Topbar({ activeRoute }) {[m
+         <span className="wordmark-mark" aria-hidden="true">D<span>·</span>S</span>[m
+         <span>DEFISENTINEL</span>[m
+       </a>[m
+[31m-      <nav className="step-nav" aria-label="Prototype steps">[m
+[31m-        <a[m
+[31m-          href="#/upload"[m
+[31m-          data-step="upload"[m
+[31m-          className={getStepClass("upload") || undefined}[m
+[31m-          aria-current={activeRoute === "upload" ? "step" : undefined}[m
+[31m-        >[m
+[31m-          <span>01</span><b>UPLOAD</b>[m
+[31m-        </a>[m
+[31m-        <span className="step-rule" aria-hidden="true"></span>[m
+[31m-        <a[m
+[31m-          href="#/configure"[m
+[31m-          data-step="configure"[m
+[31m-          className={getStepClass("configure") || undefined}[m
+[31m-          aria-current={activeRoute === "configure" ? "step" : undefined}[m
+[31m-        >[m
+[31m-          <span>02</span><b>CONFIGURE</b>[m
+[31m-        </a>[m
+[31m-        <span className="step-rule" aria-hidden="true"></span>[m
+[31m-        <a[m
+[31m-          href="#/running"[m
+[31m-          data-step="running"[m
+[31m-          className={getStepClass("running") || undefined}[m
+[31m-          aria-current={activeRoute === "running" ? "step" : undefined}[m
+[31m-        >[m
+[31m-          <span>03</span><b>RUN</b>[m
+[31m-        </a>[m
+[31m-        <span className="step-rule" aria-hidden="true"></span>[m
+[31m-        <a[m
+[31m-          href="#/report"[m
+[31m-          data-step="report"[m
+[31m-          className={getStepClass("report") || undefined}[m
+[31m-          aria-current={activeRoute === "report" ? "step" : undefined}[m
+[31m-        >[m
+[31m-          <span>04</span><b>REPORT</b>[m
+[31m-        </a>[m
+[32m+[m[32m      <nav className="step-nav" aria-label="Workflow progress">[m
+[32m+[m[32m        {[[m
+[32m+[m[32m          { key: "upload", num: "01", label: "UPLOAD" },[m
+[32m+[m[32m          { key: "configure", num: "02", label: "CONFIGURE" },[m
+[32m+[m[32m          { key: "running", num: "03", label: "RUN" },[m
+[32m+[m[32m          { key: "report", num: "04", label: "REPORT" }[m
+[32m+[m[32m        ].map((step, idx) => {[m
+[32m+[m[32m          const isAct = step.key === activeRoute;[m
+[32m+[m[32m          const isDone = currentIdx >= 0 && idx < currentIdx;[m
+[32m+[m[32m          const isNext = currentIdx >= 0 && idx === currentIdx + 1;[m
+[32m+[m[32m          const statusText = isDone ? "Completed" : isAct ? "In Progress" : isNext ? "Next" : "Upcoming";[m
+[32m+[m
+[32m+[m[32m          return ([m
+[32m+[m[32m            <span key={step.key} className="step-item-wrap">[m
+[32m+[m[32m              {idx > 0 && <span className={`step-rule ${isDone ? "is-done" : ""}`} aria-hidden="true"></span>}[m
+[32m+[m[32m              <a[m
+[32m+[m[32m                href={`#/${step.key}`}[m
+[32m+[m[32m                data-step={step.key}[m
+[32m+[m[32m                className={`step-link ${isAct ? "active" : ""} ${isDone ? "done" : ""}`}[m
+[32m+[m[32m                aria-current={isAct ? "step" : undefined}[m
+[32m+[m[32m                title={`Stage ${step.num}: ${step.label} (${statusText})`}[m
+[32m+[m[32m              >[m
+[32m+[m[32m                <span className="step-badge" aria-hidden="true">[m
+[32m+[m[32m                  {isDone ? "✓" : step.num}[m
+[32m+[m[32m                </span>[m
+[32m+[m[32m                <span className="step-label-group">[m
+[32m+[m[32m                  <b>{step.label}</b>[m
+[32m+[m[32m                  <small className="step-state-tag">{statusText}</small>[m
+[32m+[m[32m                </span>[m
+[32m+[m[32m              </a>[m
+[32m+[m[32m            </span>[m
+[32m+[m[32m          );[m
+[32m+[m[32m        })}[m
+       </nav>[m
+       <a className="history-link" href="#/history">[m
+[31m-        <span className="history-dot" aria-hidden="true"></span>HISTORY[m
+[32m+[m[32m        <span className="history-dot" aria-hidden="true"></span>[m
+[32m+[m[32m        <span>PAST SCANS</span>[m
+       </a>[m
+     </header>[m
+   );[m
+[1mdiff --git a/dashboard-next/src/components/UploadScreen.jsx b/dashboard-next/src/components/UploadScreen.jsx[m
+[1mindex 7d61c67..ea594e5 100644[m
+[1m--- a/dashboard-next/src/components/UploadScreen.jsx[m
+[1m+++ b/dashboard-next/src/components/UploadScreen.jsx[m
+[36m@@ -187,37 +187,80 @@[m [mexport default function UploadScreen({ state, setState, showToast }) {[m
+               onChange={(e) => loadFile(e.target.files?.[0])}[m
+             />[m
+           </label>[m
+[31m-          <div className="upload-divider">OR PASTE SOURCE</div>[m
+[32m+[m[32m          <div className="upload-divider">OR PASTE SOLIDITY SOURCE CODE</div>[m
+           <div className="field">[m
+[31m-            <label className="field-label" htmlFor="sourceName">FILE NAME</label>[m
+[32m+[m[32m            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>[m
+[32m+[m[32m              <label className="field-label" htmlFor="sourceName">[m
+[32m+[m[32m                CONTRACT FILE NAME <span style={{ color: "var(--mint)" }}>*</span>[m
+[32m+[m[32m              </label>[m
+[32m+[m[32m              <button[m
+[32m+[m[32m                type="button"[m
+[32m+[m[32m                className="sample-load-btn"[m
+[32m+[m[32m                onClick={() => {[m
+[32m+[m[32m                  const sampleName = "VaultVulnerable.sol";[m
+[32m+[m[32m                  const sampleCode = `// SPDX-License-Identifier: MIT[m
+[32m+[m[32mpragma solidity ^0.8.20;[m
+[32m+[m
+[32m+[m[32mcontract VaultVulnerable {[m
+[32m+[m[32m    mapping(address => uint256) public balances;[m
+[32m+[m[32m    bool private locked;[m
+[32m+[m
+[32m+[m[32m    function deposit() external payable {[m
+[32m+[m[32m        balances[msg.sender] += msg.value;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    function withdraw() external {[m
+[32m+[m[32m        uint256 bal = balances[msg.sender];[m
+[32m+[m[32m        require(bal > 0, "No balance");[m
+[32m+[m[32m        // State updated AFTER external call (Reentrancy vector)[m
+[32m+[m[32m        (bool ok, ) = msg.sender.call{value: bal}("");[m
+[32m+[m[32m        require(ok, "Transfer failed");[m
+[32m+[m[32m        balances[msg.sender] = 0;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    function balanceOf(address user) external view returns (uint256) {[m
+[32m+[m[32m        return balances[user];[m
+[32m+[m[32m    }[m
+[32m+[m[32m}`;[m
+[32m+[m[32m                  handleSourceChange(sampleCode, sampleName);[m
+[32m+[m[32m                  showToast("Loaded sample VaultVulnerable.sol");[m
+[32m+[m[32m                }}[m
+[32m+[m[32m              >[m
+[32m+[m[32m                + Load Sample Vault (.sol)[m
+[32m+[m[32m              </button>[m
+[32m+[m[32m            </div>[m
+             <input[m
+               className="text-input"[m
+               id="sourceName"[m
+               name="sourceName"[m
+[31m-              placeholder="e.g. VaultVulnerable.sol"[m
+[32m+[m[32m              placeholder="e.g. MyContract.sol (must end in .sol)"[m
+               value={state.fileName || ""}[m
+               onChange={(e) => handleNameChange(e.target.value)}[m
+               maxLength={120}[m
+               spellCheck={false}[m
+               aria-describedby="uploadErrors"[m
+[32m+[m[32m              aria-required="true"[m
+             />[m
+           </div>[m
+[31m-          <div className="field" style={{ marginTop: 11 }}>[m
+[31m-            <label className="field-label" htmlFor="sourceCode">SOLIDITY SOURCE</label>[m
+[32m+[m[32m          <div className="field" style={{ marginTop: 12 }}>[m
+[32m+[m[32m            <label className="field-label" htmlFor="sourceCode">[m
+[32m+[m[32m              SOLIDITY SOURCE CODE <span style={{ color: "var(--mint)" }}>*</span>[m
+[32m+[m[32m            </label>[m
+             <textarea[m
+               className="text-area paste-code"[m
+               id="sourceCode"[m
+               name="sourceCode"[m
+[31m-              placeholder="// Paste contract source here (must contain pragma, contract, etc.)"[m
+[32m+[m[32m              placeholder="// Paste Solidity source here (must contain 'pragma solidity', 'contract', etc.)"[m
+               spellCheck={false}[m
+               aria-describedby="uploadErrors"[m
+[32m+[m[32m              aria-required="true"[m
+               value={code}[m
+               onChange={(e) => handleSourceChange(e.target.value)}[m
+             />[m
+           </div>[m
+           <div className="file-meta">[m
+             <span id="fileMetaName">[m
+[31m-              <strong>{state.fileName || "No source selected"}</strong>[m
+[32m+[m[32m              <strong>{state.fileName || "No contract loaded"}</strong>[m
+             </span>[m
+             <span id="fileMetaSize">{bytes ? `${bytes.toLocaleString()} B` : "0 B"}</span>[m
+           </div>[m
+[36m@@ -226,7 +269,7 @@[m [mexport default function UploadScreen({ state, setState, showToast }) {[m
+             className={`code-preview${code ? " is-visible" : ""}`}[m
+             aria-label="Monospace Solidity preview"[m
+           >[m
+[31m-            {lines || "Preview appears when source is entered."}[m
+[32m+[m[32m            {lines || "Source preview will appear here."}[m
+           </pre>[m
+           <ul[m
+             id="uploadErrors"[m
+[36m@@ -240,15 +283,28 @@[m [mexport default function UploadScreen({ state, setState, showToast }) {[m
+           </ul>[m
+           <div className="upload-actions">[m
+             <span className="hint">[m
+[31m-              .SOL <span aria-hidden="true">/</span> NON-EMPTY <span aria-hidden="true">/</span> &lt;100 KB[m
+[32m+[m[32m              {!state.uploadValid || !code.trim() || !(state.fileName || "").trim() ? ([m
+[32m+[m[32m                <span className="disabled-reason">[m
+[32m+[m[32m                  ⚠ Add a valid .sol file and non-empty contract source to proceed.[m
+[32m+[m[32m                </span>[m
+[32m+[m[32m              ) : ([m
+[32m+[m[32m                <span className="ready-indicator" style={{ color: "var(--mint)" }}>[m
+[32m+[m[32m                  ✓ Source valid. Ready to configure roles.[m
+[32m+[m[32m                </span>[m
+[32m+[m[32m              )}[m
+             </span>[m
+             <button[m
+               className="button"[m
+               id="continueUpload"[m
+               type="submit"[m
+               disabled={!state.uploadValid || !code.trim() || !(state.fileName || "").trim()}[m
+[32m+[m[32m              title={[m
+[32m+[m[32m                !state.uploadValid || !code.trim() || !(state.fileName || "").trim()[m
+[32m+[m[32m                  ? "Upload or paste valid Solidity code ending in .sol to enable"[m
+[32m+[m[32m                  : "Proceed to Stage 02: Configure Roles"[m
+[32m+[m[32m              }[m
+             >[m
+[31m-              CONTINUE <span className="button-arrow" aria-hidden="true">→</span>[m
+[32m+[m[32m              CONTINUE TO CONFIGURE <span className="button-arrow" aria-hidden="true">→</span>[m
+             </button>[m
+           </div>[m
+         </form>[m
+[1mdiff --git a/tatus b/tatus[m
+[1mindex a0839c3..74570f6 100644[m
+[1m--- a/tatus[m
+[1m+++ b/tatus[m
+[36m@@ -1,77 +1,324 @@[m
+[31m- .gitignore                                         |    12 [32m+[m[31m-[m[m
+[31m- README.md                                          |    19 [32m+[m[31m-[m[m
+[31m- dashboard-next/next.config.mjs                     |    12 [32m+[m[m
+[31m- dashboard-next/package-lock.json                   |   477 [32m+[m[m
+[31m- dashboard-next/package.json                        |    21 [32m+[m[m
+[31m- .../public}/fonts/IBMPlexMono-OFL.txt              |     0[m
+[31m- .../public}/fonts/IBMPlexMono-Regular.ttf          |   Bin[m
+[31m- .../public}/fonts/IBMPlexSans-OFL.txt              |     0[m
+[31m- .../public}/fonts/IBMPlexSans-Variable.ttf         |   Bin[m
+[31m- .../public}/fonts/Michroma-OFL.txt                 |     0[m
+[31m- .../public}/fonts/Michroma-Regular.ttf             |   Bin[m
+[31m- .../screenshots-parity/3d-upload-new.png           |   Bin [31m0[m -> [32m956530[m bytes[m
+[31m- .../screenshots-parity/3d-upload-old.png           |   Bin [31m0[m -> [32m960431[m bytes[m
+[31m- .../screenshots-parity/desktop-configure-diff.png  |   Bin [31m0[m -> [32m165324[m bytes[m
+[31m- .../screenshots-parity/desktop-configure-new.png   |   Bin [31m0[m -> [32m189941[m bytes[m
+[31m- .../screenshots-parity/desktop-configure-old.png   |   Bin [31m0[m -> [32m189932[m bytes[m
+[31m- .../screenshots-parity/desktop-history-diff.png    |   Bin [31m0[m -> [32m149484[m bytes[m
+[31m- .../screenshots-parity/desktop-history-new.png     |   Bin [31m0[m -> [32m165922[m bytes[m
+[31m- .../screenshots-parity/desktop-history-old.png     |   Bin [31m0[m -> [32m165895[m bytes[m
+[31m- .../screenshots-parity/desktop-report-diff.png     |   Bin [31m0[m -> [32m72927[m bytes[m
+[31m- .../screenshots-parity/desktop-report-new.png      |   Bin [31m0[m -> [32m57055[m bytes[m
+[31m- .../screenshots-parity/desktop-report-old.png      |   Bin [31m0[m -> [32m57054[m bytes[m
+[31m- .../screenshots-parity/desktop-running-diff.png    |   Bin [31m0[m -> [32m130617[m bytes[m
+[31m- .../screenshots-parity/desktop-running-new.png     |   Bin [31m0[m -> [32m131892[m bytes[m
+[31m- .../screenshots-parity/desktop-running-old.png     |   Bin [31m0[m -> [32m131830[m bytes[m
+[31m- .../screenshots-parity/desktop-upload-diff.png     |   Bin [31m0[m -> [32m182330[m bytes[m
+[31m- .../screenshots-parity/desktop-upload-new.png      |   Bin [31m0[m -> [32m200635[m bytes[m
+[31m- .../screenshots-parity/desktop-upload-old.png      |   Bin [31m0[m -> [32m200636[m bytes[m
+[31m- .../screenshots-parity/mobile-configure-diff.png   |   Bin [31m0[m -> [32m80289[m bytes[m
+[31m- .../screenshots-parity/mobile-configure-new.png    |   Bin [31m0[m -> [32m99496[m bytes[m
+[31m- .../screenshots-parity/mobile-configure-old.png    |   Bin [31m0[m -> [32m99497[m bytes[m
+[31m- .../screenshots-parity/mobile-history-diff.png     |   Bin [31m0[m -> [32m83348[m bytes[m
+[31m- .../screenshots-parity/mobile-history-new.png      |   Bin [31m0[m -> [32m108007[m bytes[m
+[31m- .../screenshots-parity/mobile-history-old.png      |   Bin [31m0[m -> [32m107964[m bytes[m
+[31m- .../screenshots-parity/mobile-report-diff.png      |   Bin [31m0[m -> [32m41670[m bytes[m
+[31m- .../screenshots-parity/mobile-report-new.png       |   Bin [31m0[m -> [32m40744[m bytes[m
+[31m- .../screenshots-parity/mobile-report-old.png       |   Bin [31m0[m -> [32m40747[m bytes[m
+[31m- .../screenshots-parity/mobile-running-diff.png     |   Bin [31m0[m -> [32m75689[m bytes[m
+[31m- .../screenshots-parity/mobile-running-new.png      |   Bin [31m0[m -> [32m87236[m bytes[m
+[31m- .../screenshots-parity/mobile-running-old.png      |   Bin [31m0[m -> [32m86671[m bytes[m
+[31m- .../screenshots-parity/mobile-upload-diff.png      |   Bin [31m0[m -> [32m90254[m bytes[m
+[31m- .../screenshots-parity/mobile-upload-new.png       |   Bin [31m0[m -> [32m108037[m bytes[m
+[31m- .../screenshots-parity/mobile-upload-old.png       |   Bin [31m0[m -> [32m108040[m bytes[m
+[31m- .../screenshots-parity/parity-report.json          |   102 [32m+[m[m
+[31m- dashboard-next/scripts/deploy.mjs                  |    31 [32m+[m[m
+[31m- dashboard-next/scripts/visual-parity.js            |   349 [32m+[m[m
+[31m- .../src/app/globals.css                            |     6 [32m+[m[31m-[m[m
+[31m- dashboard-next/src/app/layout.jsx                  |    25 [32m+[m[m
+[31m- dashboard-next/src/app/page.jsx                    |   166 [32m+[m[m
+[31m- dashboard-next/src/components/ConfigureScreen.jsx  |   202 [32m+[m[m
+[31m- dashboard-next/src/components/Footer.jsx           |     9 [32m+[m[m
+[31m- dashboard-next/src/components/GlassCanvas.jsx      |   419 [32m+[m[m
+[31m- dashboard-next/src/components/HistoryScreen.jsx    |   140 [32m+[m[m
+[31m- .../src/components/PixelFieldCanvas.jsx            |   226 [32m+[m[31m-[m[m
+[31m- dashboard-next/src/components/PrototypeStrip.jsx   |     9 [32m+[m[m
+[31m- dashboard-next/src/components/ReportScreen.jsx     |   262 [32m+[m[m
+[31m- dashboard-next/src/components/RunningScreen.jsx    |   166 [32m+[m[m
+[31m- dashboard-next/src/components/ScreenHeader.jsx     |    17 [32m+[m[m
+[31m- dashboard-next/src/components/Topbar.jsx           |    60 [32m+[m[m
+[31m- dashboard-next/src/components/UploadScreen.jsx     |   217 [32m+[m[m
+[31m- dashboard-next/src/components/ViewportFrame.jsx    |    10 [32m+[m[m
+[31m- .../js => dashboard-next/src/lib}/mock-api.js      |     2 [32m+[m[m
+[31m- .../js => dashboard-next/src/lib}/real-api.js      |     0[m
+[31m- dashboard/serve.py                                 |   138 [32m+[m[31m-[m[m
+[31m- dashboard/static/new-ui/ASSET-SOURCES.md           |     7 [31m-[m[m
+[31m- dashboard/static/new-ui/README.md                  |    59 [31m-[m[m
+[31m- dashboard/static/new-ui/index.html                 |    65 [31m-[m[m
+[31m- dashboard/static/new-ui/js/app.js                  |   137 [31m-[m[m
+[31m- dashboard/static/new-ui/js/glass.js                |   214 [31m-[m[m
+[31m- dashboard/static/new-ui/js/views.js                |   270 [31m-[m[m
+[31m- dashboard/static/new-ui/vendor/THREE-LICENSE.txt   |    21 [31m-[m[m
+[31m- .../new-ui/vendor/geometries/RoundedBoxGeometry.js |   216 [31m-[m[m
+[31m- dashboard/static/new-ui/vendor/three.core.js       | 58773 [31m-------------------[m[m
+[31m- dashboard/static/new-ui/vendor/three.module.js     | 18251 [31m------[m[m
+[31m- dashboard/templates/index.html                     |    65 [31m-[m[m
+[31m- tests/test_api.py                                  |     2 [32m+[m[31m-[m[m
+[31m- 76 files changed, 2961 insertions(+), 78216 deletions(-)[m
+[32m+[m
+[32m+[m[32m                   SSUUMMMMAARRYY OOFF LLEESSSS CCOOMMMMAANNDDSS[m
+[32m+[m
+[32m+[m[32m      Commands marked with * may be preceded by a number, _N.[m
+[32m+[m[32m      Notes in parentheses indicate the behavior if _N is given.[m
+[32m+[m[32m      A key preceded by a caret indicates the Ctrl key; thus ^K is ctrl-K.[m
+[32m+[m
+[32m+[m[32m  h  H                 Display this help.[m
+[32m+[m[32m  q  :q  Q  :Q  ZZ     Exit.[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                           MMOOVVIINNGG[m
+[32m+[m
+[32m+[m[32m  e  ^E  j  ^N  CR  *  Forward  one line   (or _N lines).[m
+[32m+[m[32m  y  ^Y  k  ^K  ^P  *  Backward one line   (or _N lines).[m
+[32m+[m[32m  ESC-j             *  Forward  one file line (or _N file lines).[m
+[32m+[m[32m  ESC-k             *  Backward one file line (or _N file lines).[m
+[32m+[m[32m  f  ^F  ^V  SPACE  *  Forward  one window (or _N lines).[m
+[32m+[m[32m  b  ^B  ESC-v      *  Backward one window (or _N lines).[m
+[32m+[m[32m  z                 *  Forward  one window (and set window to _N).[m
+[32m+[m[32m  w                 *  Backward one window (and set window to _N).[m
+[32m+[m[32m  ESC-SPACE         *  Forward  one window, but don't stop at end-of-file.[m
+[32m+[m[32m  ESC-b             *  Backward one window, but don't stop at beginning-of-file.[m
+[32m+[m[32m  d  ^D             *  Forward  one half-window (and set half-window to _N).[m
+[32m+[m[32m  u  ^U             *  Backward one half-window (and set half-window to _N).[m
+[32m+[m[32m  ESC-)  RightArrow *  Right one half screen width (or _N positions).[m
+[32m+[m[32m  ESC-(  LeftArrow  *  Left  one half screen width (or _N positions).[m
+[32m+[m[32m  ESC-}  ^RightArrow   Right to last column displayed.[m
+[32m+[m[32m  ESC-{  ^LeftArrow    Left  to first column.[m
+[32m+[m[32m  F                    Forward forever; like "tail -f".[m
+[32m+[m[32m  ESC-F                Like F but stop when search pattern is found.[m
+[32m+[m[32m  r  ^R  ^L            Repaint screen.[m
+[32m+[m[32m  R                    Repaint screen, discarding buffered input.[m
+[32m+[m[32m        ---------------------------------------------------[m
+[32m+[m[32m        Default "window" is the screen height.[m
+[32m+[m[32m        Default "half-window" is half of the screen height.[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                          SSEEAARRCCHHIINNGG[m
+[32m+[m
+[32m+[m[32m  /_p_a_t_t_e_r_n          *  Search forward for (_N-th) matching line.[m
+[32m+[m[32m  ?_p_a_t_t_e_r_n          *  Search backward for (_N-th) matching line.[m
+[32m+[m[32m  n                 *  Repeat previous search (for _N-th occurrence).[m
+[32m+[m[32m  N                 *  Repeat previous search in reverse direction.[m
+[32m+[m[32m  ESC-n             *  Repeat previous search, spanning files.[m
+[32m+[m[32m  ESC-N             *  Repeat previous search, reverse dir. & spanning files.[m
+[32m+[m[32m  ^O^N  ^On         *  Search forward for (_N-th) OSC8 hyperlink.[m
+[32m+[m[32m  ^O^P  ^Op         *  Search backward for (_N-th) OSC8 hyperlink.[m
+[32m+[m[32m  ^O^L  ^Ol            Jump to the currently selected OSC8 hyperlink.[m
+[32m+[m[32m  ESC-u                Undo (toggle) search highlighting.[m
+[32m+[m[32m  ESC-U                Clear search highlighting.[m
+[32m+[m[32m  &_p_a_t_t_e_r_n          *  Display only matching lines.[m
+[32m+[m[32m        ---------------------------------------------------[m
+[32m+[m		[32mSearch is case-sensitive unless changed with -i or -I.[m
+[32m+[m[32m        A search pattern may begin with one or more of:[m
+[32m+[m[32m        ^N or !  Search for NON-matching lines.[m
+[32m+[m[32m        ^E or *  Search multiple files (pass thru END OF FILE).[m
+[32m+[m[32m        ^F or @  Start search at FIRST file (for /) or last file (for ?).[m
+[32m+[m[32m        ^K       Highlight matches, but don't move (KEEP position).[m
+[32m+[m[32m        ^R       Don't use REGULAR EXPRESSIONS.[m
+[32m+[m[32m        ^S _n     Search for match in _n-th parenthesized subpattern.[m
+[32m+[m[32m        ^W       WRAP search if no match found.[m
+[32m+[m[32m        ^L       Enter next character literally into pattern.[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                           JJUUMMPPIINNGG[m
+[32m+[m
+[32m+[m[32m  g  <  ESC-<       *  Go to first line in file (or line _N).[m
+[32m+[m[32m  G  >  ESC->       *  Go to last line in file (or line _N).[m
+[32m+[m[32m  p  %              *  Go to beginning of file (or _N percent into file).[m
+[32m+[m[32m  t                 *  Go to the (_N-th) next tag.[m
+[32m+[m[32m  T                 *  Go to the (_N-th) previous tag.[m
+[32m+[m[32m  {  (  [           *  Find close bracket } ) ].[m
+[32m+[m[32m  }  )  ]           *  Find open bracket { ( [.[m
+[32m+[m[32m  ESC-^F _<_c_1_> _<_c_2_>  *  Find close bracket _<_c_2_>.[m
+[32m+[m[32m  ESC-^B _<_c_1_> _<_c_2_>  *  Find open bracket _<_c_1_>.[m
+[32m+[m[32m        ---------------------------------------------------[m
+[32m+[m[32m        Each "find close bracket" command goes forward to the close bracket[m[41m [m
+[32m+[m[32m          matching the (_N-th) open bracket in the top line.[m
+[32m+[m[32m        Each "find open bracket" command goes backward to the open bracket[m[41m [m
+[32m+[m[32m          matching the (_N-th) close bracket in the bottom line.[m
+[32m+[m
+[32m+[m[32m  m_<_l_e_t_t_e_r_>            Mark the current top line with <letter>.[m
+[32m+[m[32m  M_<_l_e_t_t_e_r_>            Mark the current bottom line with <letter>.[m
+[32m+[m[32m  '_<_l_e_t_t_e_r_>            Go to a previously marked position.[m
+[32m+[m[32m  ''                   Go to the previous position.[m
+[32m+[m[32m  ^X^X                 Same as '.[m
+[32m+[m[32m  ESC-m_<_l_e_t_t_e_r_>        Clear a mark.[m
+[32m+[m[32m        ---------------------------------------------------[m
+[32m+[m[32m        A mark is any upper-case or lower-case letter.[m
+[32m+[m[32m        Certain marks are predefined:[m
+[32m+[m[32m             ^  means  beginning of the file[m
+[32m+[m[32m             $  means  end of the file[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                        CCHHAANNGGIINNGG FFIILLEESS[m
+[32m+[m
+[32m+[m[32m  :e [_f_i_l_e]            Examine a new file.[m
+[32m+[m[32m  ^X^V                 Same as :e.[m
+[32m+[m[32m  :n                *  Examine the (_N-th) next file from the command line.[m
+[32m+[m[32m  :p                *  Examine the (_N-th) previous file from the command line.[m
+[32m+[m[32m  :x                *  Examine the first (or _N-th) file from the command line.[m
+[32m+[m[32m  ^O^O                 Open the currently selected OSC8 hyperlink.[m
+[32m+[m[32m  :d                   Delete the current file from the command line list.[m
+[32m+[m[32m  =  ^G  :f            Print current file name.[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                    MMIISSCCEELLLLAANNEEOOUUSS CCOOMMMMAANNDDSS[m
+[32m+[m
+[32m+[m[32m  -_<_f_l_a_g_>              Toggle a command line option [see OPTIONS below].[m
+[32m+[m[32m  --_<_n_a_m_e_>             Toggle a command line option, by name.[m
+[32m+[m[32m  __<_f_l_a_g_>              Display the setting of a command line option.[m
+[32m+[m[32m  ___<_n_a_m_e_>             Display the setting of an option, by name.[m
+[32m+[m[32m  +_c_m_d                 Execute the less cmd each time a new file is examined.[m
+[32m+[m
+[32m+[m[32m  !_c_o_m_m_a_n_d             Execute the shell command with $SHELL.[m
+[32m+[m[32m  #_c_o_m_m_a_n_d             Execute the shell command, expanded like a prompt.[m
+[32m+[m[32m  |XX_c_o_m_m_a_n_d            Pipe file between current pos & mark XX to shell command.[m
+[32m+[m[32m  s _f_i_l_e               Save input to a file.[m
+[32m+[m[32m  v                    Edit the current file with $VISUAL or $EDITOR.[m
+[32m+[m[32m  V                    Print version number of "less".[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                           OOPPTTIIOONNSS[m
+[32m+[m
+[32m+[m[32m        Most options may be changed either on the command line,[m
+[32m+[m[32m        or from within less by using the - or -- command.[m
+[32m+[m[32m        Options may be given in one of two forms: either a single[m
+[32m+[m[32m        character preceded by a -, or a name preceded by --.[m
+[32m+[m
+[32m+[m[32m  -?  ........  --help[m
+[32m+[m[32m                  Display help (from command line).[m
+[32m+[m[32m  -a  ........  --search-skip-screen[m
+[32m+[m[32m                  Search skips current screen.[m
+[32m+[m[32m  -A  ........  --SEARCH-SKIP-SCREEN[m
+[32m+[m[32m                  Search starts just after target line.[m
+[32m+[m[32m  -b [_N]  ....  --buffers=[_N][m
+[32m+[m[32m                  Number of buffers.[m
+[32m+[m[32m  -B  ........  --auto-buffers[m
+[32m+[m[32m                  Don't automatically allocate buffers for pipes.[m
+[32m+[m[32m  -c  ........  --clear-screen[m
+[32m+[m[32m                  Repaint by clearing rather than scrolling.[m
+[32m+[m[32m  -d  ........  --dumb[m
+[32m+[m[32m                  Dumb terminal.[m
+[32m+[m[32m  -D xx_c_o_l_o_r  .  --color=xx_c_o_l_o_r[m
+[32m+[m[32m                  Set screen colors.[m
+[32m+[m[32m  -e  -E  ....  --quit-at-eof  --QUIT-AT-EOF[m
+[32m+[m[32m                  Quit at end of file.[m
+[32m+[m[32m  -f  ........  --force[m
+[32m+[m[32m                  Force open non-regular files.[m
+[32m+[m[32m  -F  ........  --quit-if-one-screen[m
+[32m+[m[32m                  Quit if entire file fits on first screen.[m
+[32m+[m[32m  -g  ........  --hilite-search[m
+[32m+[m[32m                  Highlight only last match for searches.[m
+[32m+[m[32m  -G  ........  --HILITE-SEARCH[m
+[32m+[m[32m                  Don't highlight any matches for searches.[m
+[32m+[m[32m  -h [_N]  ....  --max-back-scroll=[_N][m
+[32m+[m[32m                  Backward scroll limit.[m
+[32m+[m[32m  -i  ........  --ignore-case[m
+[32m+[m[32m                  Ignore case in searches that do not contain uppercase.[m
+[32m+[m[32m  -I  ........  --IGNORE-CASE[m
+[32m+[m[32m                  Ignore case in all searches.[m
+[32m+[m[32m  -j [_N]  ....  --jump-target=[_N][m
+[32m+[m[32m                  Screen position of target lines.[m
+[32m+[m[32m  -J  ........  --status-column[m
+[32m+[m[32m                  Display a status column at left edge of screen.[m
+[32m+[m[32m  -k _f_i_l_e  ...  --lesskey-file=_f_i_l_e[m
+[32m+[m[32m                  Use a compiled lesskey file.[m
+[32m+[m[32m  -K  ........  --quit-on-intr[m
+[32m+[m[32m                  Exit less in response to ctrl-C.[m
+[32m+[m[32m  -L  ........  --no-lessopen[m
+[32m+[m[32m                  Ignore the LESSOPEN environment variable.[m
+[32m+[m[32m  -m  -M  ....  --long-prompt  --LONG-PROMPT[m
+[32m+[m[32m                  Set prompt style.[m
+[32m+[m[32m  -n .........  --line-numbers[m
+[32m+[m[32m                  Suppress line numbers in prompts and messages.[m
+[32m+[m[32m  -N .........  --LINE-NUMBERS[m
+[32m+[m[32m                  Display line number at start of each line.[m
+[32m+[m[32m  -o [_f_i_l_e] ..  --log-file=[_f_i_l_e][m
+[32m+[m[32m                  Copy to log file (standard input only).[m
+[32m+[m[32m  -O [_f_i_l_e] ..  --LOG-FILE=[_f_i_l_e][m
+[32m+[m[32m                  Copy to log file (unconditionally overwrite).[m
+[32m+[m[32m  -p _p_a_t_t_e_r_n .  --pattern=[_p_a_t_t_e_r_n][m
+[32m+[m[32m                  Start at pattern (from command line).[m
+[32m+[m[32m  -P [_p_r_o_m_p_t]   --prompt=[_p_r_o_m_p_t][m
+[32m+[m[32m                  Define new prompt.[m
+[32m+[m[32m  -q  -Q  ....  --quiet  --QUIET  --silent --SILENT[m
+[32m+[m[32m                  Quiet the terminal bell.[m
+[32m+[m[32m  -r  -R  ....  --raw-control-chars  --RAW-CONTROL-CHARS[m
+[32m+[m[32m                  Output "raw" control characters.[m
+[32m+[m[32m  -s  ........  --squeeze-blank-lines[m
+[32m+[m[32m                  Squeeze multiple blank lines.[m
+[32m+[m[32m  -S  ........  --chop-long-lines[m
+[32m+[m[32m                  Chop (truncate) long lines rather than wrapping.[m
+[32m+[m[32m  -t _t_a_g  ....  --tag=[_t_a_g][m
+[32m+[m[32m                  Find a tag.[m
+[32m+[m[32m  -T [_t_a_g_s_f_i_l_e] --tag-file=[_t_a_g_s_f_i_l_e][m
+[32m+[m[32m                  Use an alternate tags file.[m
+[32m+[m[32m  -u  -U  ....  --underline-special  --UNDERLINE-SPECIAL[m
+[32m+[m[32m                  Change handling of backspaces, tabs and carriage returns.[m
+[32m+[m[32m  -V  ........  --version[m
+[32m+[m[32m                  Display the version number of "less".[m
+[32m+[m[32m  -w  ........  --hilite-unread[m
+[32m+[m[32m                  Highlight first new line after forward-screen.[m
+[32m+[m[32m  -W  ........  --HILITE-UNREAD[m
+[32m+[m[32m                  Highlight first new line after any forward movement.[m
+[32m+[m[32m  -x [_N[,...]]  --tabs=[_N[,...]][m
+[32m+[m[32m                  Set tab stops.[m
+[32m+[m[32m  -X  ........  --no-init[m
+[32m+[m[32m                  Don't use termcap init/deinit strings.[m
+[32m+[m[32m  -y [_N]  ....  --max-forw-scroll=[_N][m
+[32m+[m[32m                  Forward scroll limit.[m
+[32m+[m[32m  -z [_N]  ....  --window=[_N][m
+[32m+[m[32m                  Set size of window.[m
+[32m+[m[32m  -" [_c[_c]]  .  --quotes=[_c[_c]][m
+[32m+[m[32m                  Set shell quote characters.[m
+[32m+[m[32m  -~  ........  --tilde[m
+[32m+[m[32m                  Don't display tildes after end of file.[m
+[32m+[m[32m  -# [_N]  ....  --shift=[_N][m
+[32m+[m[32m                  Set horizontal scroll amount (0 = one half screen width).[m
+[32m+[m
+[32m+[m[32m                --exit-follow-on-close[m
+[32m+[m[32m                  Exit F command on a pipe when writer closes pipe.[m
+[32m+[m[32m                --file-size[m
+[32m+[m[32m                  Automatically determine the size of the input file.[m
+[32m+[m[32m                --follow-name[m
+[32m+[m[32m                  The F command changes files if the input file is renamed.[m
+[32m+[m[32m                --form-feed[m
+[32m+[m[32m                  Stop scrolling when a form feed character is reached.[m
+[32m+[m[32m                --header=[_L[,_C[,_N]]][m
+[32m+[m[32m                  Use _L lines (starting at line _N) and _C columns as headers.[m
+[32m+[m[32m                --incsearch[m
+[32m+[m[32m                  Search file as each pattern character is typed in.[m
+[32m+[m[32m                --intr=[_C][m
+[32m+[m[32m                  Use _C instead of ^X to interrupt a read.[m
+[32m+[m[32m                --lesskey-context=_t_e_x_t[m
+[32m+[m[32m                  Use lesskey source file contents.[m
+[32m+[m[32m                --lesskey-src=_f_i_l_e[m
+[32m+[m[32m                  Use a lesskey source file.[m
+[32m+[m[32m                --line-num-width=[_N][m
+[32m+[m[32m                  Set the width of the -N line number field to _N characters.[m
+[32m+[m[32m                --match-shift=[_N][m
+[32m+[m[32m                  Show at least _N characters to the left of a search match.[m
+[32m+[m[32m                --modelines=[_N][m
+[32m+[m[32m                  Read _N lines from the input file and look for vim modelines.[m
+[32m+[m[32m                --mouse[m
+[32m+[m[32m                  Enable mouse input.[m
+[32m+[m[32m                --no-edit-warn[m
+[32m+[m[32m                  Don't warn when using v command on a file opened via LESSOPEN.[m
+[32m+[m[32m                --no-keypad[m
+[32m+[m[32m                  Don't send termcap keypad init/deinit strings.[m
+[32m+[m[32m                --no-histdups[m
+[32m+[m[32m                  Remove duplicates from command history.[m
+[32m+[m[32m                --no-number-headers[m
+[32m+[m[32m                  Don't give line numbers to header lines.[m
+[32m+[m[32m                --no-paste[m
+[32m+[m[32m                  Ignore pasted input.[m
+[32m+[m[32m                --no-search-header-lines[m
+[32m+[m[32m                  Searches do not include header lines.[m
+[32m+[m[32m                --no-search-header-columns[m
+[32m+[m[32m                  Searches do not include header columns.[m
+[32m+[m[32m                --no-search-headers[m
+[32m+[m[32m                  Searches do not include header lines or columns.[m
+[32m+[m[32m                --no-vbell[m
+[32m+[m[32m                  Disable the terminal's visual bell.[m
+[32m+[m[32m                --redraw-on-quit[m
+[32m+[m[32m                  Redraw final screen when quitting.[m
+[32m+[m[32m                --rscroll=[_C][m
+[32m+[m[32m                  Set the character used to mark truncated lines.[m
+[32m+[m[32m                --save-marks[m
+[32m+[m[32m                  Retain marks across invocations of less.[m
+[32m+[m[32m                --search-options=[EFKNRW-][m
+[32m+[m[32m                  Set default options for every search.[m
+[32m+[m[32m                --show-preproc-errors[m
+[32m+[m[32m                  Display a message if preprocessor exits with an error status.[m
+[32m+[m[32m                --proc-backspace[m
+[32m+[m[32m                  Process backspaces for bold/underline.[m
+[32m+[m[32m                --PROC-BACKSPACE[m
+[32m+[m[32m                  Treat backspaces as control characters.[m
+[32m+[m[32m                --proc-return[m
+[32m+[m[32m                  Delete carriage returns before newline.[m
+[32m+[m[32m                --PROC-RETURN[m
+[32m+[m[32m                  Treat carriage returns as control characters.[m
+[32m+[m[32m                --proc-tab[m
+[32m+[m[32m                  Expand tabs to spaces.[m
+[32m+[m[32m                --PROC-TAB[m
+[32m+[m[32m                  Treat tabs as control characters.[m
+[32m+[m[32m                --status-col-width=[_N][m
+[32m+[m[32m                  Set the width of the -J status column to _N characters.[m
+[32m+[m[32m                --status-line[m
+[32m+[m[32m                  Highlight or color the entire line containing a mark.[m
+[32m+[m[32m                --use-backslash[m
+[32m+[m[32m                  Subsequent options use backslash as escape char.[m
+[32m+[m[32m                --use-color[m
+[32m+[m[32m                  Enables colored text.[m
+[32m+[m[32m                --wheel-lines=[_N][m
+[32m+[m[32m                  Each click of the mouse wheel moves _N lines.[m
+[32m+[m[32m                --wordwrap[m
+[32m+[m[32m                  Wrap lines at spaces.[m
+[32m+[m
+[32m+[m
+[32m+[m[32m ---------------------------------------------------------------------------[m
+[32m+[m
+[32m+[m[32m                          LLIINNEE EEDDIITTIINNGG[m
+[32m+[m
+[32m+[m[32m        These keys can be used to edit text being entered[m[41m [m
+[32m+[m[32m        on the "command line" at the bottom of the screen.[m
+[32m+[m
+[32m+[m[32m RightArrow ..................... ESC-l ... Move cursor right one character.[m
+[32m+[m[32m LeftArrow ...................... ESC-h ... Move cursor left one character.[m
+[32m+[m[32m ctrl-RightArrow  ESC-RightArrow  ESC-w ... Move cursor right one word.[m
+[32m+[m[32m ctrl-LeftArrow   ESC-LeftArrow   ESC-b ... Move cursor left one word.[m
+[32m+[m[32m HOME ........................... ESC-0 ... Move cursor to start of line.[m
+[32m+[m[32m END ............................ ESC-$ ... Move cursor to end of line.[m
+[32m+[m[32m BACKSPACE ................................ Delete char to left of cursor.[m
+[32m+[m[32m DELETE ......................... ESC-x ... Delete char under cursor.[m
+[32m+[m[32m ctrl-BACKSPACE   ESC-BACKSPACE ........... Delete word to left of cursor.[m
+[32m+[m[32m ctrl-DELETE .... ESC-DELETE .... ESC-X ... Delete word under cursor.[m
+[32m+[m[32m ctrl-U ......... ESC (MS-DOS only) ....... Delete entire line.[m
+[32m+[m[32m UpArrow ........................ ESC-k ... Retrieve previous command line.[m
+[32m+[m[32m DownArrow ...................... ESC-j ... Retrieve next command line.[m
+[32m+[m[32m TAB ...................................... Complete filename & cycle.[m
+[32m+[m[32m SHIFT-TAB ...................... ESC-TAB   Complete filename & reverse cycle.[m
+[32m+[m[32m ctrl-L ................................... Complete filename, list all.[m

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ScreenHeader from "./ScreenHeader";
 import { fetchRealEngineReports, realReportsCache } from "../lib/real-api";
+import { ArrowRight, AlertCircle, Loader2, FileClock } from "lucide-react";
 
 const fmtDate = value => {
   const d = new Date(value);
@@ -57,30 +58,32 @@ export default function HistoryScreen({ setState }) {
       <ScreenHeader
         num="—"
         label="HISTORY"
-        right="FOUNDRY ENGINE REPORTS"
       />
       <div className="history-head">
         <div>
-          <div className="eyebrow micro tracked">REPORT INDEX</div>
+          <div className="eyebrow micro tracked">Scan history</div>
           <h1 id="screen-title" className="display display-small">
-            Previous checks.
+            Previous scans.
           </h1>
         </div>
         <span className="micro">
-          {reports.length} REAL REPORTS <span aria-hidden="true">/</span> CLICK A ROW TO OPEN
+          {reports.length} reports · Click to view
         </span>
       </div>
 
       {error ? (
         <div className="notice" role="alert" style={{ marginTop: 16 }}>
-          <span className="notice-mark">!</span>
+          <span className="notice-mark" aria-hidden="true">
+            <AlertCircle size={13} strokeWidth={2} style={{ color: "var(--coral)" }} />
+          </span>
           <span>{error}</span>
         </div>
       ) : null}
 
       {!loaded ? (
         <div className="empty-state">
-          <strong>LOADING HISTORY...</strong>Fetching execution records from local engine.
+          <Loader2 size={22} strokeWidth={2.5} className="spin" style={{ color: "var(--mint)", marginBottom: 8, display: "block" }} aria-hidden="true" />
+          <strong>Loading reports...</strong> Fetching past scan records.
         </div>
       ) : reports.length ? (
         <div
@@ -120,15 +123,14 @@ export default function HistoryScreen({ setState }) {
                   <td className="target-cell">{item.target || "UploadedContract.sol"}</td>
                   <td>
                     {(item.mode || "local").toUpperCase()}
-                    <span className="table-real">
-                      / REAL ENGINE DATA
-                    </span>
                   </td>
                   <td className="count-succeeded">
                     {item.summary?.succeeded || 0}{" "}
                     <span className="muted">/ {item.summary?.total || 0}</span>
                   </td>
-                  <td aria-hidden="true">→</td>
+                  <td aria-hidden="true">
+                    <ArrowRight size={13} strokeWidth={2} className="history-row-arrow" style={{ verticalAlign: "-2px" }} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -136,11 +138,12 @@ export default function HistoryScreen({ setState }) {
         </div>
       ) : (
         <div className="empty-state">
-          <strong>NO REPORTS YET</strong>Run a security simulation to create the first report.
+          <FileClock size={24} strokeWidth={1.8} style={{ color: "var(--muted)", marginBottom: 8, display: "block" }} aria-hidden="true" />
+          <strong>No reports yet.</strong> Run a simulation to create the first report.
         </div>
       )}
       <p className="micro" style={{ marginTop: 15 }}>
-        REAL ENGINE REPORTS ARE PERSISTED IN reports/ AND FETCHED DIRECTLY VIA /api/reports.
+        Reports are stored locally and fetched from /api/reports.
       </p>
     </section>
   );

@@ -1,3 +1,5 @@
+import { Check, History } from "lucide-react";
+
 const ROUTES = ["upload", "configure", "running", "report"];
 
 export default function Topbar({ activeRoute }) {
@@ -17,10 +19,10 @@ export default function Topbar({ activeRoute }) {
       </a>
       <nav className="step-nav" aria-label="Workflow progress">
         {[
-          { key: "upload", num: "01", label: "UPLOAD" },
-          { key: "configure", num: "02", label: "CONFIGURE" },
-          { key: "running", num: "03", label: "RUN" },
-          { key: "report", num: "04", label: "REPORT" }
+          { key: "upload", num: "01", label: "Upload" },
+          { key: "configure", num: "02", label: "Configure" },
+          { key: "running", num: "03", label: "Run" },
+          { key: "report", num: "04", label: "Report" }
         ].map((step, idx) => {
           const isAct = step.key === activeRoute;
           const isDone = currentIdx >= 0 && idx < currentIdx;
@@ -38,7 +40,7 @@ export default function Topbar({ activeRoute }) {
                 title={`Stage ${step.num}: ${step.label} (${statusText})`}
               >
                 <span className="step-badge" aria-hidden="true">
-                  {isDone ? "✓" : step.num}
+                  {isDone ? <Check size={11} strokeWidth={2.5} aria-hidden="true" /> : step.num}
                 </span>
                 <span className="step-label-group">
                   <b>{step.label}</b>
@@ -49,9 +51,9 @@ export default function Topbar({ activeRoute }) {
           );
         })}
       </nav>
-      <a className="history-link" href="#/history">
-        <span className="history-dot" aria-hidden="true"></span>
-        <span>PAST SCANS</span>
+      <a className="history-link" href="#/history" title="View past scan records" aria-label="Scan history">
+        <History size={13} strokeWidth={2} className="history-icon" aria-hidden="true" style={{ marginRight: 6 }} />
+        <span>History</span>
       </a>
     </header>
   );
