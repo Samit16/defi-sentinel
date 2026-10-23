@@ -132,36 +132,18 @@ export default function LandingPage() {
       <section className="landing-hero" id="home">
         <div className="landing-hero-layout">
           <div className="landing-hero-content">
-            <p className="landing-eyebrow">SMART CONTRACT SECURITY ANALYSIS</p>
-            <h1>Find vulnerabilities<br />before <span>attackers</span> do.</h1>
-            <p className="landing-lede">Upload your smart contract, run controlled attack simulations, and identify potential vulnerabilities with DeFi Sentinel.</p>
-            <div className="landing-upload-card">
-              <div className="landing-dropzone">
-                <span className="landing-file-icon" aria-hidden="true">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                  </svg>
-                </span>
-                <strong>Upload Smart Contract</strong>
-                <span>Upload your Solidity (.sol) files to start security analysis</span>
-                <a className="landing-button" href="#/upload">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  Choose Files
-                </a>
-                <small>or drag and drop files here</small>
-              </div>
-              <div className="landing-upload-meta">
-                <span>Supported file type: .sol&nbsp;&nbsp; | &nbsp;&nbsp;Multiple files allowed</span>
-                <a href="#/upload">View sample&nbsp; →</a>
-              </div>
+          <p className="landing-eyebrow">SMART CONTRACT SECURITY ANALYSIS</p>
+          <h1>Find vulnerabilities<br />before <span>attackers</span> do.</h1>
+          <p className="landing-lede">Upload your smart contract, run controlled attack simulations, and identify potential vulnerabilities with DeFi Sentinel.</p>
+          <div className="landing-upload-card">
+            <div className="landing-dropzone">
+              <span className="landing-file-icon" aria-hidden="true">▤</span>
+              <strong>Upload Smart Contract</strong>
+              <a className="landing-button" href="#/upload"><span aria-hidden="true">↥</span> Choose Files</a>
+              <small>or drag and drop files here</small>
             </div>
+            <div className="landing-upload-meta"><span>Supported file type: .sol</span></div>
+          </div>
           </div>
           <HeroSplineScene />
         </div>
@@ -172,17 +154,11 @@ export default function LandingPage() {
         <h2>From code to security insights</h2>
         <p className="landing-section-lede">A simple process to analyze your smart contracts for potential vulnerabilities.</p>
         <div className="landing-steps">
-          {steps.map((step, index) => (
-            <article className="landing-step" key={step.number}>
-              <span className="landing-step-icon" aria-hidden="true">{step.icon}</span>
-              <div>
-                <span className="landing-step-number">{step.number}</span>
-                <h3>{step.title}</h3>
-                <p>{step.detail}</p>
-              </div>
-              {index < steps.length - 1 && <span className="landing-step-arrow" aria-hidden="true">→</span>}
-            </article>
-          ))}
+          {steps.map((step, index) => <article className="landing-step" key={step.number}>
+            <span className="landing-step-icon" aria-hidden="true">{step.icon}</span>
+            <div><span className="landing-step-number">{step.number}</span><h3>{step.title}</h3></div>
+            {index < steps.length - 1 && <span className="landing-step-arrow" aria-hidden="true">→</span>}
+          </article>)}
         </div>
       </section>
 
@@ -206,27 +182,15 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="landing-feature-copy" id="about">
-          <p className="landing-eyebrow">FEATURES</p>
-          <h2>A focused approach<br />to contract security</h2>
-          <div className="landing-feature-list">
-            {features.map((feature) => (
-              <article key={feature.title}>
-                <span className="landing-feature-icon" aria-hidden="true">{feature.icon}</span>
-                <div>
-                  <h3>{feature.title}</h3>
-                  <p>{feature.detail}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <p className="landing-eyebrow">FEATURES</p><h2>A focused approach<br />to contract security</h2>
+          <div className="landing-feature-list">{features.map(feature => <article key={feature.title}><span className="landing-feature-icon" aria-hidden="true">{feature.icon}</span><div><h3>{feature.title}</h3></div></article>)}</div>
         </div>
       </section>
 
       <footer className="landing-cta">
         <div className="landing-cta-content">
           <p className="landing-eyebrow">SECURE SMART CONTRACTS</p>
-          <h2>Start analyzing your contract today.</h2>
-          <p>Upload your Solidity files and get a comprehensive security analysis<br className="desktop-break" /> with controlled attack simulations.</p>
+          <h2 style={{ marginBottom: "32px" }}>Start analyzing your contract today.</h2>
           <a className="landing-button" href="#/upload">Scan Contract <span>→</span></a>
         </div>
       </footer>
