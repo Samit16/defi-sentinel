@@ -5,7 +5,7 @@ and normalizes numeric profit metrics from wei to ETH.
 """
 
 import re
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 # Strict regex matching: SENTINEL_RESULT|<module>|<variant>|<SUCCEEDED|FAILED>|<profit_wei>|<note>
 SENTINEL_REGEX = re.compile(
@@ -40,7 +40,7 @@ def parse_sentinel_line(line: str, duration_s: float = 0.0) -> Dict[str, Any]:
 
 
 def parse_forge_output(output: str, duration_s: float = 0.0) -> Dict[str, Any]:
-    """Scans forge execution output for the SENTINEL_RESULT line and extracts parsed result."""
+    """Scans forge execution output for the first SENTINEL_RESULT line and extracts parsed result."""
     for line in output.splitlines():
         if "SENTINEL_RESULT|" in line:
             return parse_sentinel_line(line, duration_s)
@@ -49,3 +49,15 @@ def parse_forge_output(output: str, duration_s: float = 0.0) -> Dict[str, Any]:
         "No SENTINEL_RESULT marker found in forge test output.\n"
         f"Captured output:\n{output}"
     )
+
+
+def parse_all_sentinel_lines(output: str, duration_s: float = 0.0) -> List[Dict[str, Any]]:
+    """Scans forge execution output and extracts all parsed SENTINEL_RESULT lines."""
+    results = []
+    for line in output.splitlines():
+        if "SENTINEL_RESULT|" in line:
+            try:
+                results.append(parse_sentinel_line(line, duration_s))
+            except ValueError:
+                continue
+    return results

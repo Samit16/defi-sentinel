@@ -1,5 +1,5 @@
 import ScreenHeader from "./ScreenHeader";
-import { FINDINGS } from "../lib/mock-api";
+import { FINDINGS } from "../lib/real-api";
 
 const fmtDate = value => {
   const d = new Date(value);
@@ -14,9 +14,9 @@ const profit = value => `${Number(value || 0).toFixed(1)} ETH`;
 
 function ChartSvg({ summary }) {
   const data = [
-    ["SUCCEEDED", summary.succeeded, "coral"],
-    ["BLOCKED", summary.failed, "mint"],
-    ["NOT APPLICABLE", summary.not_applicable, "na"],
+    ["SUCCEEDED", summary.succeeded || 0, "coral"],
+    ["BLOCKED", summary.failed || 0, "mint"],
+    ["NOT APPLICABLE", summary.not_applicable || 0, "na"],
   ];
 
   return (
@@ -84,14 +84,14 @@ export default function ReportScreen({ report, setState, showToast }) {
         <div className="empty-state">
           <strong>NO REPORT SELECTED</strong>Run a local simulation or open a history row.
         </div>
-        <a className="button" href="#/upload">
+        <a className="button" href="#/upload" style={{ marginTop: 20 }}>
           START A CHECK →
         </a>
       </section>
     );
   }
 
-  const summary = report.summary;
+  const summary = report.summary || { total: 0, succeeded: 0, failed: 0 };
   const vulnerable = summary.succeeded > 0;
   const isReal = Boolean(report.is_real);
   const title = isReal
@@ -108,13 +108,13 @@ export default function ReportScreen({ report, setState, showToast }) {
     </span>
   ) : (
     <span className="demo-tag">
-      DEMO DATA <span aria-hidden="true">/</span> NOT A REAL SCAN
+      SAMPLE DATA <span aria-hidden="true">/</span> NOT A REAL SCAN
     </span>
   );
 
   const verdictNote = isReal
-    ? `Real simulation results executed by DeFiSentinel attack modules on local execution fork.`
-    : `Local sample outcomes illustrate possible report states only. They are not evidence about this uploaded contract and are not a professional audit.`;
+    ? `Real atomic simulations executed by DeFiSentinel attack harnesses on local Foundry EVM.`
+    : `Local sample outcomes illustrate possible report states only. They are not evidence about this uploaded contract.`;
 
   const handleRunAgain = () => {
     setState(prev => ({ ...prev, runRows: null, report: null }));
@@ -147,12 +147,34 @@ export default function ReportScreen({ report, setState, showToast }) {
       <div className="report-top">
         <div className="report-title">
           {tag}
+          {report.target && (
+            <div className="micro tracked" style={{ margin: "6px 0 2px", color: "rgba(255,255,255,0.7)" }}>
+              TARGET: <strong>{report.target}</strong>
+              {report.target_hash ? ` · SHA: ${report.target_hash.slice(0, 10)}...` : ""}
+            </div>
+          )}
           <h1 id="screen-title" className="display display-small">
             {title}
           </h1>
         </div>
         <aside className="verdict-note">{verdictNote}</aside>
       </div>
+
+      {report.compiler_warnings && report.compiler_warnings.length > 0 ? (
+        <div className="notice" style={{ margin: "14px 0" }}>
+          <span className="notice-mark">i</span>
+          <div>
+            <strong>Compiler & Linter Diagnostics:</strong>
+            <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+              {report.compiler_warnings.slice(0, 4).map((w, idx) => (
+                <li key={idx} style={{ fontSize: "11px", fontFamily: "monospace" }}>
+                  {w}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : null}
 
       <div className="summary-grid" aria-label="Summary figures">
         <div className="summary-cell">
@@ -169,7 +191,7 @@ export default function ReportScreen({ report, setState, showToast }) {
         </div>
         <div className="summary-cell">
           <div className="summary-label">NOT APPLICABLE</div>
-          <div className="summary-value is-na">{summary.not_applicable}</div>
+          <div className="summary-value is-na">{summary.not_applicable || 0}</div>
         </div>
       </div>
 
@@ -179,7 +201,7 @@ export default function ReportScreen({ report, setState, showToast }) {
             ATTACK RESULTS
           </div>
           <div className="result-list">
-            {report.results.map((result, i) => {
+            {(report.results || []).map((result, i) => {
               const finding = FINDINGS[result.module];
               const findings =
                 result.status === "SUCCEEDED" && finding ? (
