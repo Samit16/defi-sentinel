@@ -149,10 +149,15 @@ export default function ConfigureScreen({ state, setState }) {
       <ScreenHeader num="02" label="CONFIGURE ROLES" right="FUNCTIONS PARSED LOCALLY" />
       <div className="configure-layout">
         <div>
-          <h1 id="screen-title" className="display display-small" style={{ marginBottom: 24 }}>
+          <div className="eyebrow">STAGE 02 / ATTACK SURFACE DEFINITION</div>
+          <h1 id="screen-title" className="display display-small" style={{ marginBottom: 12 }}>
             Map contract roles.
           </h1>
-          <div className="section-rule">01 <span>PROTOCOL TYPE</span></div>
+          <p className="lede" style={{ marginBottom: 26, fontSize: "15px" }}>
+            Select your protocol archetype and link each entry point to standard DeFi roles so the simulation engine can test realistic attack sequences.
+          </p>
+
+          <div className="section-rule">STEP 01 <span>SELECT PROTOCOL ARCHETYPE</span></div>
           <div className="protocol-grid" role="group" aria-label="Choose protocol type">
             {PROTOCOLS.map(([id, desc]) => (
               <button
@@ -163,52 +168,80 @@ export default function ConfigureScreen({ state, setState }) {
                 aria-pressed={protocol === id}
                 onClick={() => handleSelectProtocol(id)}
               >
-                <span className="protocol-name">{id}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span className="protocol-name">{id}</span>
+                  {protocol === id && <span className="pill-badge" style={{ color: "var(--mint)" }}>SELECTED</span>}
+                </div>
                 <span className="protocol-description">{desc}</span>
               </button>
             ))}
           </div>
-          <div className="section-rule">02 <span>FUNCTION ROLE MAPPING</span></div>
-          <p className="micro" style={{ margin: "8px 0 0" }}>
-            SELECT THE FUNCTION THAT PLAYS EACH STANDARD ROLE.
-          </p>
+
+          <div className="section-rule" style={{ marginTop: 28 }}>
+            STEP 02 <span>FUNCTION ROLE MAPPING</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0 14px" }}>
+            <p className="micro" style={{ margin: 0 }}>
+              ASSIGN DETECTED SOLIDITY FUNCTIONS TO ATTACK ROLES ({funcs.length} DETECTED)
+            </p>
+            {funcs.length > 0 && protocol && (
+              <span className="auto-mapped-hint" style={{ fontSize: "11px", color: "var(--mint)" }}>
+                ✓ Smart auto-mapped
+              </span>
+            )}
+          </div>
+
           <div className="mapping-list">
             {roles.length ? (
-              roles.map(role => (
-                <label key={role} className="mapping-row">
-                  <span className="mapping-label">{role}</span>
-                  <select
-                    className="select-input role-select"
-                    data-role={role}
-                    aria-label={`Map function for ${role}`}
-                    disabled={!protocol || !funcs.length}
-                    value={state.roleMap?.[role] || ""}
-                    onChange={(e) => handleRoleSelect(role, e.target.value)}
-                  >
-                    <option value="">{funcs.length ? "Select function" : "No functions detected"}</option>
-                    {funcs.map(fn => (
-                      <option key={fn} value={fn}>
-                        {fn}()
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ))
+              roles.map(role => {
+                const isMapped = Boolean(state.roleMap?.[role]);
+                return (
+                  <div key={role} className="mapping-row bracket-panel" style={{ padding: "14px 16px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span className="mapping-label">
+                        {role} <span style={{ color: "var(--mint)" }}>*</span>
+                      </span>
+                      <span className={`role-badge ${isMapped ? "is-mapped" : "is-unmapped"}`}>
+                        {isMapped ? "✓ MAPPED" : "REQUIRED"}
+                      </span>
+                    </div>
+                    <select
+                      className="select-input role-select"
+                      data-role={role}
+                      aria-label={`Map function for ${role}`}
+                      disabled={!protocol || !funcs.length}
+                      value={state.roleMap?.[role] || ""}
+                      onChange={(e) => handleRoleSelect(role, e.target.value)}
+                    >
+                      <option value="">{funcs.length ? "-- Choose function --" : "No functions detected"}</option>
+                      {funcs.map(fn => (
+                        <option key={fn} value={fn}>
+                          {fn}()
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })
             ) : (
-              <p className="micro">Choose a protocol type to load its expected roles.</p>
+              <div className="notice" style={{ gridColumn: "1 / -1" }}>
+                <span className="notice-mark">→</span>
+                <span>Select a protocol archetype above to load its required role mapping inputs.</span>
+              </div>
             )}
           </div>
           {protocol && !funcs.length ? (
-            <div className="notice" role="status">
+            <div className="notice" role="status" style={{ marginTop: 14 }}>
               <span className="notice-mark">!</span>
               <span>
-                No function declarations were found in this source. Map manually or return to upload.
+                No function declarations were auto-detected. Check contract syntax or return to Upload.
               </span>
             </div>
           ) : null}
         </div>
+
         <aside className="configure-side bracket-panel">
-          <div className="section-rule">03 <span>DEPLOYMENT CONTEXT</span></div>
+          <div className="section-rule">STEP 03 <span>DEPLOYMENT CONTEXT</span></div>
           <div className="field">
             <label className="field-label" htmlFor="constructorArgs">
               CONSTRUCTOR ARGUMENTS <span className="muted">/ OPTIONAL</span>
@@ -216,14 +249,20 @@ export default function ConfigureScreen({ state, setState }) {
             <textarea
               className="text-area"
               id="constructorArgs"
-              placeholder="e.g. _asset = 0x…"
+              placeholder="e.g. 0x123..., 18, 1000000000000000000"
               spellCheck={false}
               value={state.constructorArgs || ""}
               onChange={(e) => handleConstructorArgsChange(e.target.value)}
             />
+            <small className="field-hint" style={{ fontSize: "10px", color: "var(--muted)" }}>
+              Comma-separated parameters for the contract constructor during deployment.
+            </small>
           </div>
           <div className="toggle-row">
-            <span className="field-label">CONTRACT HOLDS</span>
+            <div>
+              <span className="field-label" style={{ display: "block" }}>TEST ASSETS HELD</span>
+              <small style={{ fontSize: "10px", color: "var(--muted)" }}>Simulated treasury funds</small>
+            </div>
             <div className="toggle-control">
               <button
                 type="button"
@@ -241,23 +280,29 @@ export default function ConfigureScreen({ state, setState }) {
                 aria-pressed={state.holds?.TOKEN === true}
                 onClick={() => handleToggleHold("TOKEN")}
               >
-                TOKEN
+                ERC20 TOKEN
               </button>
             </div>
           </div>
           <div className="notice">
             <span className="notice-mark">i</span>
             <span>
-              Target: <strong>{state.fileName}</strong>. Foundry will deploy and simulate attacks on the local EVM.
+              Target: <strong>{state.fileName}</strong>. An isolated local Foundry EVM instance will deploy and test 4 attack vectors.
             </span>
           </div>
+
           <div className="validation-message" id="configureMessage" role="status">
             {missing.length ? (
-              <>
-                <span className="missing">RUN DISABLED</span> <span aria-hidden="true">/</span> MAP {missing.join(", ")}.
-              </>
+              <div className="missing-summary">
+                <span className="missing">⚠ ACTION REQUIRED</span>
+                <p style={{ margin: "4px 0 0", fontSize: "11px" }}>
+                  Please assign: <strong>{missing.join(", ")}</strong> before starting execution.
+                </p>
+              </div>
             ) : (
-              "ALL REQUIRED ROLES MAPPED. READY FOR FOUNDRY EXECUTION."
+              <div className="ready-summary" style={{ color: "var(--mint)" }}>
+                ✓ ALL ROLES CONFIGURED. Ready for local simulation.
+              </div>
             )}
           </div>
           <button
@@ -266,8 +311,9 @@ export default function ConfigureScreen({ state, setState }) {
             type="button"
             disabled={missing.length > 0}
             onClick={handleRunSimulation}
+            title={missing.length > 0 ? `Complete missing configuration: ${missing.join(", ")}` : "Start Foundry EVM attack simulations"}
           >
-            RUN SIMULATION <span className="button-arrow" aria-hidden="true">→</span>
+            START ATTACK SIMULATION <span className="button-arrow" aria-hidden="true">→</span>
           </button>
         </aside>
       </div>

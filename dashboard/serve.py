@@ -17,7 +17,6 @@ from orchestrator.validator import ValidationError
 from orchestrator.compiler import CompilationError
 from orchestrator.scan_service import validate_and_inspect_solidity, execute_scan
 from dashboard.scans import scans_bp
-
 REPORTS_DIR = PROJECT_ROOT / "reports"
 SAMPLE_REPORT_FILE = REPORTS_DIR / "sample_report.json"
 

@@ -197,86 +197,128 @@ export default function ReportScreen({ report, setState, showToast }) {
 
       <div className="report-grid">
         <div>
-          <div className="section-rule" style={{ marginBottom: 14 }}>
-            ATTACK RESULTS
+          <div className="section-rule" style={{ marginBottom: 16 }}>
+            ATTACK VECTOR FINDINGS &amp; REMEDIATION ({report.results?.length || 0} SIMULATED VECTORS)
           </div>
           <div className="result-list">
             {(report.results || []).map((result, i) => {
               const finding = FINDINGS[result.module];
-              const findings =
-                result.status === "SUCCEEDED" && finding ? (
-                  <div className="finding-grid">
-                    <section className="finding-panel">
-                      <h4>WHAT WAS LACKING</h4>
-                      <p>{finding.lacking}</p>
-                    </section>
-                    <section className="finding-panel">
-                      <h4>SUGGESTED FIX</h4>
-                      <p>{finding.fix}</p>
-                    </section>
-                  </div>
-                ) : null;
+              const isExploited = result.status === "SUCCEEDED";
+              const isBlocked = result.status === "FAILED";
+              const severity = isExploited ? (result.module === "Reentrancy" ? "CRITICAL" : "HIGH") : isBlocked ? "LOW / MITIGATED" : "INFO";
+              const severityColor = isExploited ? "var(--coral)" : isBlocked ? "var(--mint)" : "var(--na)";
 
               return (
-                <article key={i} className="result-card">
+                <article key={i} className={`result-card bracket-panel ${isExploited ? "is-exploited" : ""}`} style={{ marginBottom: 14, padding: "18px 22px" }}>
                   <div className="result-card-head">
                     <div>
-                      <span className="attack-index">ATTACK / 0{i + 1}</span>
-                      <div className="result-name">{result.module}</div>
-                      <div className="result-note">{result.note}</div>
+                      <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: 6 }}>
+                        <span className="attack-index">ATTACK VECTOR / 0{i + 1}</span>
+                        <span className="severity-pill" style={{ color: severityColor, borderColor: severityColor }}>
+                          {severity}
+                        </span>
+                      </div>
+                      <h3 className="result-name" style={{ margin: "2px 0 6px", fontSize: "17px" }}>{result.module}</h3>
+                      <div className="result-note" style={{ fontSize: "13px", color: "var(--soft)", lineHeight: 1.5 }}>
+                        <strong>Simulation Outcome:</strong> {result.note || (isExploited ? "Attack sequence successfully extracted contract funds." : "State invariant held. Attack transaction reverted.")}
+                      </div>
                     </div>
                     <span className={`result-status ${statusClass(result.status)}`}>
-                      {result.status}
+                      {isExploited ? "✕ EXPLOITED" : isBlocked ? "✓ BLOCKED" : "— N/A"}
                     </span>
                   </div>
-                  <div className="profit-line">
-                    ESTIMATED PROFIT <strong>{profit(result.profit_eth)}</strong>
-                    <span className="muted">
-                      {" "}
-                      <span aria-hidden="true">/</span>{" "}
-                      {Number(result.duration_s || 0).toFixed(1)} S
-                    </span>
+
+                  <div className="result-evidence-bar" style={{ display: "flex", flexWrap: "wrap", gap: "18px", margin: "14px 0", padding: "10px 14px", background: "rgba(0,0,0,0.35)", border: "1px solid var(--line)" }}>
+                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
+                      <span style={{ color: "var(--muted)" }}>EXTRACTED VALUE: </span>
+                      <strong style={{ color: isExploited ? "var(--coral)" : "var(--text)" }}>{profit(result.profit_eth)}</strong>
+                    </div>
+                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
+                      <span style={{ color: "var(--muted)" }}>EXECUTION DURATION: </span>
+                      <span>{Number(result.duration_s || 0).toFixed(2)}s</span>
+                    </div>
+                    <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
+                      <span style={{ color: "var(--muted)" }}>TEST ENVIRONMENT: </span>
+                      <span>{isReal ? "Foundry EVM Local Fork" : "Sample Attack Harness"}</span>
+                    </div>
                   </div>
-                  {findings}
+
+                  {isExploited && finding && (
+                    <div className="finding-grid" style={{ marginTop: 14 }}>
+                      <section className="finding-panel" style={{ borderLeft: "2px solid var(--coral)" }}>
+                        <h4 style={{ color: "var(--coral)", display: "flex", alignItems: "center", gap: 6 }}>
+                          <span>⚠</span> VULNERABILITY MECHANISM
+                        </h4>
+                        <p>{finding.lacking}</p>
+                      </section>
+                      <section className="finding-panel" style={{ borderLeft: "2px solid var(--mint)" }}>
+                        <h4 style={{ color: "var(--mint)", display: "flex", alignItems: "center", gap: 6 }}>
+                          <span>✓</span> ACTIONABLE REMEDIATION
+                        </h4>
+                        <p>{finding.fix}</p>
+                      </section>
+                    </div>
+                  )}
+
+                  {isBlocked && (
+                    <div className="mitigation-note" style={{ padding: "10px 14px", background: "rgba(77,240,168,0.05)", borderLeft: "2px solid var(--mint)", marginTop: 10, fontSize: "12px", color: "#B3C4BB" }}>
+                      ✓ Contract properly enforces state guards and reverts this simulated exploitation sequence.
+                    </div>
+                  )}
                 </article>
               );
             })}
           </div>
         </div>
+
         <aside>
-          <div className="chart-panel">
-            <h3>RESULT DISTRIBUTION</h3>
+          <div className="chart-panel bracket-panel">
+            <h3>SIMULATION DISTRIBUTION</h3>
             <p className="chart-caption">
-              Four modules <span aria-hidden="true">/</span> {isReal ? "real engine" : "sample-data"} status count
+              Four standardized vectors <span aria-hidden="true">/</span> {isReal ? "Verified Engine Run" : "Sample Reference Run"}
             </p>
             <ChartSvg summary={summary} />
             <div className="chart-key">
               <span>
-                <i className="key-swatch coral"></i>SUCCEEDED
+                <i className="key-swatch coral"></i>SUCCEEDED ({summary.succeeded})
               </span>
               <span>
-                <i className="key-swatch mint"></i>BLOCKED
+                <i className="key-swatch mint"></i>BLOCKED ({summary.failed})
               </span>
               <span>
-                <i className="key-swatch na"></i>NOT APPLICABLE
+                <i className="key-swatch na"></i>NOT APPLICABLE ({summary.not_applicable || 0})
               </span>
             </div>
           </div>
+
+          <div className="trust-panel bracket-panel" style={{ marginTop: 16, padding: "16px 18px", fontSize: "12px", lineHeight: 1.55 }}>
+            <div className="field-label" style={{ marginBottom: 6, color: "var(--mint)" }}>
+              TRANSPARENCY &amp; LIMITATIONS
+            </div>
+            <p style={{ margin: "0 0 8px", color: "var(--soft)" }}>
+              {isReal ? (
+                <>
+                  Results represent atomic state changes executed by DeFi Sentinel test harnesses on a local Foundry EVM. Gas limits, private mempool transactions, and cross-contract multi-block conditions outside simulated parameters may differ on live public networks.
+                </>
+              ) : (
+                <>
+                  Simulated preview data. Pre-launch checks provide automated regression testing against common attack patterns and do not replace a full manual security audit by certified smart contract auditors.
+                </>
+              )}
+            </p>
+            <div style={{ fontSize: "10px", fontFamily: "var(--mono)", color: "var(--muted)" }}>
+              ENGINE: FOUNDRY FORGE · EVM SHANGHAI COMPLIANT
+            </div>
+          </div>
+
           <div className="report-actions">
             <button className="button" id="runAgain" type="button" onClick={handleRunAgain}>
-              RUN AGAIN <span aria-hidden="true">↻</span>
+              RUN NEW CHECK <span aria-hidden="true">↻</span>
             </button>
             <button className="button button-secondary" id="copyReport" type="button" onClick={handleCopyReport}>
-              COPY REPORT AS JSON
+              EXPORT JSON REPORT
             </button>
           </div>
-          <p className="report-footnote">
-            {isReal ? (
-              <>REAL ENGINE RUN <span aria-hidden="true">/</span> LOCAL FORK TEST.</>
-            ) : (
-              <>PRE-LAUNCH CHECK <span aria-hidden="true">/</span> NOT A REPLACEMENT FOR A PROFESSIONAL AUDIT.</>
-            )}
-          </p>
         </aside>
       </div>
     </section>

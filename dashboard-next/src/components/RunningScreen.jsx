@@ -168,34 +168,39 @@ export default function RunningScreen({ state, setState, showToast }) {
       <div className="running-head">
         <div>
           <div className="eyebrow micro tracked">
-            TARGET: {state.fileName} <span aria-hidden="true">/</span> LOCAL EVM
+            STAGE 03 / SIMULATED ATTACK EXECUTION · TARGET: {state.fileName || "Contract.sol"}
           </div>
           <h1 id="screen-title" className="display display-small">
-            Four attack paths.
+            Simulating attack paths.
           </h1>
-          <p className="micro" style={{ marginTop: 8, color: "var(--color-primary-dim)" }}>
-            {stageMessage}
+          <p className="micro" style={{ marginTop: 8, color: "var(--mint)", letterSpacing: "0.08em" }}>
+            ● {stageMessage}
           </p>
         </div>
         <div className="run-summary">
-          <span id="overallProgress">{pct}</span>% COMPLETE<br />
-          <span id="overallElapsed">{Number(overallElapsed).toFixed(1)}</span> S ELAPSED
+          <div style={{ fontSize: "28px", fontFamily: "var(--display)", color: "var(--text)" }}>
+            <span id="overallProgress">{pct}</span>%
+          </div>
+          <div style={{ color: "var(--muted)", letterSpacing: "0.08em" }}>
+            <span id="overallElapsed">{Number(overallElapsed).toFixed(1)}</span>s ELAPSED
+          </div>
         </div>
       </div>
       <div className="attack-list" id="attackList">
         {rows.map((row, i) => (
           <div
             key={i}
-            className="attack-row"
+            className="attack-row bracket-panel"
+            style={{ marginBottom: "10px", padding: "16px 20px" }}
             data-attack={i}
             data-state={row.state.toLowerCase()}
           >
             <div>
-              <span className="attack-index">MODULE / 0{i + 1}</span>
-              <div className="attack-name">{row.module}</div>
+              <span className="attack-index">VECTOR / 0{i + 1}</span>
+              <div className="attack-name" style={{ fontWeight: 500 }}>{row.module}</div>
             </div>
             <div className="attack-status">
-              <span className="status-dot" aria-hidden="true"></span>
+              <span className={`status-dot ${row.state.toLowerCase()}`} aria-hidden="true"></span>
               <span className="state-label">{row.state}</span>
             </div>
             <div
@@ -217,15 +222,16 @@ export default function RunningScreen({ state, setState, showToast }) {
       </div>
       <div className="run-footer">
         <span className="run-footnote">
-          REAL SIMULATION <span aria-hidden="true">/</span> EXECUTING ON LOCAL FOUNDRY EVM WITH ZERO MOCKED VERDICTS.
+          ISOLATED LOCAL ENVIRONMENT <span aria-hidden="true">/</span> EXECUTED VIA FOUNDRY FORGE TEST HARNESSES. NO EXTERNAL RPC USED.
         </span>
         <button
           className="button button-danger"
           id="cancelRun"
           type="button"
           onClick={handleCancel}
+          title="Abort simulation and return to role configuration"
         >
-          CANCEL <span aria-hidden="true">×</span>
+          ABORT SIMULATION <span aria-hidden="true">×</span>
         </button>
       </div>
     </section>

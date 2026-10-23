@@ -499,3 +499,203 @@ button {
     0 0 16px rgba(77, 240, 168, 0.08),
     0 8px 20px rgba(46, 204, 140, 0.1);
 }
+
+/* ==========================================================================
+   UNIFIED WORKFLOW & ACCESSIBILITY ENHANCEMENTS
+   ========================================================================== */
+
+/* Topbar Workflow Progress Indicators */
+.step-item-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 18px);
+}
+
+.step-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.2s var(--ease);
+}
+
+.step-link:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.step-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  font: 400 9px var(--mono);
+  color: var(--muted);
+  background: rgba(15, 15, 18, 0.8);
+  transition: all 0.2s var(--ease);
+}
+
+.step-link.active .step-badge {
+  color: var(--bg);
+  background: var(--mint);
+  border-color: var(--mint);
+  box-shadow: 0 0 10px rgba(77, 240, 168, 0.45);
+}
+
+.step-link.done .step-badge {
+  color: var(--mint);
+  border-color: rgba(77, 240, 168, 0.6);
+  background: rgba(77, 240, 168, 0.12);
+}
+
+.step-label-group {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.step-label-group b {
+  font: 500 10px var(--mono);
+  letter-spacing: 0.1em;
+  color: inherit;
+}
+
+.step-state-tag {
+  font: 400 8px var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.step-link.active .step-state-tag {
+  color: var(--mint);
+}
+
+.step-link.done .step-state-tag {
+  color: #79a896;
+}
+
+.step-rule.is-done {
+  background: rgba(77, 240, 168, 0.45);
+}
+
+/* Sample Contract Quick-Load Button */
+.sample-load-btn {
+  background: transparent;
+  border: 1px solid rgba(77, 240, 168, 0.3);
+  color: var(--mint);
+  font: 400 9px var(--mono);
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.sample-load-btn:hover {
+  background: rgba(77, 240, 168, 0.12);
+  border-color: var(--mint);
+  color: #fff;
+}
+
+.sample-load-btn:focus-visible {
+  outline: 2px solid var(--mint);
+  outline-offset: 2px;
+}
+
+/* Role Mapping Badges */
+.role-badge {
+  font: 500 8px var(--mono);
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+.role-badge.is-mapped {
+  color: var(--mint);
+  background: rgba(77, 240, 168, 0.1);
+  border-color: rgba(77, 240, 168, 0.25);
+}
+
+.role-badge.is-unmapped {
+  color: var(--coral);
+  background: rgba(255, 92, 108, 0.08);
+  border-color: rgba(255, 92, 108, 0.25);
+}
+
+.pill-badge {
+  font: 500 8px var(--mono);
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  background: rgba(77, 240, 168, 0.1);
+  border: 1px solid rgba(77, 240, 168, 0.3);
+  border-radius: 2px;
+}
+
+/* Report Severity Indicators */
+.severity-pill {
+  display: inline-flex;
+  align-items: center;
+  font: 600 8px var(--mono);
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.result-card.is-exploited {
+  border-color: rgba(255, 92, 108, 0.35);
+  box-shadow: 0 0 20px rgba(255, 92, 108, 0.08);
+}
+
+/* Disabled Reason Callouts */
+.disabled-reason {
+  color: #e59966;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Accessible focus states for all interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--mint) !important;
+  outline-offset: 3px !important;
+}
+
+/* High contrast inputs */
+.text-input:focus,
+.select-input:focus,
+.text-area:focus {
+  border-color: var(--mint) !important;
+  box-shadow: 0 0 0 1px var(--mint), 0 0 12px rgba(77, 240, 168, 0.18) !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .step-item-wrap {
+    gap: 4px;
+  }
+  .step-state-tag {
+    display: none;
+  }
+  .step-link {
+    padding: 4px 6px;
+  }
+  .step-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+  }
+}
