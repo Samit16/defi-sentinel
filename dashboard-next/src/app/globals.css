@@ -31,7 +31,18 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .history-link{justify-self:end;color:var(--muted);display:flex;align-items:center;gap:9px}.history-link:hover{color:var(--text)}.history-dot{width:5px;height:5px;border:1px solid currentColor;border-radius:50%}
 .prototype-strip{min-height:39px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px;color:#A8A8B0;font:400 9px var(--mono);letter-spacing:.075em}.prototype-strip>span:nth-child(2){text-align:center}.strip-index,.strip-end{font-size:8px;color:var(--muted);white-space:nowrap}.strip-index span{color:var(--muted)}
 #app{flex:1;min-height:calc(100vh - 160px);display:flex;flex-direction:column;justify-content:center;padding:clamp(34px,6vh,76px) 0;transition:opacity .3s var(--ease),transform .3s var(--ease)}#app.is-transitioning{opacity:0;transform:translateY(5px)}
-.screen{width:100%;max-width:1400px;margin:0 auto;animation:screenIn .4s var(--ease) both}@keyframes screenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.screen{width:100%;max-width:1400px;margin:0 auto}
+
+/* GSAP handles enter/exit — CSS animation only for reduced-motion fallback */
+@media(prefers-reduced-motion:reduce){
+  .screen{animation:screenIn .4s var(--ease) both}
+}
+@keyframes screenIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* GSAP transition overlay — mint scanlines flash on route change */
+.gsap-route-overlay{position:fixed;inset:0;pointer-events:none;z-index:9;
+  background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(77,240,168,.03) 3px,rgba(77,240,168,.03) 4px);
+  mix-blend-mode:screen;opacity:0;transition:opacity .15s}
 .screen-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:clamp(25px,4vw,50px)}.screen-label{display:flex;align-items:center;gap:13px;color:var(--muted)}.screen-label .num{color:var(--text)}.screen-index{font:400 9px var(--mono);letter-spacing:.1em;color:var(--muted)}
 .glyph-divider{width:84px;height:12px;display:block;opacity:.75}.display{font:400 clamp(37px,6.2vw,86px)/1.02 var(--display);letter-spacing:.055em;text-transform:uppercase;margin:0;max-width:980px}.display .line{display:block}.display-small{font-size:clamp(32px,4.4vw,62px)}.display-xl{font-size:clamp(37px,7vw,96px);letter-spacing:.045em}.accent-rule{width:42px;height:1px;background:rgba(255,255,255,.34);display:inline-block;vertical-align:middle;margin-right:14px}.lede{font-size:16px;line-height:1.65;color:#B7B7BF;max-width:600px}.muted{color:var(--muted)}.micro{color:var(--muted);font-size:9px}.tracked{letter-spacing:.16em}.section-rule{display:flex;align-items:center;gap:12px;color:var(--muted);font:400 9px var(--mono);letter-spacing:.1em}.section-rule::after{content:"";height:1px;background:var(--line);flex:1}
 .bracket-panel{position:relative;background:var(--surface);border:1px solid var(--line);padding:clamp(20px,3vw,34px)}.bracket-panel::before,.bracket-panel::after{content:"";position:absolute;width:15px;height:15px;border-color:rgba(255,255,255,.34);border-style:solid;pointer-events:none}.bracket-panel::before{left:-1px;top:-1px;border-width:1px 0 0 1px}.bracket-panel::after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
@@ -50,18 +61,62 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 @media(max-width:640px){:root{--gutter:20px}.topbar{gap:10px}.wordmark{font-size:8px;gap:8px}.wordmark-mark{width:22px;height:22px}.step-nav{gap:7px;justify-content:space-between}.step-nav a{gap:4px}.step-nav a b{font-size:8px}.step-nav a span{font-size:8px}.step-rule{width:8px}.prototype-strip{align-items:flex-start;padding:9px 0;gap:8px}.prototype-strip>span:nth-child(2){font-size:8px;line-height:1.45;max-width:220px}.strip-index{font-size:7px}.strip-end{display:none}#app{min-height:calc(100vh - 165px);padding:30px 0}.screen-header{margin-bottom:26px;padding-bottom:14px}.glyph-divider{width:54px}.display{font-size:clamp(34px,9vw,53px);letter-spacing:.025em}.display-xl{font-size:clamp(33px,9.2vw,55px)}.upload-layout{gap:24px}.upload-copy .lede{font-size:14px;margin-top:18px}.bracket-panel{padding:18px}.protocol-grid{grid-template-columns:1fr;gap:8px}.protocol-option{min-height:75px}.mapping-list{grid-template-columns:1fr;gap:11px}.attack-row{grid-template-columns:1fr auto;gap:10px 12px;padding:15px 0}.attack-status{grid-column:2;grid-row:1;justify-self:end}.progress-track{grid-column:1;grid-row:2}.elapsed{grid-column:2;grid-row:2}.run-footer{align-items:flex-start}.run-summary{font-size:8px}.summary-grid{grid-template-columns:repeat(2,1fr)}.summary-cell{border-bottom:1px solid var(--line);padding:13px}.summary-cell:nth-child(2){border-right:0}.summary-cell:nth-child(3),.summary-cell:nth-child(4){border-bottom:0}.summary-value{font-size:24px}.report-top{gap:18px}.verdict-note{font-size:11px}.finding-grid{grid-template-columns:1fr}.history-head{align-items:flex-start;flex-direction:column}.site-footer{font-size:7px;flex-wrap:wrap;gap:8px}.footer-center{order:3;text-align:left;width:100%}.footer-right{margin-left:auto}.glass-shape{width:78vw;right:-27vw;top:10vh;opacity:.48}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 
-/* Subtle text depth and cool light keep copy readable over the moving field. */
+/* Stronger text depth — keeps all copy readable against the animated pixel background. */
 .app-shell {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.92);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.97);
 }
 
 .app-shell .display {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 14px rgba(210, 228, 255, 0.2);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.98), 0 0 22px rgba(120, 210, 170, 0.18);
 }
 
 .app-shell .lede {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(205, 223, 255, 0.12);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.98), 0 0 10px rgba(120, 200, 160, 0.10);
+  color: #cecece;
 }
+
+/* Boost sizes for metadata/mono text that becomes illegible over the field */
+.app-shell .screen-label,
+.app-shell .screen-index { font-size: 11px; }
+
+.app-shell .eyebrow,
+.app-shell .micro,
+.app-shell .strip-index,
+.app-shell .strip-end { font-size: 10px; }
+
+.app-shell .field-label,
+.app-shell .mapping-label { font-size: 11px; letter-spacing: .08em; color: #c8c8d0; }
+
+.app-shell .dropzone small { font-size: 11px; color: #aeb8b8; }
+.app-shell .upload-divider { font-size: 10px; }
+.app-shell .file-meta { font-size: 11px; color: #b0b8b8; }
+.app-shell .hint { font-size: 10px; color: #9fa9a9; }
+
+.app-shell .protocol-name { font-size: 12px; letter-spacing: .12em; color: #e0e0e8; }
+.app-shell .protocol-description { font-size: 12px; color: #b0b8b8; }
+
+.app-shell .attack-index { font-size: 10px; color: #a8b2b2; }
+.app-shell .attack-status { font-size: 10px; }
+.app-shell .elapsed { font-size: 11px; color: #aab2b2; }
+.app-shell .run-summary { font-size: 11px; color: #b8c0c0; }
+.app-shell .run-footnote { font-size: 11px; color: #9fa9a9; }
+
+.app-shell .summary-label { font-size: 10px; color: #b0b8b8; }
+.app-shell .result-note { font-size: 13px; color: #b8b8c0; }
+.app-shell .finding-panel h4 { font-size: 10px; color: #cfd5d5; }
+.app-shell .finding-panel p { font-size: 12px; color: #b2baba; }
+.app-shell .chart-panel h3 { font-size: 11px; color: #cfd5d5; }
+.app-shell .chart-caption { font-size: 12px; color: #a8b2b2; }
+.app-shell .chart-key { font-size: 10px; color: #a0aaaa; }
+.app-shell .report-footnote { font-size: 11px; color: #9fa9a9; }
+.app-shell .validation-message { font-size: 11px; color: #b2b8b8; }
+.app-shell .toggle-button { font-size: 10px; }
+
+.app-shell .history-table th { font-size: 10px; color: #b0b8b8; }
+.app-shell .history-table td { font-size: 12px; color: #d2d8d8; }
+
+.app-shell .verdict-note { font-size: 13px; color: #c0c8c8; }
+.app-shell .demo-tag { font-size: 9px; }
 
 .app-shell .button,
 .app-shell button,
@@ -71,15 +126,15 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
   text-shadow: none;
 }
 
-/* Restrained steel-blue edge light separates surfaces from the moving field. */
+/* Restrained mint/emerald edge light separates surfaces from the moving field. */
 .bracket-panel,
 .chart-panel,
 .table-wrap,
 .summary-grid {
-  border-color: rgba(164, 188, 218, 0.22);
+  border-color: rgba(145, 218, 185, 0.22);
   box-shadow:
     inset 0 1px 0 rgba(238, 244, 255, 0.045),
-    0 0 0 1px rgba(126, 154, 193, 0.055),
+    0 0 0 1px rgba(126, 193, 164, 0.055),
     0 14px 36px rgba(0, 0, 0, 0.18);
 }
 
@@ -88,7 +143,7 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .notice,
 .finding-panel,
 .code-preview {
-  border-color: rgba(160, 183, 212, 0.22);
+  border-color: rgba(140, 212, 178, 0.22);
   box-shadow: inset 0 1px 0 rgba(240, 246, 255, 0.035);
 }
 
@@ -96,30 +151,30 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .select-input,
 .text-area,
 .toggle-button {
-  border-color: rgba(161, 182, 207, 0.25);
+  border-color: rgba(140, 207, 176, 0.25);
   box-shadow: inset 0 1px 0 rgba(235, 242, 255, 0.035);
 }
 
 .dropzone:hover {
-  border-color: rgba(180, 202, 231, 0.34);
+  border-color: rgba(150, 231, 190, 0.34);
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.055),
-    0 0 18px rgba(117, 159, 210, 0.065);
+    0 0 18px rgba(100, 219, 165, 0.065);
 }
 
 .protocol-option:hover {
-  border-color: rgba(175, 201, 232, 0.34);
+  border-color: rgba(150, 232, 190, 0.34);
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.055),
-    0 0 15px rgba(120, 156, 205, 0.06);
+    0 0 15px rgba(100, 219, 165, 0.06);
 }
 
 .protocol-option[aria-pressed="true"] {
-  border-color: rgba(186, 208, 237, 0.42);
+  border-color: rgba(160, 237, 198, 0.42);
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.06),
-    0 0 0 1px rgba(139, 92, 246, 0.09),
-    0 0 16px rgba(139, 92, 246, 0.055);
+    0 0 0 1px rgba(77, 240, 168, 0.12),
+    0 0 16px rgba(77, 240, 168, 0.08);
 }
 
 /* Marketing landing page */
@@ -181,7 +236,7 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
   }
 }
 
-/* A restrained blue filament brightens only the small interface typography. */
+/* Strong shadow on all small mono text to keep it legible over the animated pixel field. */
 #app :is(
   .screen-label,
   .screen-index,
@@ -220,19 +275,20 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
   .table-real,
   .demo-tag--real
 ) {
-  text-shadow: 0 0 7px rgba(130, 174, 242, 0.2), 0 1px 2px rgba(0, 0, 0, 0.88);
+  text-shadow: 0 0 8px rgba(40, 180, 120, 0.18), 0 1px 4px rgba(0, 0, 0, 0.96);
 }
 
 .topbar,
 .prototype-strip,
 .site-footer {
-  text-shadow: 0 0 7px rgba(130, 174, 242, 0.2), 0 1px 2px rgba(0, 0, 0, 0.88);
+  text-shadow: 0 0 8px rgba(40, 180, 120, 0.18), 0 1px 4px rgba(0, 0, 0, 0.96);
 }
 
-/* Raise black surfaces to cool charcoal and let the blue light fall below them. */
+/* Darker, more opaque surfaces so pixel-field light only bleeds subtly through. */
 :root {
-  --surface: #121318;
-  --surface2: #18191f;
+  --surface: #0e1014;
+  --surface2: #14161b;
+  --bg: #080b09;
 }
 
 .dropzone {
@@ -265,8 +321,8 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .summary-grid {
   box-shadow:
     inset 0 1px 0 rgba(238, 244, 255, 0.045),
-    0 0 0 1px rgba(126, 154, 193, 0.055),
-    0 12px 36px rgba(49, 109, 196, 0.32),
+    0 0 0 1px rgba(126, 193, 164, 0.055),
+    0 12px 36px rgba(46, 204, 140, 0.32),
     0 14px 36px rgba(0, 0, 0, 0.18);
 }
 
@@ -277,7 +333,7 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .code-preview {
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.035),
-    0 8px 20px rgba(49, 109, 196, 0.12);
+    0 8px 20px rgba(46, 204, 140, 0.12);
 }
 
 .text-input,
@@ -286,35 +342,35 @@ body[data-glass-fallback="true"] .glass-fallback{display:block}
 .toggle-button {
   box-shadow:
     inset 0 1px 0 rgba(235, 242, 255, 0.035),
-    0 5px 14px rgba(49, 109, 196, 0.075);
+    0 5px 14px rgba(46, 204, 140, 0.075);
 }
 
 .dropzone:hover {
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.055),
-    0 0 18px rgba(117, 159, 210, 0.065),
-    0 8px 20px rgba(49, 109, 196, 0.1);
+    0 0 18px rgba(100, 219, 165, 0.065),
+    0 8px 20px rgba(46, 204, 140, 0.1);
 }
 
 .dropzone.is-dragging {
   background: #181a21;
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.06),
-    0 0 18px rgba(117, 159, 210, 0.09),
-    0 8px 20px rgba(49, 109, 196, 0.13);
+    0 0 18px rgba(100, 219, 165, 0.09),
+    0 8px 20px rgba(46, 204, 140, 0.13);
 }
 
 .protocol-option:hover {
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.055),
-    0 0 15px rgba(120, 156, 205, 0.06),
-    0 8px 20px rgba(49, 109, 196, 0.1);
+    0 0 15px rgba(100, 219, 165, 0.06),
+    0 8px 20px rgba(46, 204, 140, 0.1);
 }
 
 .protocol-option[aria-pressed="true"] {
   box-shadow:
     inset 0 1px 0 rgba(240, 246, 255, 0.06),
-    0 0 0 1px rgba(139, 92, 246, 0.09),
-    0 0 16px rgba(139, 92, 246, 0.055),
-    0 8px 20px rgba(49, 109, 196, 0.1);
+    0 0 0 1px rgba(77, 240, 168, 0.12),
+    0 0 16px rgba(77, 240, 168, 0.08),
+    0 8px 20px rgba(46, 204, 140, 0.1);
 }

@@ -20,6 +20,7 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 SAMPLE_REPORT_FILE = REPORTS_DIR / "sample_report.json"
 
 app = Flask(__name__)
+app.register_blueprint(scans_bp)
 
 
 @app.after_request
