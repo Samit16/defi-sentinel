@@ -60,11 +60,10 @@ export default function LandingPage() {
             <div className="landing-dropzone">
               <span className="landing-file-icon" aria-hidden="true">▤</span>
               <strong>Upload Smart Contract</strong>
-              <span>Upload your Solidity (.sol) files to start security analysis</span>
               <a className="landing-button" href="#/upload"><span aria-hidden="true">↥</span> Choose Files</a>
               <small>or drag and drop files here</small>
             </div>
-            <div className="landing-upload-meta"><span>Supported file type: .sol&nbsp;&nbsp; | &nbsp;&nbsp;Multiple files allowed</span><a href="#/upload">View sample&nbsp; →</a></div>
+            <div className="landing-upload-meta"><span>Supported file type: .sol</span></div>
           </div>
           </div>
           <HeroSplineScene />
@@ -78,7 +77,7 @@ export default function LandingPage() {
         <div className="landing-steps">
           {steps.map((step, index) => <article className="landing-step" key={step.number}>
             <span className="landing-step-icon" aria-hidden="true">{step.icon}</span>
-            <div><span className="landing-step-number">{step.number}</span><h3>{step.title}</h3><p>{step.detail}</p></div>
+            <div><span className="landing-step-number">{step.number}</span><h3>{step.title}</h3></div>
             {index < steps.length - 1 && <span className="landing-step-arrow" aria-hidden="true">→</span>}
           </article>)}
         </div>
@@ -96,12 +95,16 @@ export default function LandingPage() {
         </div>
         <div className="landing-feature-copy" id="about">
           <p className="landing-eyebrow">FEATURES</p><h2>A focused approach<br />to contract security</h2>
-          <div className="landing-feature-list">{features.map(feature => <article key={feature.title}><span className="landing-feature-icon" aria-hidden="true">{feature.icon}</span><div><h3>{feature.title}</h3><p>{feature.detail}</p></div></article>)}</div>
+          <div className="landing-feature-list">{features.map(feature => <article key={feature.title}><span className="landing-feature-icon" aria-hidden="true">{feature.icon}</span><div><h3>{feature.title}</h3></div></article>)}</div>
         </div>
       </section>
 
       <footer className="landing-cta">
-        <div className="landing-cta-content"><p className="landing-eyebrow">SECURE SMART CONTRACTS</p><h2>Start analyzing your contract today.</h2><p>Upload your Solidity files and get a comprehensive security analysis<br className="desktop-break" /> with controlled attack simulations.</p><a className="landing-button" href="#/upload">Scan Contract <span>→</span></a></div>
+        <div className="landing-cta-content">
+          <p className="landing-eyebrow">SECURE SMART CONTRACTS</p>
+          <h2 style={{ marginBottom: "32px" }}>Start analyzing your contract today.</h2>
+          <a className="landing-button" href="#/upload">Scan Contract <span>→</span></a>
+        </div>
       </footer>
     </main>
   );
