@@ -9,7 +9,7 @@ export default function HeroSplineScene() {
     <div className="landing-spline-scene">
       <Script
         type="module"
-        src="https://cdn.spline.design/@splinetool/viewer@2.0.95/build/spline-viewer.webgpu.js"
+        src="https://cdn.spline.design/@splinetool/viewer@2.0.98/build/spline-viewer.webgpu.js"
         strategy="afterInteractive"
       />
 

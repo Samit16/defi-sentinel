@@ -7,11 +7,11 @@ const TUNING = Object.freeze({
   lightFieldScale: 2.05,
   domainWarpStrength: 1.35,
   lightCoverage: 0.72,
-  brightness: 0.6,
-  highlightIntensity: 2.0,
-  cyanBalance: 0.86,
-  blueBalance: 0.68,
-  whiteBalance: 0.90,
+  brightness: 0.45,
+  highlightIntensity: 1.8,
+  cyanBalance: 0.90,
+  blueBalance: 0.70,
+  whiteBalance: 0.85,
   pixelSpacing: 8.2,
   visibilityThreshold: 0.54,
   renderPixelSize: 2.5,
@@ -113,18 +113,19 @@ void main() {
   }
 
   float colorFlow = 0.5 + 0.5 * sin(q.x * 1.2 - q.y * 0.9 + time * 0.23);
-  float blueRegion = clamp(u_colorBalance.y * (0.26 + 0.66 * colorFlow), 0.0, 0.92);
-  float cyanRegion = clamp(u_colorBalance.x * (0.24 + 0.72 * (1.0 - colorFlow)), 0.0, 0.95);
-  vec3 steelBlue = vec3(0.045, 0.15, 0.36);
-  vec3 electricBlue = vec3(0.045, 0.34, 0.96);
-  vec3 teal = vec3(0.025, 0.48, 0.56);
-  vec3 cyan = vec3(0.10, 0.72, 0.96);
-  vec3 color = mix(steelBlue, electricBlue, blueRegion);
-  color = mix(color, mix(teal, cyan, colorFlow), cyanRegion);
+  float primaryRegion = clamp(u_colorBalance.y * (0.28 + 0.64 * colorFlow), 0.0, 0.92);
+  float accentRegion = clamp(u_colorBalance.x * (0.26 + 0.70 * (1.0 - colorFlow)), 0.0, 0.95);
+  // Matching landing page palette: deep dark teal, rich pine/emerald, vivid cyan-mint, and bright mint (#66d9bb / #4DF0A8)
+  vec3 deepTeal = vec3(0.015, 0.085, 0.08);
+  vec3 richPine = vec3(0.03, 0.28, 0.22);
+  vec3 mutedMint = vec3(0.20, 0.55, 0.44);
+  vec3 brightMint = vec3(0.35, 0.88, 0.68);
+  vec3 color = mix(deepTeal, richPine, primaryRegion);
+  color = mix(color, mix(mutedMint, brightMint, colorFlow), accentRegion);
 
   float pearlBand = smoothstep(threshold + 0.10, 0.84, field);
   float pearl = clamp(pearlBand * u_colorBalance.z * u_highlights, 0.0, 0.93);
-  color = mix(color, vec3(0.94, 0.985, 1.0), pearl);
+  color = mix(color, vec3(0.86, 0.98, 0.94), pearl);
   float brightCore = smoothstep(threshold + 0.08, 0.88, field);
   float alpha = pixelShape * light * u_brightness * mix(0.62, 1.0, brightCore);
   alpha = min(alpha, 0.82);
