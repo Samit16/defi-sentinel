@@ -1,5 +1,6 @@
 import ScreenHeader from "./ScreenHeader";
 import { FINDINGS } from "../lib/real-api";
+import { ArrowRight, RotateCcw, Download, AlertTriangle, ShieldCheck, CheckCircle2, Check, Minus, Info } from "lucide-react";
 
 const fmtDate = value => {
   const d = new Date(value);
@@ -80,12 +81,12 @@ export default function ReportScreen({ report, setState, showToast }) {
   if (!report) {
     return (
       <section className="screen">
-        <ScreenHeader num="04" label="REPORT" right="NO REPORT SELECTED" />
+        <ScreenHeader num="04" label="REPORT" />
         <div className="empty-state">
-          <strong>NO REPORT SELECTED</strong>Run a local simulation or open a history row.
+          <strong>No report available</strong> Run a simulation or open a past scan.
         </div>
         <a className="button" href="#/upload" style={{ marginTop: 20 }}>
-          START A CHECK →
+          Start a scan <ArrowRight size={14} strokeWidth={2} style={{ marginLeft: 6, verticalAlign: "-1px" }} aria-hidden="true" />
         </a>
       </section>
     );
@@ -94,27 +95,23 @@ export default function ReportScreen({ report, setState, showToast }) {
   const summary = report.summary || { total: 0, succeeded: 0, failed: 0 };
   const vulnerable = summary.succeeded > 0;
   const isReal = Boolean(report.is_real);
-  const title = isReal
-    ? (vulnerable
-        ? `${summary.succeeded} OF ${summary.total} ATTACKS SUCCEEDED. CONTRACT IS VULNERABLE.`
-        : `0 OF ${summary.total} ATTACKS SUCCEEDED. ALL ATTACKS BLOCKED.`)
-    : (vulnerable
-        ? `${summary.succeeded} OF ${summary.total} ATTACKS SUCCEEDED. CONTRACT IS VULNERABLE.`
-        : `0 OF ${summary.total} ATTACKS SUCCEEDED. NO DEMO EXPLOIT WAS OBSERVED.`);
+  const title = vulnerable
+    ? `${summary.succeeded} of ${summary.total} attacks succeeded — vulnerabilities found.`
+    : `All ${summary.total} attacks blocked — no exploits detected.`;
 
   const tag = isReal ? (
     <span className="demo-tag demo-tag--real">
-      REAL ENGINE DATA <span aria-hidden="true">/</span> REAL SIMULATION
+      Live scan results
     </span>
   ) : (
     <span className="demo-tag">
-      SAMPLE DATA <span aria-hidden="true">/</span> NOT A REAL SCAN
+      Sample data — not a real scan
     </span>
   );
 
   const verdictNote = isReal
-    ? `Real atomic simulations executed by DeFiSentinel attack harnesses on local Foundry EVM.`
-    : `Local sample outcomes illustrate possible report states only. They are not evidence about this uploaded contract.`;
+    ? `Results from DeFi Sentinel attack simulations on local Foundry EVM.`
+    : `Sample data — illustrates possible report states. Not evidence about this contract.`;
 
   const handleRunAgain = () => {
     setState(prev => ({ ...prev, runRows: null, report: null }));
@@ -139,11 +136,7 @@ export default function ReportScreen({ report, setState, showToast }) {
 
   return (
     <section className="screen" aria-labelledby="screen-title">
-      <ScreenHeader
-        num="04"
-        label="SIMULATION REPORT"
-        right={`${report.report_id} / ${fmtDate(report.generated_at)}`}
-      />
+      <ScreenHeader num="04" label="REPORT" right={fmtDate(report.generated_at)} />
       <div className="report-top">
         <div className="report-title">
           {tag}
@@ -162,7 +155,9 @@ export default function ReportScreen({ report, setState, showToast }) {
 
       {report.compiler_warnings && report.compiler_warnings.length > 0 ? (
         <div className="notice" style={{ margin: "14px 0" }}>
-          <span className="notice-mark">i</span>
+          <span className="notice-mark" aria-hidden="true">
+            <Info size={13} strokeWidth={2} />
+          </span>
           <div>
             <strong>Compiler & Linter Diagnostics:</strong>
             <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
@@ -198,7 +193,7 @@ export default function ReportScreen({ report, setState, showToast }) {
       <div className="report-grid">
         <div>
           <div className="section-rule" style={{ marginBottom: 16 }}>
-            ATTACK VECTOR FINDINGS &amp; REMEDIATION ({report.results?.length || 0} SIMULATED VECTORS)
+            Findings ({report.results?.length || 0} vectors)
           </div>
           <div className="result-list">
             {(report.results || []).map((result, i) => {
@@ -213,7 +208,7 @@ export default function ReportScreen({ report, setState, showToast }) {
                   <div className="result-card-head">
                     <div>
                       <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: 6 }}>
-                        <span className="attack-index">ATTACK VECTOR / 0{i + 1}</span>
+                        <span className="attack-index">{i + 1}</span>
                         <span className="severity-pill" style={{ color: severityColor, borderColor: severityColor }}>
                           {severity}
                         </span>
@@ -223,22 +218,37 @@ export default function ReportScreen({ report, setState, showToast }) {
                         <strong>Simulation Outcome:</strong> {result.note || (isExploited ? "Attack sequence successfully extracted contract funds." : "State invariant held. Attack transaction reverted.")}
                       </div>
                     </div>
-                    <span className={`result-status ${statusClass(result.status)}`}>
-                      {isExploited ? "✕ EXPLOITED" : isBlocked ? "✓ BLOCKED" : "— N/A"}
+                    <span className={`result-status ${statusClass(result.status)}`} style={{ display: "inline-flex", alignItems: "center" }}>
+                      {isExploited ? (
+                        <>
+                          <AlertTriangle size={12} strokeWidth={2.2} style={{ marginRight: 4 }} aria-hidden="true" />
+                          EXPLOITED
+                        </>
+                      ) : isBlocked ? (
+                        <>
+                          <ShieldCheck size={12} strokeWidth={2.2} style={{ marginRight: 4 }} aria-hidden="true" />
+                          BLOCKED
+                        </>
+                      ) : (
+                        <>
+                          <Minus size={12} strokeWidth={2} style={{ marginRight: 4 }} aria-hidden="true" />
+                          N/A
+                        </>
+                      )}
                     </span>
                   </div>
 
                   <div className="result-evidence-bar" style={{ display: "flex", flexWrap: "wrap", gap: "18px", margin: "14px 0", padding: "10px 14px", background: "rgba(0,0,0,0.35)", border: "1px solid var(--line)" }}>
                     <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
-                      <span style={{ color: "var(--muted)" }}>EXTRACTED VALUE: </span>
+                      <span style={{ color: "var(--muted)" }}>Extracted: </span>
                       <strong style={{ color: isExploited ? "var(--coral)" : "var(--text)" }}>{profit(result.profit_eth)}</strong>
                     </div>
                     <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
-                      <span style={{ color: "var(--muted)" }}>EXECUTION DURATION: </span>
+                      <span style={{ color: "var(--muted)" }}>Duration: </span>
                       <span>{Number(result.duration_s || 0).toFixed(2)}s</span>
                     </div>
                     <div style={{ fontSize: "11px", fontFamily: "var(--mono)" }}>
-                      <span style={{ color: "var(--muted)" }}>TEST ENVIRONMENT: </span>
+                      <span style={{ color: "var(--muted)" }}>Environment: </span>
                       <span>{isReal ? "Foundry EVM Local Fork" : "Sample Attack Harness"}</span>
                     </div>
                   </div>
@@ -247,13 +257,13 @@ export default function ReportScreen({ report, setState, showToast }) {
                     <div className="finding-grid" style={{ marginTop: 14 }}>
                       <section className="finding-panel" style={{ borderLeft: "2px solid var(--coral)" }}>
                         <h4 style={{ color: "var(--coral)", display: "flex", alignItems: "center", gap: 6 }}>
-                          <span>⚠</span> VULNERABILITY MECHANISM
+                          <AlertTriangle size={14} strokeWidth={2} aria-hidden="true" /> Vulnerability
                         </h4>
                         <p>{finding.lacking}</p>
                       </section>
                       <section className="finding-panel" style={{ borderLeft: "2px solid var(--mint)" }}>
                         <h4 style={{ color: "var(--mint)", display: "flex", alignItems: "center", gap: 6 }}>
-                          <span>✓</span> ACTIONABLE REMEDIATION
+                          <CheckCircle2 size={14} strokeWidth={2} aria-hidden="true" /> Remediation
                         </h4>
                         <p>{finding.fix}</p>
                       </section>
@@ -261,8 +271,9 @@ export default function ReportScreen({ report, setState, showToast }) {
                   )}
 
                   {isBlocked && (
-                    <div className="mitigation-note" style={{ padding: "10px 14px", background: "rgba(77,240,168,0.05)", borderLeft: "2px solid var(--mint)", marginTop: 10, fontSize: "12px", color: "#B3C4BB" }}>
-                      ✓ Contract properly enforces state guards and reverts this simulated exploitation sequence.
+                    <div className="mitigation-note" style={{ padding: "10px 14px", background: "rgba(77,240,168,0.05)", borderLeft: "2px solid var(--mint)", marginTop: 10, fontSize: "12px", color: "#B3C4BB", display: "inline-flex", alignItems: "center", gap: 6, width: "100%" }}>
+                      <Check size={13} strokeWidth={2.5} style={{ color: "var(--mint)", flexShrink: 0 }} aria-hidden="true" />
+                      <span>Contract properly enforces state guards and reverts this simulated exploitation sequence.</span>
                     </div>
                   )}
                 </article>
@@ -273,9 +284,9 @@ export default function ReportScreen({ report, setState, showToast }) {
 
         <aside>
           <div className="chart-panel bracket-panel">
-            <h3>SIMULATION DISTRIBUTION</h3>
+            <h3>Result Distribution</h3>
             <p className="chart-caption">
-              Four standardized vectors <span aria-hidden="true">/</span> {isReal ? "Verified Engine Run" : "Sample Reference Run"}
+              {summary.total} vectors · {isReal ? "Live scan" : "Sample data"}
             </p>
             <ChartSvg summary={summary} />
             <div className="chart-key">
@@ -293,7 +304,7 @@ export default function ReportScreen({ report, setState, showToast }) {
 
           <div className="trust-panel bracket-panel" style={{ marginTop: 16, padding: "16px 18px", fontSize: "12px", lineHeight: 1.55 }}>
             <div className="field-label" style={{ marginBottom: 6, color: "var(--mint)" }}>
-              TRANSPARENCY &amp; LIMITATIONS
+              Transparency &amp; Limitations
             </div>
             <p style={{ margin: "0 0 8px", color: "var(--soft)" }}>
               {isReal ? (
@@ -307,16 +318,17 @@ export default function ReportScreen({ report, setState, showToast }) {
               )}
             </p>
             <div style={{ fontSize: "10px", fontFamily: "var(--mono)", color: "var(--muted)" }}>
-              ENGINE: FOUNDRY FORGE · EVM SHANGHAI COMPLIANT
+              Engine: Foundry · EVM Shanghai
             </div>
           </div>
 
           <div className="report-actions">
             <button className="button" id="runAgain" type="button" onClick={handleRunAgain}>
-              RUN NEW CHECK <span aria-hidden="true">↻</span>
+              Run new check <RotateCcw size={14} strokeWidth={2} style={{ marginLeft: 6, verticalAlign: "-1px" }} aria-hidden="true" />
             </button>
             <button className="button button-secondary" id="copyReport" type="button" onClick={handleCopyReport}>
-              EXPORT JSON REPORT
+              <Download size={14} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-1px" }} aria-hidden="true" />
+              Export JSON
             </button>
           </div>
         </aside>

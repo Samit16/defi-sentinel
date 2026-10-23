@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ScreenHeader from "./ScreenHeader";
+import { UploadCloud, FileCode, FileText, AlertCircle, CheckCircle2, ArrowRight } from "lucide-react";
 
 export function errorsForUpload(name, source) {
   const errors = [];
@@ -146,23 +147,19 @@ export default function UploadScreen({ state, setState, showToast }) {
 
   return (
     <section className="screen" aria-labelledby="screen-title">
-      <ScreenHeader num="01" label="UPLOAD SOURCE" right="SOLIDITY FILE / MAX 100 KB" />
+      <ScreenHeader num="01" label="UPLOAD" />
       <div className="upload-layout">
         <div className="upload-copy">
-          <div className="eyebrow">PRE-LAUNCH SECURITY SIMULATION</div>
           <h1 id="screen-title" className="display display-xl">
             <span className="line">Verify before</span>
             <span className="line">mainnet.</span>
           </h1>
           <p className="lede">
-            A local, pre-launch check for DeFi developers. Map the contract&apos;s roles, then execute simulated attack paths against the actual uploaded Solidity source code on an isolated EVM.
-          </p>
-          <p className="micro tracked" style={{ marginTop: 24 }}>
-            REAL SUBPROCESS EXECUTION <span aria-hidden="true">/</span> FOUNDRY EVM <span aria-hidden="true">/</span> ZERO MOCKED RESULTS
+            Upload your Solidity contract, map its roles, and run simulated attacks on a local EVM.
           </p>
         </div>
         <form className="upload-card bracket-panel" id="uploadForm" noValidate onSubmit={handleSubmit}>
-          <div className="section-rule">SOURCE CONTRACT <span className="muted">.SOL ONLY</span></div>
+          <div className="section-rule">Source contract <span className="muted">.sol</span></div>
           <label
             className={`dropzone ${isDragging ? "is-dragging" : ""}`}
             id="dropzone"
@@ -172,10 +169,7 @@ export default function UploadScreen({ state, setState, showToast }) {
             onDragLeave={(e) => { e.preventDefault(); setIsDragging(false); }}
             onDrop={handleDrop}
           >
-            <svg className="upload-symbol" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-              <path d="M18 25V8m0 0-6 6m6-6 6 6M7 23v7h22v-7" stroke="currentColor" strokeWidth="1.2" />
-              <path d="M3.5 3.5h7m-7 0v7m29-7h-7m7 0v7M3.5 32.5h7m-7 0v-7m29 7h-7m7 0v-7" stroke="currentColor" strokeOpacity=".35" />
-            </svg>
+            <UploadCloud className="upload-symbol" size={34} strokeWidth={1.5} aria-hidden="true" />
             <strong>Drop one Solidity file here</strong>
             <small>or choose a file · max 100 KB</small>
             <input
@@ -187,11 +181,11 @@ export default function UploadScreen({ state, setState, showToast }) {
               onChange={(e) => loadFile(e.target.files?.[0])}
             />
           </label>
-          <div className="upload-divider">OR PASTE SOLIDITY SOURCE CODE</div>
+          <div className="upload-divider">Or paste Solidity source</div>
           <div className="field">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <label className="field-label" htmlFor="sourceName">
-                CONTRACT FILE NAME <span style={{ color: "var(--mint)" }}>*</span>
+                File name <span style={{ color: "var(--mint)" }}>*</span>
               </label>
               <button
                 type="button"
@@ -226,7 +220,8 @@ contract VaultVulnerable {
                   showToast("Loaded sample VaultVulnerable.sol");
                 }}
               >
-                + Load Sample Vault (.sol)
+                <FileCode size={13} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-2px" }} aria-hidden="true" />
+                Load Sample Vault (.sol)
               </button>
             </div>
             <input
@@ -244,7 +239,7 @@ contract VaultVulnerable {
           </div>
           <div className="field" style={{ marginTop: 12 }}>
             <label className="field-label" htmlFor="sourceCode">
-              SOLIDITY SOURCE CODE <span style={{ color: "var(--mint)" }}>*</span>
+              Source code <span style={{ color: "var(--mint)" }}>*</span>
             </label>
             <textarea
               className="text-area paste-code"
@@ -259,7 +254,8 @@ contract VaultVulnerable {
             />
           </div>
           <div className="file-meta">
-            <span id="fileMetaName">
+            <span id="fileMetaName" style={{ display: "inline-flex", alignItems: "center" }}>
+              <FileText size={13} strokeWidth={1.8} style={{ marginRight: 6, color: "var(--mint)" }} aria-hidden="true" />
               <strong>{state.fileName || "No contract loaded"}</strong>
             </span>
             <span id="fileMetaSize">{bytes ? `${bytes.toLocaleString()} B` : "0 B"}</span>
@@ -284,12 +280,14 @@ contract VaultVulnerable {
           <div className="upload-actions">
             <span className="hint">
               {!state.uploadValid || !code.trim() || !(state.fileName || "").trim() ? (
-                <span className="disabled-reason">
-                  ⚠ Add a valid .sol file and non-empty contract source to proceed.
+                <span className="disabled-reason" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                  <AlertCircle size={13} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+                  Add a valid .sol file and non-empty contract source to proceed.
                 </span>
               ) : (
-                <span className="ready-indicator" style={{ color: "var(--mint)" }}>
-                  ✓ Source valid. Ready to configure roles.
+                <span className="ready-indicator" style={{ color: "var(--mint)", display: "inline-flex", alignItems: "center", gap: 5 }}>
+                  <CheckCircle2 size={13} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+                  Source valid. Ready to configure roles.
                 </span>
               )}
             </span>
@@ -304,7 +302,7 @@ contract VaultVulnerable {
                   : "Proceed to Stage 02: Configure Roles"
               }
             >
-              CONTINUE TO CONFIGURE <span className="button-arrow" aria-hidden="true">→</span>
+              Continue <ArrowRight size={14} strokeWidth={2} style={{ marginLeft: 6, verticalAlign: "-1px" }} aria-hidden="true" />
             </button>
           </div>
         </form>

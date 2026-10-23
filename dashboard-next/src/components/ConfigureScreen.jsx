@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import ScreenHeader from "./ScreenHeader";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, Info } from "lucide-react";
 
 export const PROTOCOLS = [
   ["VAULT", "Deposits, withdrawals, and shares"],
@@ -132,13 +133,14 @@ export default function ConfigureScreen({ state, setState }) {
   if (!hasSource) {
     return (
       <section className="screen" aria-labelledby="screen-title">
-        <ScreenHeader num="02" label="CONFIGURE ROLES" right="NO SOURCE LOADED" />
+        <ScreenHeader num="02" label="CONFIGURE" />
         <div className="empty-state">
           <strong>NO CONTRACT SOURCE LOADED</strong>
           Analysis cannot begin without a valid Solidity file. Upload or paste a contract first.
         </div>
         <a className="button" href="#/upload" style={{ marginTop: 20 }}>
-          ← GO TO UPLOAD SCREEN
+          <ArrowLeft size={14} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-2px" }} aria-hidden="true" />
+          Go to Upload Screen
         </a>
       </section>
     );
@@ -146,18 +148,17 @@ export default function ConfigureScreen({ state, setState }) {
 
   return (
     <section className="screen" aria-labelledby="screen-title">
-      <ScreenHeader num="02" label="CONFIGURE ROLES" right="FUNCTIONS PARSED LOCALLY" />
+      <ScreenHeader num="02" label="CONFIGURE" />
       <div className="configure-layout">
         <div>
-          <div className="eyebrow">STAGE 02 / ATTACK SURFACE DEFINITION</div>
           <h1 id="screen-title" className="display display-small" style={{ marginBottom: 12 }}>
             Map contract roles.
           </h1>
           <p className="lede" style={{ marginBottom: 26, fontSize: "15px" }}>
-            Select your protocol archetype and link each entry point to standard DeFi roles so the simulation engine can test realistic attack sequences.
+            Select your protocol type and link each entry point to standard DeFi roles for attack simulation.
           </p>
 
-          <div className="section-rule">STEP 01 <span>SELECT PROTOCOL ARCHETYPE</span></div>
+          <div className="section-rule">Protocol type</div>
           <div className="protocol-grid" role="group" aria-label="Choose protocol type">
             {PROTOCOLS.map(([id, desc]) => (
               <button
@@ -170,7 +171,12 @@ export default function ConfigureScreen({ state, setState }) {
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span className="protocol-name">{id}</span>
-                  {protocol === id && <span className="pill-badge" style={{ color: "var(--mint)" }}>SELECTED</span>}
+                  {protocol === id && (
+                    <span className="pill-badge" style={{ color: "var(--mint)", display: "inline-flex", alignItems: "center" }}>
+                      <Check size={11} strokeWidth={2.5} style={{ marginRight: 3 }} aria-hidden="true" />
+                      SELECTED
+                    </span>
+                  )}
                 </div>
                 <span className="protocol-description">{desc}</span>
               </button>
@@ -178,15 +184,16 @@ export default function ConfigureScreen({ state, setState }) {
           </div>
 
           <div className="section-rule" style={{ marginTop: 28 }}>
-            STEP 02 <span>FUNCTION ROLE MAPPING</span>
+            Role mapping
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0 14px" }}>
             <p className="micro" style={{ margin: 0 }}>
-              ASSIGN DETECTED SOLIDITY FUNCTIONS TO ATTACK ROLES ({funcs.length} DETECTED)
+              Assign detected functions to roles ({funcs.length} found)
             </p>
             {funcs.length > 0 && protocol && (
-              <span className="auto-mapped-hint" style={{ fontSize: "11px", color: "var(--mint)" }}>
-                ✓ Smart auto-mapped
+              <span className="auto-mapped-hint" style={{ fontSize: "11px", color: "var(--mint)", display: "inline-flex", alignItems: "center" }}>
+                <Sparkles size={11} strokeWidth={2} style={{ marginRight: 4 }} aria-hidden="true" />
+                Smart auto-mapped
               </span>
             )}
           </div>
@@ -201,8 +208,15 @@ export default function ConfigureScreen({ state, setState }) {
                       <span className="mapping-label">
                         {role} <span style={{ color: "var(--mint)" }}>*</span>
                       </span>
-                      <span className={`role-badge ${isMapped ? "is-mapped" : "is-unmapped"}`}>
-                        {isMapped ? "✓ MAPPED" : "REQUIRED"}
+                      <span className={`role-badge ${isMapped ? "is-mapped" : "is-unmapped"}`} style={{ display: "inline-flex", alignItems: "center" }}>
+                        {isMapped ? (
+                          <>
+                            <Check size={10} strokeWidth={2.5} style={{ marginRight: 3 }} aria-hidden="true" />
+                            MAPPED
+                          </>
+                        ) : (
+                          "REQUIRED"
+                        )}
                       </span>
                     </div>
                     <select
@@ -225,14 +239,18 @@ export default function ConfigureScreen({ state, setState }) {
               })
             ) : (
               <div className="notice" style={{ gridColumn: "1 / -1" }}>
-                <span className="notice-mark">→</span>
+                <span className="notice-mark" aria-hidden="true">
+                  <Info size={13} strokeWidth={2} />
+                </span>
                 <span>Select a protocol archetype above to load its required role mapping inputs.</span>
               </div>
             )}
           </div>
           {protocol && !funcs.length ? (
             <div className="notice" role="status" style={{ marginTop: 14 }}>
-              <span className="notice-mark">!</span>
+              <span className="notice-mark" aria-hidden="true">
+                <AlertTriangle size={13} strokeWidth={2} style={{ color: "var(--coral)" }} />
+              </span>
               <span>
                 No function declarations were auto-detected. Check contract syntax or return to Upload.
               </span>
@@ -241,10 +259,10 @@ export default function ConfigureScreen({ state, setState }) {
         </div>
 
         <aside className="configure-side bracket-panel">
-          <div className="section-rule">STEP 03 <span>DEPLOYMENT CONTEXT</span></div>
+          <div className="section-rule">Deployment context</div>
           <div className="field">
             <label className="field-label" htmlFor="constructorArgs">
-              CONSTRUCTOR ARGUMENTS <span className="muted">/ OPTIONAL</span>
+              Constructor arguments <span className="muted">optional</span>
             </label>
             <textarea
               className="text-area"
@@ -260,7 +278,7 @@ export default function ConfigureScreen({ state, setState }) {
           </div>
           <div className="toggle-row">
             <div>
-              <span className="field-label" style={{ display: "block" }}>TEST ASSETS HELD</span>
+              <span className="field-label" style={{ display: "block" }}>Test assets</span>
               <small style={{ fontSize: "10px", color: "var(--muted)" }}>Simulated treasury funds</small>
             </div>
             <div className="toggle-control">
@@ -285,23 +303,29 @@ export default function ConfigureScreen({ state, setState }) {
             </div>
           </div>
           <div className="notice">
-            <span className="notice-mark">i</span>
+            <span className="notice-mark" aria-hidden="true">
+              <Info size={13} strokeWidth={2} />
+            </span>
             <span>
-              Target: <strong>{state.fileName}</strong>. An isolated local Foundry EVM instance will deploy and test 4 attack vectors.
+              Target: <strong>{state.fileName}</strong>. Isolated local EVM will deploy and test 4 attack vectors.
             </span>
           </div>
 
           <div className="validation-message" id="configureMessage" role="status">
             {missing.length ? (
               <div className="missing-summary">
-                <span className="missing">⚠ ACTION REQUIRED</span>
+                <span className="missing" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                  <AlertCircle size={13} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+                  Action required
+                </span>
                 <p style={{ margin: "4px 0 0", fontSize: "11px" }}>
                   Please assign: <strong>{missing.join(", ")}</strong> before starting execution.
                 </p>
               </div>
             ) : (
-              <div className="ready-summary" style={{ color: "var(--mint)" }}>
-                ✓ ALL ROLES CONFIGURED. Ready for local simulation.
+              <div className="ready-summary" style={{ color: "var(--mint)", display: "inline-flex", alignItems: "center", gap: 5 }}>
+                <CheckCircle2 size={13} strokeWidth={2} style={{ flexShrink: 0 }} aria-hidden="true" />
+                All roles configured. Ready to run.
               </div>
             )}
           </div>
@@ -313,7 +337,7 @@ export default function ConfigureScreen({ state, setState }) {
             onClick={handleRunSimulation}
             title={missing.length > 0 ? `Complete missing configuration: ${missing.join(", ")}` : "Start Foundry EVM attack simulations"}
           >
-            START ATTACK SIMULATION <span className="button-arrow" aria-hidden="true">→</span>
+            Start simulation <ArrowRight size={14} strokeWidth={2} style={{ marginLeft: 6, verticalAlign: "-1px" }} aria-hidden="true" />
           </button>
         </aside>
       </div>

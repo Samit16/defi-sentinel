@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ScreenHeader from "./ScreenHeader";
 import { executeAnalysisScan } from "../lib/real-api";
+import { ArrowLeft, SlidersHorizontal, AlertOctagon, AlertTriangle, ShieldCheck, Clock, Minus, Loader2, X } from "lucide-react";
 
 const DEFAULT_ROWS = [
   "Reentrancy",
@@ -13,6 +14,21 @@ const DEFAULT_ROWS = [
   progress: 0,
   elapsed_s: 0
 }));
+
+const renderStatusIcon = (stateStr) => {
+  switch ((stateStr || "").toUpperCase()) {
+    case "EXPLOITED":
+      return <AlertTriangle size={12} strokeWidth={2.2} style={{ color: "var(--coral)", marginRight: 5, flexShrink: 0 }} aria-hidden="true" />;
+    case "BLOCKED":
+      return <ShieldCheck size={12} strokeWidth={2.2} style={{ color: "var(--mint)", marginRight: 5, flexShrink: 0 }} aria-hidden="true" />;
+    case "RUNNING":
+      return <Loader2 size={12} strokeWidth={2.5} className="spin" style={{ color: "var(--mint)", marginRight: 5, flexShrink: 0 }} aria-hidden="true" />;
+    case "QUEUED":
+      return <Clock size={12} strokeWidth={2} style={{ color: "var(--muted)", marginRight: 5, flexShrink: 0 }} aria-hidden="true" />;
+    default:
+      return <Minus size={12} strokeWidth={2} style={{ color: "var(--muted)", marginRight: 5, flexShrink: 0 }} aria-hidden="true" />;
+  }
+};
 
 export default function RunningScreen({ state, setState, showToast }) {
   const [overallElapsed, setOverallElapsed] = useState(0);
@@ -125,13 +141,14 @@ export default function RunningScreen({ state, setState, showToast }) {
   if (!hasSource) {
     return (
       <section className="screen" aria-labelledby="screen-title">
-        <ScreenHeader num="03" label="SIMULATION RUN" right="NO SOURCE LOADED" />
+        <ScreenHeader num="03" label="RUNNING" />
         <div className="empty-state">
           <strong>NO CONTRACT INPUT</strong>
           Analysis cannot begin without an uploaded Solidity file. Please return to the upload step.
         </div>
         <a className="button" href="#/upload" style={{ marginTop: 20 }}>
-          ← GO TO UPLOAD SCREEN
+          <ArrowLeft size={14} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-2px" }} aria-hidden="true" />
+          Go to Upload Screen
         </a>
       </section>
     );
@@ -140,9 +157,10 @@ export default function RunningScreen({ state, setState, showToast }) {
   if (errorMessage) {
     return (
       <section className="screen" aria-labelledby="screen-title">
-        <ScreenHeader num="03" label="SIMULATION FAILED" right="REAL ENGINE ERROR" />
+        <ScreenHeader num="03" label="SIMULATION FAILED" />
         <div className="empty-state" style={{ borderColor: "var(--coral, #ff6b6b)" }}>
-          <strong style={{ color: "var(--coral, #ff6b6b)" }}>ANALYSIS EXECUTION FAILED</strong>
+          <AlertOctagon size={24} strokeWidth={2} style={{ color: "var(--coral, #ff6b6b)", marginBottom: 8, display: "block" }} aria-hidden="true" />
+          <strong style={{ color: "var(--coral, #ff6b6b)" }}>Simulation failed</strong>
           <pre style={{ textAlign: "left", whiteSpace: "pre-wrap", marginTop: 12, padding: 12, background: "rgba(0,0,0,0.4)", borderRadius: 4 }}>
             {errorMessage}
           </pre>
@@ -152,10 +170,12 @@ export default function RunningScreen({ state, setState, showToast }) {
         </div>
         <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
           <a className="button" href="#/upload">
-            ← EDIT SOURCE
+            <ArrowLeft size={14} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-2px" }} aria-hidden="true" />
+            Edit Source
           </a>
           <a className="button button-secondary" href="#/configure">
-            RECONFIGURE ROLES
+            <SlidersHorizontal size={14} strokeWidth={2} style={{ marginRight: 6, verticalAlign: "-2px" }} aria-hidden="true" />
+            Reconfigure Roles
           </a>
         </div>
       </section>
@@ -164,17 +184,18 @@ export default function RunningScreen({ state, setState, showToast }) {
 
   return (
     <section className="screen" aria-labelledby="screen-title">
-      <ScreenHeader num="03" label="SIMULATION RUN" right="FOUNDRY EVM ENGINE" />
+      <ScreenHeader num="03" label="RUNNING" />
       <div className="running-head">
         <div>
           <div className="eyebrow micro tracked">
-            STAGE 03 / SIMULATED ATTACK EXECUTION · TARGET: {state.fileName || "Contract.sol"}
+            Scanning {state.fileName || "Contract.sol"}
           </div>
           <h1 id="screen-title" className="display display-small">
             Simulating attack paths.
           </h1>
-          <p className="micro" style={{ marginTop: 8, color: "var(--mint)", letterSpacing: "0.08em" }}>
-            ● {stageMessage}
+          <p className="micro" style={{ marginTop: 8, color: "var(--mint)", letterSpacing: "0.08em", display: "inline-flex", alignItems: "center" }}>
+            <Loader2 size={12} strokeWidth={2.5} className="spin" style={{ marginRight: 6 }} aria-hidden="true" />
+            {stageMessage}
           </p>
         </div>
         <div className="run-summary">
@@ -196,11 +217,11 @@ export default function RunningScreen({ state, setState, showToast }) {
             data-state={row.state.toLowerCase()}
           >
             <div>
-              <span className="attack-index">VECTOR / 0{i + 1}</span>
+              <span className="attack-index">{i + 1}</span>
               <div className="attack-name" style={{ fontWeight: 500 }}>{row.module}</div>
             </div>
-            <div className="attack-status">
-              <span className={`status-dot ${row.state.toLowerCase()}`} aria-hidden="true"></span>
+            <div className="attack-status" style={{ display: "inline-flex", alignItems: "center" }}>
+              {renderStatusIcon(row.state)}
               <span className="state-label">{row.state}</span>
             </div>
             <div
@@ -222,7 +243,7 @@ export default function RunningScreen({ state, setState, showToast }) {
       </div>
       <div className="run-footer">
         <span className="run-footnote">
-          ISOLATED LOCAL ENVIRONMENT <span aria-hidden="true">/</span> EXECUTED VIA FOUNDRY FORGE TEST HARNESSES. NO EXTERNAL RPC USED.
+          ISOLATED LOCAL ENVIRONMENT. NO EXTERNAL RPC USED.
         </span>
         <button
           className="button button-danger"
@@ -231,7 +252,7 @@ export default function RunningScreen({ state, setState, showToast }) {
           onClick={handleCancel}
           title="Abort simulation and return to role configuration"
         >
-          ABORT SIMULATION <span aria-hidden="true">×</span>
+          Abort <X size={14} strokeWidth={2.2} style={{ marginLeft: 5, verticalAlign: "-1px" }} aria-hidden="true" />
         </button>
       </div>
     </section>
