@@ -6,7 +6,7 @@ const SPLINE_SCENE_URL = "https://prod.spline.design/Q2bZ1zmJNrH4PFxo/scene.spli
 
 export default function HeroSplineScene() {
   return (
-    <div className="landing-spline-scene">
+    <div className="landing-spline-scene" style={{ position: "relative" }}>
       <Script
         type="module"
         src="https://cdn.spline.design/@splinetool/viewer@2.0.95/build/spline-viewer.webgpu.js"
@@ -22,6 +22,26 @@ export default function HeroSplineScene() {
           width: "100%",
           height: "100%",
           background: "transparent",
+        }}
+      />
+
+      {/* Image patch that covers the "Built with Spline" shadow-DOM badge */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/images/spline-cover.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          width: "220px",
+          height: "60px",
+          objectFit: "cover",
+          objectPosition: "center center",
+          pointerEvents: "none",
+          zIndex: 10,
+          display: "block",
         }}
       />
     </div>
