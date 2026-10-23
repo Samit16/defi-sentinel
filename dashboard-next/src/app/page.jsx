@@ -19,6 +19,10 @@ const PixelFieldCanvas = dynamic(() => import("../components/PixelFieldCanvas"),
   ssr: false,
 });
 
+const GlassCanvas = dynamic(() => import("../components/GlassCanvas"), {
+  ssr: false,
+});
+
 function getRouteFromHash() {
   if (typeof window === "undefined") return "landing";
   const raw = window.location.hash.replace(/^#\/?/, "").split("?")[0];
@@ -128,6 +132,7 @@ export default function Page() {
       ) : (
         <>
           <PixelFieldCanvas />
+          <GlassCanvas activeRoute={activeRoute} state={state} />
           <ViewportFrame />
           <div className="app-shell" ref={appShellRef}>
             <Topbar activeRoute={activeRoute} />

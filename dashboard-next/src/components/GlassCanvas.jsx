@@ -41,30 +41,30 @@ function makeEnvironment(rendererInstance) {
 function physicalMaterial(env) {
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
-    metalness: 0.005,
-    roughness: 0.095,
-    transmission: 0.98,
-    thickness: 0.38,
-    ior: 1.43,
-    iridescence: 0.82,
-    iridescenceIOR: 1.3,
-    iridescenceThicknessRange: [180, 510],
-    clearcoat: 0.88,
-    clearcoatRoughness: 0.06,
+    metalness: 0.02,
+    roughness: 0.14,
+    transmission: 0.96,
+    thickness: 0.32,
+    ior: 1.38,
+    iridescence: 0.55,
+    iridescenceIOR: 1.25,
+    iridescenceThicknessRange: [140, 420],
+    clearcoat: 0.72,
+    clearcoatRoughness: 0.12,
     envMap: env,
-    envMapIntensity: 1.5,
-    emissive: 0x010814,
-    emissiveIntensity: 0.05,
-    attenuationColor: new THREE.Color(0x3f60b1),
-    attenuationDistance: 4.5,
+    envMapIntensity: 0.85,
+    emissive: 0x021612,
+    emissiveIntensity: 0.04,
+    attenuationColor: new THREE.Color(0x277a66),
+    attenuationDistance: 6.0,
     transparent: true,
-    opacity: 1,
+    opacity: 0.42,
     depthWrite: false,
     vertexColors: true,
     side: THREE.DoubleSide,
     flatShading: false
   });
-  if ("dispersion" in material) material.dispersion = 0.07;
+  if ("dispersion" in material) material.dispersion = 0.04;
   material.onBeforeCompile = shader => {
     shader.uniforms.uFilmTime = { value: 0 };
     shader.vertexShader = shader.vertexShader
@@ -84,23 +84,21 @@ function physicalMaterial(env) {
       .replace(
         "#include <color_fragment>",
         `#include <color_fragment>
-        float filmPhase=vCrystalPosition.x*2.2+vCrystalPosition.y*1.8-vCrystalPosition.z*1.4+sin(vCrystalPosition.z*2.4+vCrystalPosition.x*1.1+uFilmTime*1.15)*1.4+uFilmTime*1.2;
-        float violetBand = smoothstep(.68, .97, .5 + .5 * sin(filmPhase + 3.7));
-        float cyanBand=smoothstep(.58,.96,.5+.5*sin(filmPhase));
-        float roseBand=smoothstep(.65,.98,.5+.5*sin(filmPhase*.83+vCrystalPosition.y*1.3+sin(vCrystalPosition.x*2.1-uFilmTime*.9)*.7));
-        float goldBand=smoothstep(.7,.98,.5+.5*sin(filmPhase+2.25));
-        vec3 filmColor=vec3(.015,.035,.62);
-        filmColor=mix(filmColor,vec3(0.0,.88,1.0),cyanBand*.1);
-        filmColor=mix(filmColor,vec3(1.0,.045,.63),roseBand*.70);
-        filmColor=mix(filmColor,vec3(1.0,1.0,1.0),goldBand*.68);
-        filmColor = mix(filmColor, vec3(.55, .18, 1.0), violetBand * .55);
-        float filmSheen=max(cyanBand,max(roseBand,goldBand));
-        diffuseColor.rgb=mix(diffuseColor.rgb,filmColor,.38+.4*filmSheen);`
+        float filmPhase=vCrystalPosition.x*1.9+vCrystalPosition.y*1.5-vCrystalPosition.z*1.2+sin(vCrystalPosition.z*2.0+vCrystalPosition.x*1.0+uFilmTime*0.9)*1.2+uFilmTime*0.9;
+        float mintBand = smoothstep(.60, .96, .5 + .5 * sin(filmPhase));
+        float cyanBand = smoothstep(.65, .98, .5 + .5 * sin(filmPhase + 2.1));
+        float tealBand = smoothstep(.68, .98, .5 + .5 * sin(filmPhase * .8 + vCrystalPosition.y * 1.1));
+        vec3 filmColor = vec3(0.02, 0.06, 0.08);
+        filmColor = mix(filmColor, vec3(0.20, 0.85, 0.60), mintBand * 0.45);
+        filmColor = mix(filmColor, vec3(0.12, 0.70, 0.85), cyanBand * 0.35);
+        filmColor = mix(filmColor, vec3(0.08, 0.45, 0.55), tealBand * 0.30);
+        float filmSheen = max(mintBand, max(cyanBand, tealBand));
+        diffuseColor.rgb = mix(diffuseColor.rgb, filmColor, .25 + .3 * filmSheen);`
       )
       .replace(
         "#include <emissivemap_fragment>",
         `#include <emissivemap_fragment>
-        totalEmissiveRadiance+=vec3(0.0,.22,.34)*cyanBand*.10+vec3(.25,.01,.12)*roseBand*.14+vec3(.24,.13,.01)*goldBand*.02;`
+        totalEmissiveRadiance += vec3(0.04, 0.22, 0.16) * mintBand * 0.08 + vec3(0.02, 0.14, 0.20) * cyanBand * 0.06;`
       );
     material.userData.iridescenceShader = shader;
   };
@@ -114,8 +112,8 @@ function withIridescentFacets(geometry) {
   for (let i = 0; i < position.count; i++) {
     const nx = normal.getX(i), ny = normal.getY(i), nz = normal.getZ(i);
     const shimmer = 0.5 + 0.5 * Math.sin(nx * 3.1 - ny * 2.2 + nz * 2.7);
-    const hue = 0.62 + 0.035 * Math.sin(nx * 2.1 - ny * 1.7 + nz * 2.5);
-    const color = new THREE.Color().setHSL(hue, 0.86, 0.26 + 0.11 * shimmer);
+    const hue = 0.45 + 0.06 * Math.sin(nx * 2.1 - ny * 1.7 + nz * 2.5);
+    const color = new THREE.Color().setHSL(hue, 0.55, 0.20 + 0.08 * shimmer);
     color.toArray(colors, i * 3);
   }
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
@@ -167,15 +165,24 @@ export default function GlassCanvas({ activeRoute, state }) {
 
     function createGlassObject(route, env) {
       const objectGroup = new THREE.Group();
-      const geometry = withIridescentFacets(new THREE.OctahedronGeometry(1.58, 0));
+      // Reduced size from 1.58 to 1.15 so it does not obstruct forms
+      const geometry = withIridescentFacets(new THREE.OctahedronGeometry(1.15, 0));
       const heroObject = new THREE.Mesh(geometry, physicalMaterial(env));
       objectGroup.add(heroObject);
       const edge = new THREE.LineSegments(
         new THREE.EdgesGeometry(geometry, 26),
-        new THREE.LineBasicMaterial({ color: 0xb8eaff, transparent: true, opacity: 0.005 })
+        new THREE.LineBasicMaterial({ color: 0x4df0a8, transparent: true, opacity: 0.04 })
       );
       objectGroup.add(edge);
-      objectGroup.userData = { route, homeX: 2.95, homeY: 0.06, homeZ: -0.35, spin: 0 };
+      // Route-specific home positions: keep it well to the right edge and slightly higher
+      const routePositions = {
+        upload: { homeX: 3.5, homeY: -0.3, homeZ: -0.5 },
+        configure: { homeX: 3.6, homeY: 0.6, homeZ: -0.6 },
+        running: { homeX: 3.4, homeY: 0.2, homeZ: -0.5 },
+        report: { homeX: 3.6, homeY: 0.7, homeZ: -0.6 },
+      };
+      const pos = routePositions[route] || { homeX: 3.5, homeY: 0.2, homeZ: -0.5 };
+      objectGroup.userData = { route, ...pos, spin: 0 };
       objectGroup.position.set(objectGroup.userData.homeX, objectGroup.userData.homeY, objectGroup.userData.homeZ);
       objectGroup.rotation.set(0.17, -0.24, 0.05);
       scene.add(objectGroup);
@@ -189,18 +196,24 @@ export default function GlassCanvas({ activeRoute, state }) {
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      const mobile = width < 700;
-      camera.position.z = mobile ? 10 : 8;
-      camera.fov = mobile ? 36 : 34;
+      const mobile = width < 800;
+      camera.position.z = mobile ? 11 : 8;
+      camera.fov = mobile ? 38 : 34;
       camera.updateProjectionMatrix();
-      for (const item of Object.values(objects)) {
-        item.userData.homeX = mobile ? 1.62 : 2.95;
+      for (const [r, item] of Object.entries(objects)) {
+        if (mobile) {
+          item.userData.homeX = 2.4;
+          item.userData.homeY = -1.8; // Move below content on mobile
+          item.scale.setScalar(0.75);
+        } else {
+          item.scale.setScalar(1.0);
+        }
       }
     }
 
     function setObjectForRoute(route) {
       const objectRoute =
-        route === "running" ? "running" : route === "report" || route === "history" ? "report" : "upload";
+        route === "running" ? "running" : route === "report" || route === "history" ? "report" : route === "configure" ? "configure" : "upload";
       Object.values(objects).forEach(item => (item.visible = item.userData.route === objectRoute));
       const chosen = objects[objectRoute];
       if (chosen) {

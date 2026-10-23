@@ -187,37 +187,80 @@ export default function UploadScreen({ state, setState, showToast }) {
               onChange={(e) => loadFile(e.target.files?.[0])}
             />
           </label>
-          <div className="upload-divider">OR PASTE SOURCE</div>
+          <div className="upload-divider">OR PASTE SOLIDITY SOURCE CODE</div>
           <div className="field">
-            <label className="field-label" htmlFor="sourceName">FILE NAME</label>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <label className="field-label" htmlFor="sourceName">
+                CONTRACT FILE NAME <span style={{ color: "var(--mint)" }}>*</span>
+              </label>
+              <button
+                type="button"
+                className="sample-load-btn"
+                onClick={() => {
+                  const sampleName = "VaultVulnerable.sol";
+                  const sampleCode = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract VaultVulnerable {
+    mapping(address => uint256) public balances;
+    bool private locked;
+
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() external {
+        uint256 bal = balances[msg.sender];
+        require(bal > 0, "No balance");
+        // State updated AFTER external call (Reentrancy vector)
+        (bool ok, ) = msg.sender.call{value: bal}("");
+        require(ok, "Transfer failed");
+        balances[msg.sender] = 0;
+    }
+
+    function balanceOf(address user) external view returns (uint256) {
+        return balances[user];
+    }
+}`;
+                  handleSourceChange(sampleCode, sampleName);
+                  showToast("Loaded sample VaultVulnerable.sol");
+                }}
+              >
+                + Load Sample Vault (.sol)
+              </button>
+            </div>
             <input
               className="text-input"
               id="sourceName"
               name="sourceName"
-              placeholder="e.g. VaultVulnerable.sol"
+              placeholder="e.g. MyContract.sol (must end in .sol)"
               value={state.fileName || ""}
               onChange={(e) => handleNameChange(e.target.value)}
               maxLength={120}
               spellCheck={false}
               aria-describedby="uploadErrors"
+              aria-required="true"
             />
           </div>
-          <div className="field" style={{ marginTop: 11 }}>
-            <label className="field-label" htmlFor="sourceCode">SOLIDITY SOURCE</label>
+          <div className="field" style={{ marginTop: 12 }}>
+            <label className="field-label" htmlFor="sourceCode">
+              SOLIDITY SOURCE CODE <span style={{ color: "var(--mint)" }}>*</span>
+            </label>
             <textarea
               className="text-area paste-code"
               id="sourceCode"
               name="sourceCode"
-              placeholder="// Paste contract source here (must contain pragma, contract, etc.)"
+              placeholder="// Paste Solidity source here (must contain 'pragma solidity', 'contract', etc.)"
               spellCheck={false}
               aria-describedby="uploadErrors"
+              aria-required="true"
               value={code}
               onChange={(e) => handleSourceChange(e.target.value)}
             />
           </div>
           <div className="file-meta">
             <span id="fileMetaName">
-              <strong>{state.fileName || "No source selected"}</strong>
+              <strong>{state.fileName || "No contract loaded"}</strong>
             </span>
             <span id="fileMetaSize">{bytes ? `${bytes.toLocaleString()} B` : "0 B"}</span>
           </div>
@@ -226,7 +269,7 @@ export default function UploadScreen({ state, setState, showToast }) {
             className={`code-preview${code ? " is-visible" : ""}`}
             aria-label="Monospace Solidity preview"
           >
-            {lines || "Preview appears when source is entered."}
+            {lines || "Source preview will appear here."}
           </pre>
           <ul
             id="uploadErrors"
@@ -240,15 +283,28 @@ export default function UploadScreen({ state, setState, showToast }) {
           </ul>
           <div className="upload-actions">
             <span className="hint">
-              .SOL <span aria-hidden="true">/</span> NON-EMPTY <span aria-hidden="true">/</span> &lt;100 KB
+              {!state.uploadValid || !code.trim() || !(state.fileName || "").trim() ? (
+                <span className="disabled-reason">
+                  ⚠ Add a valid .sol file and non-empty contract source to proceed.
+                </span>
+              ) : (
+                <span className="ready-indicator" style={{ color: "var(--mint)" }}>
+                  ✓ Source valid. Ready to configure roles.
+                </span>
+              )}
             </span>
             <button
               className="button"
               id="continueUpload"
               type="submit"
               disabled={!state.uploadValid || !code.trim() || !(state.fileName || "").trim()}
+              title={
+                !state.uploadValid || !code.trim() || !(state.fileName || "").trim()
+                  ? "Upload or paste valid Solidity code ending in .sol to enable"
+                  : "Proceed to Stage 02: Configure Roles"
+              }
             >
-              CONTINUE <span className="button-arrow" aria-hidden="true">→</span>
+              CONTINUE TO CONFIGURE <span className="button-arrow" aria-hidden="true">→</span>
             </button>
           </div>
         </form>
