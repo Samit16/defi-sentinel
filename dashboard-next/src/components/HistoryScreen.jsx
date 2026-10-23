@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ScreenHeader from "./ScreenHeader";
-import { getHistoryData, getReportById } from "../lib/mock-api";
+import { fetchRealEngineReports, realReportsCache } from "../lib/real-api";
 
 const fmtDate = value => {
   const d = new Date(value);
@@ -9,54 +9,55 @@ const fmtDate = value => {
 };
 
 export default function HistoryScreen({ setState }) {
-  const [historyState, setHistoryState] = useState(() => {
-    const local = getLocalHistory().map(r => ({ ...r, is_real: false }));
-    local.sort((a, b) => new Date(b.generated_at) - new Date(a.generated_at));
-    const apiStatus = getApiStatus();
-    return {
-      reports: local,
-      isFallback: true,
-      fallbackReason: apiStatus.empty
-        ? "NO REAL ENGINE REPORTS FOUND (/api/reports returned empty). SHOWING DEMO DATA."
-        : "REAL ENGINE DATA UNAVAILABLE (/api/reports request failed). SHOWING DEMO DATA.",
-      loaded: false,
-    };
+  const [historyState, setHistoryState] = useState({
+    reports: [],
+    loaded: false,
+    error: null,
   });
 
   useEffect(() => {
     let active = true;
-    getHistoryData().then(({ reports, isFallback, fallbackReason }) => {
-      if (!active) return;
-      const sorted = [...reports].sort(
-        (a, b) => new Date(b.generated_at) - new Date(a.generated_at)
-      );
-      setHistoryState({
-        reports: sorted,
-        isFallback,
-        fallbackReason,
-        loaded: true,
+    fetchRealEngineReports()
+      .then(reports => {
+        if (!active) return;
+        const sorted = [...reports].sort(
+          (a, b) => new Date(b.generated_at) - new Date(a.generated_at)
+        );
+        setHistoryState({
+          reports: sorted,
+          loaded: true,
+          error: null,
+        });
+      })
+      .catch(err => {
+        if (!active) return;
+        setHistoryState({
+          reports: [],
+          loaded: true,
+          error: "Failed to load reports from backend engine (/api/reports).",
+        });
       });
-    });
+
     return () => {
       active = false;
     };
   }, []);
 
   const openReport = (reportId) => {
-    const report = getReportById(reportId);
+    const report = realReportsCache.get(reportId);
     if (!report) return;
     setState(prev => ({ ...prev, report }));
     window.location.hash = "/report";
   };
 
-  const { reports, isFallback, fallbackReason } = historyState;
+  const { reports, loaded, error } = historyState;
 
   return (
     <section className="screen" aria-labelledby="screen-title">
       <ScreenHeader
         num="—"
         label="HISTORY"
-        right={isFallback ? "DEMO DATA FALLBACK" : "LOCAL / ENGINE REPORTS"}
+        right="FOUNDRY ENGINE REPORTS"
       />
       <div className="history-head">
         <div>
@@ -66,16 +67,22 @@ export default function HistoryScreen({ setState }) {
           </h1>
         </div>
         <span className="micro">
-          {reports.length} REPORTS <span aria-hidden="true">/</span> CLICK A ROW TO OPEN
+          {reports.length} REAL REPORTS <span aria-hidden="true">/</span> CLICK A ROW TO OPEN
         </span>
       </div>
-      {isFallback && fallbackReason ? (
-        <div className="notice" role="status" style={{ marginTop: 16 }}>
+
+      {error ? (
+        <div className="notice" role="alert" style={{ marginTop: 16 }}>
           <span className="notice-mark">!</span>
-          <span>{fallbackReason}</span>
+          <span>{error}</span>
         </div>
       ) : null}
-      {reports.length ? (
+
+      {!loaded ? (
+        <div className="empty-state">
+          <strong>LOADING HISTORY...</strong>Fetching execution records from local engine.
+        </div>
+      ) : reports.length ? (
         <div
           className="table-wrap"
           role="region"
@@ -89,7 +96,7 @@ export default function HistoryScreen({ setState }) {
                 <th scope="col">DATE</th>
                 <th scope="col">TARGET</th>
                 <th scope="col">MODE</th>
-                <th scope="col">SUCCEEDED</th>
+                <th scope="col">EXPLOITED</th>
                 <th scope="col">OPEN</th>
               </tr>
             </thead>
@@ -99,7 +106,7 @@ export default function HistoryScreen({ setState }) {
                   key={item.report_id}
                   data-report-id={item.report_id}
                   tabIndex={0}
-                  aria-label={`Open ${item.is_real ? "real" : "demo"} report ${item.report_id} for ${item.target}`}
+                  aria-label={`Open real report ${item.report_id} for ${item.target}`}
                   onClick={() => openReport(item.report_id)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -110,16 +117,16 @@ export default function HistoryScreen({ setState }) {
                 >
                   <td className="report-id">{item.report_id}</td>
                   <td>{fmtDate(item.generated_at)}</td>
-                  <td className="target-cell">{item.target}</td>
+                  <td className="target-cell">{item.target || "UploadedContract.sol"}</td>
                   <td>
-                    {item.mode.toUpperCase()}
-                    <span className={item.is_real ? "table-real" : "table-demo"}>
-                      / {item.is_real ? "REAL ENGINE DATA" : "DEMO DATA"}
+                    {(item.mode || "local").toUpperCase()}
+                    <span className="table-real">
+                      / REAL ENGINE DATA
                     </span>
                   </td>
                   <td className="count-succeeded">
-                    {item.summary.succeeded}{" "}
-                    <span className="muted">/ {item.summary.total}</span>
+                    {item.summary?.succeeded || 0}{" "}
+                    <span className="muted">/ {item.summary?.total || 0}</span>
                   </td>
                   <td aria-hidden="true">→</td>
                 </tr>
@@ -129,11 +136,11 @@ export default function HistoryScreen({ setState }) {
         </div>
       ) : (
         <div className="empty-state">
-          <strong>NO REPORTS YET</strong>Run a local simulation to create the first report.
+          <strong>NO REPORTS YET</strong>Run a security simulation to create the first report.
         </div>
       )}
       <p className="micro" style={{ marginTop: 15 }}>
-        REAL ENGINE REPORTS ARE FETCHED FROM LOCAL ENGINE (/api/reports). DEMO SAMPLE REPORTS ARE STORED LOCALLY.
+        REAL ENGINE REPORTS ARE PERSISTED IN reports/ AND FETCHED DIRECTLY VIA /api/reports.
       </p>
     </section>
   );
